@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Papel y Luna</title>
+    <script src="" defer></script>
+</head>
+<body>
+    <!-- HEADER Y INPUT DE NAVEGACION -->
+    <header class="header__content">
+        <h1 class="header__content-title">Papel y Luna</h1>
+        <input type="text" id="searchInput" placeholder="Buscar producto..." class="header__content-input"> 
+        <!-- el input de navegacion debe permitir al usuario buscar y filtrar productos por nombre y actualizar el catálogo en tiempo real -->
+    </header>
+    <!-- MAIN -->
+    <main class="main__content">
+        <!-- CATALOGO -->
+        <section class="main__content-section">
+            <h2 class="main__content-title">Catálogo de Productos</h2>
+            <div class="main__products-container">
+                <!-- JS DATA debe desplegar los productos del catálogo en tiempo real , poder seleccionarlos y agregarlos al carrito-->
+            </div>
+        </section>
+        <!-- CARRITO -->
+        <aside class="cart__aside" id="cart">
+            <h2 class="cart__aside-title">Carrito</h2>
+            <div class="cart__items-container">
+                <div class="cart__items" id="cartItems">
+                    <!-- JS CART debe desplegar los productos del carrito en tiempo real-->
+                </div>
+                <div class="empty__cart" id="emptyCartMessage">
+                    <!-- JS CART contiene un mensaje de carrito vacío -->
+                </div>
+                <div class="cart__footer" id="cartFooter">
+                    <!-- JS CART boton de comprar y total a pagar -->
+                </div>
+            </div>
+        </aside>
+    </main>
+    
+</body>
+</html>
