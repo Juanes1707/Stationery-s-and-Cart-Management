@@ -1,7 +1,95 @@
+/* ESTILOS GENERALES POR DEFECTO */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     text-decoration: none;
     list-style: none;
+    font-family: monospace;
 }
+
+header, main,aside, footer {
+    padding: 1.5rem;
+    border: 2px solid #000;
+}
+
+body {
+    background-color: #dfe;
+}
+/* USO DE GRID CON EL OBJETIVO DE CREAR EL LAYOUT PRINCIPAL QUE VA A TENER LA PAGINA, CON AYUDA DE ESTE DEFINO LA CANTIDAD DE COLUMNAS QUE VAN A TENER, PARA QUE EL MAIN Y EL ASIDE TENGA UNA ALTURA MAYOR, SELECCIONO LAS FILAS QUE SE CREAN IMPLICITAMENTE, CON AUTO HAGO QUE LA FILA 1 Y 3 OCUPEN ESPACIO SEGUN SU CONTENIDO Y LA FILA 2 QUE CONTIENE AL MAIN Y AL ASIDE OCUPARAN EL ESPACIO DISPONIBLE QUE DEJEN EL HEADER Y EL FOOTER */
+.app__container {
+    width: 80vw;
+    background-color: #fff;
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    grid-auto-rows: auto 1fr auto;
+    min-height: 80vh;
+    gap: 12px;
+    grid-template-areas: 
+    "header header"
+    "main aside"
+    "footer footer";
+    margin: 2rem auto;
+}
+/* HEADER SECTION */
+
+.header__content {
+    grid-area: header;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+/* CREACION DE LA BARRA DE BUSQUEDA, SE CREA UN PUNTO DE REFERENCIA CON POSITION RELATIVE EN EL CONTENEDOR, LUEGO SE LE DA A LA LUPA QUE ES EL BOTON UN POSITION ABSOLUTE PARA QUE SE POSICIONE CON RESPECTO AL CONTENDOR y LO ACOMODAMOS */
+.header__content-input-container {
+    width: 30vw;
+    position: relative;
+}
+
+.header__content-button {
+    color: #888;
+    position: absolute;
+    left: 0;
+    top: 0%;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+/* LE AGREGAMOS UN PADDING AL INPUT PARA QUE EL PLACEHOLDER LE DE ESPACIO A LA LUPA, QUITAMOS EL OUTLINE POR TEMAS ESTICOS, SE LE AGREGO EL REDONDEO AL INPUT Y AGREGAMOS UNA PEQUEÑA TRANSICION QUE AL CLICKEAR LA BARRA DE NAVEGACION SU COLOR DE FONDO CAMBIE  */
+.header__content-input{
+    min-width: 30vw;
+    background-color: #eee;
+    padding: 0.5rem 0.5rem 0.5rem 2rem;
+    border-radius: 25px;
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+
+}
+
+
+.header__content-input:focus {
+    border-color: #444;
+    background-color: #fff;
+}
+
+/* MAIN SECTION */
+
+.main__content {
+    grid-area: main;
+}
+/* ASIDE / CART SECTION */
+
+.cart__aside {
+    grid-area: aside;
+    text-align: center;
+}
+/* FOOTER SECTION */
+
+.footer-content {
+    grid-area: footer;
+}
+
+/* MEDIA QUERIES */
