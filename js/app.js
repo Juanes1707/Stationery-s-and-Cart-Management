@@ -4,7 +4,6 @@ import { state, addToCart } from "./state.js";
 import { increaseQuantity, decreaseQuantity } from "./state.js";
 import { removeFromCart } from "./state.js";
 
-
 // SELECTORES
 const productsContainer = document.querySelector(".main__products-container");
 const cartItemsContainer = document.getElementById("cartItems");
@@ -12,32 +11,28 @@ const emptyCartMessage = document.getElementById("emptyCartMessage");
 const cartFooter = document.getElementById("cartFooter");
 const searchInput = document.getElementById("searchInput");
 
-
-
-// 🔹 FUNCIÓN 1: Render catálogo
+//  FUNCIÓN 1: Render catálogo
 function renderProducts(productList) {
   productsContainer.innerHTML = "";
 
-  productList.forEach(product => {
+  productList.forEach((product) => {
     const productCard = `
-      <div class="product__card">
+    <div class="product__card">
         <img src="${product.image}" alt="${product.name}">
         <h3>${product.name}</h3>
         <p>${product.description}</p>
-        <p>$${product.price}</p>
+        <span class="product__price">$${product.price}</span>
         <button data-id="${product.id}">
-          Agregar al carrito
+        Agregar al carrito
         </button>
-      </div>
+    </div>
     `;
     productsContainer.innerHTML += productCard;
   });
 }
 
-
-// 🔹 FUNCIÓN 2: Render carrito 
+//  FUNCIÓN 2: Render carrito
 function renderCart() {
-
   cartItemsContainer.innerHTML = "";
 
   if (state.cart.length === 0) {
@@ -48,11 +43,8 @@ function renderCart() {
 
   emptyCartMessage.innerHTML = "";
 
-  state.cart.forEach(item => {
-
-    const subtotal = (item.price * item.quantity)
-  .toLocaleString("es-CO");
-
+  state.cart.forEach((item) => {
+    const subtotal = (item.price * item.quantity).toLocaleString("es-CO");
 
     const cartItem = `
         <div class="cart__item">
@@ -72,39 +64,32 @@ function renderCart() {
     `;
 
     cartItemsContainer.innerHTML += cartItem;
-
   });
 
-  const total = state.cart.reduce((acc, item) => {
-    return acc + (item.price * item.quantity);
-    }, 0).toLocaleString("es-CO");
-
+  const total = state.cart
+    .reduce((acc, item) => {
+      return acc + item.price * item.quantity;
+    }, 0)
+    .toLocaleString("es-CO");
 
   cartFooter.innerHTML = `
   <h3>Total: $${total}</h3>
   <button class="checkout">Comprar</button>
 `;
-
 }
 
-
-// 🔹 EVENT LISTENER catálogo
-productsContainer.addEventListener("click", function(event) {
-
+//  EVENT LISTENER catálogo
+productsContainer.addEventListener("click", function (event) {
   if (event.target.tagName === "BUTTON") {
-
     const productId = parseInt(event.target.dataset.id);
-    const product = products.find(p => p.id === productId);
+    const product = products.find((p) => p.id === productId);
 
     addToCart(product);
     renderCart();
-
   }
-
 });
 
-cartItemsContainer.addEventListener("click", function(event) {
-
+cartItemsContainer.addEventListener("click", function (event) {
   const productId = parseInt(event.target.dataset.id);
 
   if (event.target.classList.contains("increase")) {
@@ -118,40 +103,31 @@ cartItemsContainer.addEventListener("click", function(event) {
   }
 
   if (event.target.classList.contains("remove")) {
-  removeFromCart(productId);
-  renderCart();
-}
-
-
+    removeFromCart(productId);
+    renderCart();
+  }
 });
 
-searchInput.addEventListener("input", function(event) {
-
+searchInput.addEventListener("input", function (event) {
   const searchText = event.target.value
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "");
 
-  const filteredProducts = products.filter(product =>
+  const filteredProducts = products.filter((product) =>
     product.name
       .toLowerCase()
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
-      .includes(searchText)
+      .includes(searchText),
   );
 
   renderProducts(filteredProducts);
-
 });
 
-
-
-
-// 🔹 Render inicial
+//  Render inicial
 renderProducts(products);
 renderCart();
-
-
 
 console.log(products);
 console.log(state);
