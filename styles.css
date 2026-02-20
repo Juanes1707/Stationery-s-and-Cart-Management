@@ -5,12 +5,12 @@
     box-sizing: border-box;
     text-decoration: none;
     list-style: none;
-    font-family: monospace;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif ;
 }
 
 header, main,aside, footer {
     padding: 1.5rem;
-    border: 2px solid #000;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);;
 }
 
 body {
@@ -29,15 +29,15 @@ body {
     width: 95vw;
     background-color: #fff;
     display: grid;
-    grid-template-columns: repeat(2,1fr);
+    grid-template-columns: 1fr 0px;
     grid-auto-rows: auto 1fr auto;
     min-height: 80vh;
-    gap: 12px;
     grid-template-areas: 
     "header header"
     "main aside"
     "footer footer";
     margin: 2rem auto;
+    transition: all 0.3s ease;
 }
 /* HEADER SECTION */
 
@@ -46,6 +46,10 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.header__content-title{
+    font-size: 30px;
 }
 /* CREACION DE LA BARRA DE BUSQUEDA, SE CREA UN PUNTO DE REFERENCIA CON POSITION RELATIVE EN EL CONTENEDOR, LUEGO SE LE DA A LA LUPA QUE ES EL BOTON UN POSITION ABSOLUTE PARA QUE SE POSICIONE CON RESPECTO AL CONTENDOR y LO ACOMODAMOS */
 .header__content-input-container {
@@ -82,6 +86,10 @@ body {
     border-color: #444;
     background-color: #fff;
 }
+.cart__button{
+    width: 2rem;
+    height: 2rem;
+}
 
 /* MAIN SECTION */
 
@@ -89,8 +97,13 @@ body {
 
 .main__content {
     grid-area: main;
+    padding-left: 5%;
 }
+.main__content-title{
+    margin-bottom: 2rem;
+    margin-top: rem;
 
+}
 /* SELECCIONAMOS LA CLASE CREADA EN EL JS Y USAMOS FLEX PARA DESPLEGAR LOS PRODUCTOS EN FILA, Y LE DAMOS UN WRAP PARA QUE QUEDE UNO DEBAJO DEL OTR CUANDO TENGAN ESPACIO AL LADO EN EL CONTENEDOR */
 .main__products-container{
     display: flex;
@@ -103,12 +116,19 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    padding: 1rem;
 }
 /* SELECCIONAMOS LA CLASE CREADA EN EL JS LE DAMO UN WIDTH MAXIMO */
 .product__card p {
     max-width: 9.4rem;
     font-size: 0.9rem;
     color: #555;
+}
+
+.product__card h3 {
+    font-size: 1rem;
 }
 
 .product__card button {
@@ -119,6 +139,7 @@ body {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    margin-top: 1.5rem ;
 }
 
 .product__card span {
@@ -130,12 +151,42 @@ body {
     font-weight: bold;
     color: #333;
 }
-/* ASIDE / CART SECTION */
+/* ASIDE / CART SECTION / .cart-open es el estado que se creo en app, que hace que pueda aparecer la ventana */
+
 
 .cart__aside {
-    grid-area: aside;
-    text-align: center;
+    background: #dfebed;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); ;
+    padding: 1.5rem;    
+    display: none;   
 }
+
+.app__container.cart-open {
+    grid-template-columns: 1fr 350px; /* Ahora el aside ocupa espacio */
+    grid-template-areas:
+        "header header"
+        "main aside"
+        "footer footer";
+}
+
+.app__container.cart-open .cart__aside {
+    display: block; /* ahora el aside aparece */
+}
+
+.cart__item img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+}
+
+.cart__item{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+}
+
+
+
 /* FOOTER SECTION */
 
 .footer-content {

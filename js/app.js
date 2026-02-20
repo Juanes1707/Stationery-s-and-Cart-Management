@@ -10,6 +10,10 @@ const cartItemsContainer = document.getElementById("cartItems");
 const emptyCartMessage = document.getElementById("emptyCartMessage");
 const cartFooter = document.getElementById("cartFooter");
 const searchInput = document.getElementById("searchInput");
+const cartButton = document.querySelector(".cart__button");
+const cart = document.querySelector(".cart__aside");
+const appContainer = document.querySelector(".app__container");
+
 
 //  FUNCIÓN 1: Render catálogo
 function renderProducts(productList) {
@@ -49,7 +53,7 @@ function renderCart() {
     const cartItem = `
         <div class="cart__item">
             <h4>${item.name}</h4>
-
+            <img src="${item.image}" alt="${item.name}">  
             <div class="cart__controls">
                 <button class="decrease" data-id="${item.id}">-</button>
                 <span>${item.quantity}</span>
@@ -77,6 +81,11 @@ function renderCart() {
   <button class="checkout">Comprar</button>
 `;
 }
+
+//crea un estado para el carrito (cuando se abre)
+cartButton.addEventListener("click", () => {
+    appContainer.classList.toggle("cart-open");
+});
 
 //  EVENT LISTENER catálogo
 productsContainer.addEventListener("click", function (event) {
