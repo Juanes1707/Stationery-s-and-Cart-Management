@@ -51,20 +51,20 @@ function renderCart() {
     const subtotal = (item.price * item.quantity).toLocaleString("es-CO");
 
     const cartItem = `
-        <div class="cart__item">
-            <h4>${item.name}</h4>
-            <img src="${item.image}" alt="${item.name}">  
-            <div class="cart__controls">
-                <button class="decrease" data-id="${item.id}">-</button>
-                <span>${item.quantity}</span>
+        <div class="cart__item-container">
+          <div class="cart__item">
+              <img src="${item.image}" alt="${item.name}">  
+              <div class="cart__controls">
+                  <button class="decrease" data-id="${item.id}">-</button>
+                  <span class="cart__quantity">${item.quantity}</span>
                 <button class="increase" data-id="${item.id}">+</button>
-            </div>
-
-            <p>Subtotal: $${subtotal}</p>
-
-            <button class="remove" data-id="${item.id}">Eliminar</button>
+              </div>
+          <div class="cart__item-info">
+            <h4>${item.name}</h4>
+            <p>$${subtotal}</p>
+          </div>
+          <button class="remove" data-id="${item.id}"><i class="fa-solid fa-trash"></i></button>
         </div>
-
     `;
 
     cartItemsContainer.innerHTML += cartItem;
@@ -77,8 +77,8 @@ function renderCart() {
     .toLocaleString("es-CO");
 
   cartFooter.innerHTML = `
-  <h3>Total: $${total}</h3>
-  <button class="checkout">Comprar</button>
+  <h3 class="cart__total">Total: $${total}</h3>
+  <button class="checkout">Finalizar Compra</button>
 `;
 }
 
