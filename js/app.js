@@ -22,13 +22,15 @@ function renderProducts(productList) {
   productList.forEach((product) => {
     const productCard = `
     <div class="product__card">
-        <img src="${product.image}" alt="${product.name}">
+      <img src="${product.image}" alt="${product.name}">
+      <div class="product__info">
         <h3>${product.name}</h3>
         <p>${product.description}</p>
         <span class="product__price">$${product.price}</span>
         <button data-id="${product.id}">
         Agregar al carrito
         </button>
+      </div>
     </div>
     `;
     productsContainer.innerHTML += productCard;

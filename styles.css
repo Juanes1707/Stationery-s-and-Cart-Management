@@ -5,19 +5,20 @@
     box-sizing: border-box;
     text-decoration: none;
     list-style: none;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif ;
+    font-family: "Plus Jakarta Sans", sans-serif;
+    
 }
 
+header {
+    box-shadow: 0 10px 25px rgba(0,0,0,.1) ;
+}
 
 header, main,aside, footer {
     padding: 1.5rem;
 }
 
-body {
-    background-color: #dfebed;
-}
 
-/* tama;o imagnes */
+/* tamaño imagnes */
 .product__card img {
     width: 150px;
     height: 150px;
@@ -26,9 +27,8 @@ body {
 
 /* USO DE GRID CON EL OBJETIVO DE CREAR EL LAYOUT PRINCIPAL QUE VA A TENER LA PAGINA, CON AYUDA DE ESTE DEFINO LA CANTIDAD DE COLUMNAS QUE VAN A TENER, PARA QUE EL MAIN Y EL ASIDE TENGA UNA ALTURA MAYOR, SELECCIONO LAS FILAS QUE SE CREAN IMPLICITAMENTE, CON AUTO HAGO QUE LA FILA 1 Y 3 OCUPEN ESPACIO SEGUN SU CONTENIDO Y LA FILA 2 QUE CONTIENE AL MAIN Y AL ASIDE OCUPARAN EL ESPACIO DISPONIBLE QUE DEJEN EL HEADER Y EL FOOTER */
 .app__container {
-    width: 95vw;
     border-radius: 20px;
-    background-color: #fff;
+    background-color: #0001;
     display: grid;
     grid-template-columns: 1fr 0px;
     /* permitir que cada fila ajuste su altura al contenido en lugar de forzar que la fila central ocupe todo */
@@ -39,20 +39,36 @@ body {
     "header header"
     "main aside"
     "footer footer";
-    margin: 2rem auto;
     transition: all 0.3s ease;
 }
 /* HEADER SECTION */
 
 .header__content {
+    background-color: #fff;
+    position: sticky;
+    top: 0;
     grid-area: header;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
+/* SE AGREGO UN DIV NUEVO PARA PODER JUNTAR LA IAMAGEN Y EL H1 Y LA BARRA DE NAVEGACION Y EL BOTON DE CARRITO QUEDARAN SEPARADOS DE ESTOS 2 */
+.header__content-elements {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-right: 2rem;
+}
+
+
 
 .header__content-title{
     font-size: 30px;
+}
+
+.header__content-logo {
+    max-width: 5.5rem;
+    object-fit: contain;
 }
 /* CREACION DE LA BARRA DE BUSQUEDA, SE CREA UN PUNTO DE REFERENCIA CON POSITION RELATIVE EN EL CONTENEDOR, LUEGO SE LE DA A LA LUPA QUE ES EL BOTON UN POSITION ABSOLUTE PARA QUE SE POSICIONE CON RESPECTO AL CONTENDOR y LO ACOMODAMOS */
 .header__content-input-container {
@@ -91,11 +107,13 @@ body {
     border-color: #444;
     background-color: #fff;
 }
+
+/* IMPLEMENTACION DE LOS ESTILOS DEL BOTON DEL CARRITO */
 .cart__button{
     width: 3.5rem;
     height: 3.5rem;
-    background-color: #69a;
-    color: #fff;
+    background-color: #FC1;
+    color: #000;
     font-size: 1.2rem;
     border: none;
     border-radius: 50%;
@@ -107,7 +125,7 @@ body {
 }
 
 .cart__button:hover {
-    background-color: #58a;
+    background-color: #FFEB3B;
     transform: scale(1.1);
 }
 
@@ -122,10 +140,11 @@ body {
 .main__content {
     grid-area: main;
     padding-left: 5%;
+
 }
 .main__content-title{
     margin-bottom: 2rem;
-    margin-top: rem;
+    margin-top: 1rem;
 
 }
 /* SELECCIONAMOS LA CLASE CREADA EN EL JS Y USAMOS FLEX PARA DESPLEGAR LOS PRODUCTOS EN FILA, Y LE DAMOS UN WRAP PARA QUE QUEDE UNO DEBAJO DEL OTR CUANDO TENGAN ESPACIO AL LADO EN EL CONTENEDOR */
@@ -135,8 +154,62 @@ body {
     gap: 2rem;
 }
 
+/* INICIO DEL HERO SECTION */
+.hero__section {
+    min-height: 320px;
+    border-radius: 22px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+    background-image:
+    linear-gradient( #0009, #0009), url("./imagenes y recursos/Hero.png");
+    background-size: cover;
+    background-position: cover;
+    box-shadow: 0 12px 28px rgba(0,0,0,.12);
+}
+
+.hero__section-content {
+    color: #fff;
+    padding: 2rem;
+    max-width: 400px;
+}
+
+.hero__section-content h2 {
+    font-weight: normal;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.hero__section-content p {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.hero__section-content button {
+    padding: 0.7rem 1.5rem;
+    background-color: #FC1;
+    color: #000;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+#hero__section-button {
+    background-color: #fff3;
+    color: #fff;
+}
+
+.hero__section-content button:hover {
+    background-color: #FFEB3B;
+}
+.hero__section-content #hero__section-button:hover {
+    background-color: #fff4;
+}
+
+
 /* CADA TAREJETA DEBE TENER UN FLEX DIRECTION COLUMN, PARA QUE SE PUEDA ACOMODAR LOS ELEMENTOS DE MANERA CORRECTA Y EL BOTON */
 .product__card {
+    background-color: #fff;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -157,20 +230,31 @@ body {
 
 /* SE LE ASIGNA UN ESTILO A LOS BOTONES DEL MAIN Y DEL CART */
 
-.product__card button, .cart__item button {
+.product__info button {
+    display: block;
+    margin: 1.5rem auto 0;
+}
+
+.product__info button, .cart__item button {
     margin-top: auto;
     padding: 0.5rem;
-    background-color: #69a;
-    color: #fff;
+    background-color: #FC1;
+    color: #000;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     margin-top: 1.5rem ;
     transition: background-color 0.3s ease;
+    align-self: center; /* center the button horizontally within the flex column */
 }
 
-.product__card button:hover, .cart__item button:hover {
-    background-color: #58a;
+.product__info button {
+    text-align: center;
+    background-color: #0001;
+}
+
+.product__info button:hover, .cart__item button:hover {
+    background-color: #FC1;
 }
 
 /* BOTON DE COMPRAR */
@@ -180,12 +264,17 @@ body {
     max-width: 300px;        /* límite opcional para no crecer demasiado */
     margin: 1rem auto 0 auto;/* centrado horizontal */
     padding: 0.7rem 1rem;    /* más relleno para impacto visual */
-    background-color: #69a;
-    color: #fff;
+    background-color: #FC1;
+    color: #000;
     font-size: 1rem;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.checkout:hover {
+    background-color: #FFEB3B;
 }
 
 .product__card span {
@@ -199,19 +288,12 @@ body {
 }
 /* ASIDE / CART SECTION / .cart-open es el estado que se creo en app, que hace que pueda aparecer la ventana desplegable */
 
-.cart__aside-container { 
-    background: #dfebed;
-    border-radius: 20px;
-    min-height: auto;
-    margin: 1rem;
-    
 
-}
 .cart__aside {
     background-color: #fff;
     grid-area: aside;
-    border-radius: 20px;
-    box-shadow: 0 2px 8px #000 ;
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px rgba(0,0,0,.1) ;
     padding: 1.5rem;    
     display: none;
     margin: 2rem;  
@@ -282,6 +364,92 @@ body {
 /* FOOTER SECTION */
 
 .footer-content {
+    border-top: 1px solid #eee;
+    box-shadow: 0 -10px 20px rgba(0,0,0,0.05);
     grid-area: footer;
+    padding: 2rem 1.5rem;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+
+
+
+
+.footer__columns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer__col {
+    flex: 1 1 200px;
+}
+
+.footer__description {
+    margin-bottom: 1rem;
+    line-height: 1.4;
+}
+
+.footer__socials a {
+    color: #555;
+    margin-right: 0.5rem;
+    font-size: 1.2rem;
+    transition: color 0.2s;
+}
+
+.footer__socials a:hover {
+    color: #000;
+}
+
+.footer__col h3 {
+    margin-bottom: 0.75rem;
+    font-size: 1.1rem;
+    color: #333;
+    /* headings themselves are plain now */
+}
+
+.footer__col-icon {
+    background-color: #FC1;
+    color: #000;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 4px;
+    margin-right: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.footer__col h3 .footer__col-icon {
+    margin-right: 0.5rem;
+}
+.footer__col ul {
+    list-style: none;
+}
+
+.footer__col ul li {
+    margin-bottom: 0.5rem;
+}
+
+.footer__col ul li a {
+    color: #555;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.footer__col ul li a:hover {
+    color: #000;
+}
+
+.footer__bottom {
+    text-align: center;
+    margin-top: 2rem;
+    font-size: 0.8rem;
+    color: #777;
 }
 
