@@ -39,6 +39,7 @@ header, main,aside, footer {
     "header header"
     "main aside"
     "footer footer";
+    place-content: center;
     transition: all 0.3s ease;
 }
 /* HEADER SECTION */
@@ -108,8 +109,15 @@ header, main,aside, footer {
     background-color: #fff;
 }
 
-/* IMPLEMENTACION DE LOS ESTILOS DEL BOTON DEL CARRITO */
-.cart__button{
+/* IMPLEMENTACION DE LOS ESTILOS DEL BOTON DEL CARRITO Y EL PERFIL */
+.header__actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+
+.header__actions-button{
     width: 3.5rem;
     height: 3.5rem;
     background-color: #FC1;
@@ -131,27 +139,6 @@ header, main,aside, footer {
 
 .cart__button:active {
     transform: scale(0.95);
-}
-
-/* MAIN SECTION */
-
-/* ASIGNACION DEL GRID AL MAIN */
-
-.main__content {
-    grid-area: main;
-    padding-left: 5%;
-
-}
-.main__content-title{
-    margin-bottom: 2rem;
-    margin-top: 1rem;
-
-}
-/* SELECCIONAMOS LA CLASE CREADA EN EL JS Y USAMOS FLEX PARA DESPLEGAR LOS PRODUCTOS EN FILA, Y LE DAMOS UN WRAP PARA QUE QUEDE UNO DEBAJO DEL OTR CUANDO TENGAN ESPACIO AL LADO EN EL CONTENEDOR */
-.main__products-container{
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
 }
 
 /* INICIO DEL HERO SECTION */
@@ -204,6 +191,27 @@ header, main,aside, footer {
 }
 .hero__section-content #hero__section-button:hover {
     background-color: #fff4;
+}
+
+/* MAIN SECTION */
+
+/* ASIGNACION DEL GRID AL MAIN */
+
+.main__content {
+    grid-area: main;
+    padding-left: 5%;
+
+}
+.main__content-title{
+    margin-bottom: 2rem;
+    margin-top: 1rem;
+
+}
+/* SELECCIONAMOS LA CLASE CREADA EN EL JS Y USAMOS FLEX PARA DESPLEGAR LOS PRODUCTOS EN FILA, Y LE DAMOS UN WRAP PARA QUE QUEDE UNO DEBAJO DEL OTRO CUANDO TENGAN ESPACIO AL LADO EN EL CONTENEDOR */
+.main__products-container{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1.5rem;
 }
 
 
