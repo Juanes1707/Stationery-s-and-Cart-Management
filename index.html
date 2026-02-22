@@ -17,29 +17,36 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap"
         rel="stylesheet">
-    <script type="module" src="./js/app.js"></script>
 </head>
 
 <body>
     <div class="app__container">
-        <!-- HEADER Y INPUT DE NAVEGACION -->
+        <!-- HEADER E INPUT DE NAVEGACIÓN -->
         <header class="header__content">
             <div class="header__content-elements">
                 <img src="imagenes y recursos/Papel y Luna Logo.png" alt="Papel y Luna Logo"
                     class="header__content-logo">
                 <h1 class="header__content-title">Papel y Luna</h1>
             </div>
-            <!-- Se crea un div que contenga un boton con el input donde el usuario va a poner su producto y un boton con una lupa para hacerlo mas estetico, al se un boton decorativo lo defino en HTML  -->
+            <!-- Se crea un div contendor, que almacena los botones del perfil, el home y el carrito, además contiene el input de navegacion donde el usuario va a poder buscar su producto. se agregan los iconos correspondientes para cada uno de los botones -->
             <div class="header__content-input-container">
                 <button class="header__content-button">
-                    <i class="fa-solid fa-cart-circle-plus"></i>
+                    <i class="fa-solid fa-magnifying-glass"></i>
                 </button>
                 <input type="text" id="searchInput" placeholder="Buscar producto..." class="header__content-input">
             </div>
-            <button class="cart__button">
-                <i class="fa-solid fa-cart-arrow-down"></i>
-            </button>
-            <!-- el input de navegacion debe permitir al usuario buscar y filtrar productos por nombre y actualizar el catálogo en tiempo real -->
+            <div class="header__actions">
+                <button class="header__actions-button" id="cartButton">
+                    <i class="fa-solid fa-cart-arrow-down"></i>
+                </button>
+                <button class="header__actions-button" id="profileButton">
+                    <i class="fa-solid fa-user"></i>
+                </button>
+                <button class="header__actions-button" id="homeButton">
+                    <i class="fa-solid fa-house"></i>
+                </button>
+            </div>
+            <!-- el input de navegación debe permitirle al usuario buscar y filtrar productos por nombre y actualizarlo en tiempo real, por otro lado los botones deben ser interactivos, el primero debe desplegar el carrito, el segundo guiar al usuario a la ventana dd perfil e historial de ventas y el tercero debe devolver al usuario al main principal cuando este lo desee -->
         </header>
         <!-- MAIN -->
         <main class="main__content">
@@ -53,11 +60,18 @@
                     <button id="hero__section-button">Novedades</button>
                 </div>
             </section>
-            <!-- CATALOGO -->
+            <!-- CATÁLOGO -->
+
             <section class="main__content-section">
                 <h2 class="main__content-title">Nuestros Productos</h2>
                 <div class="main__products-container">
-                    <!-- JS DATA debe desplegar los productos del catálogo en tiempo real , poder seleccionarlos y agregarlos al carrito-->
+                    <!-- JS DATA debe desplegar los productos del catálogo  en tiempo real, poer seleccionarlos y agregarlos al carrito -->
+                </div>
+            </section>
+            <!-- HISTORIAL DE VENTAS -->
+            <section class="history__content" id="historySection">
+                <div class="history__content-list">
+                    <!-- El JS History y el JS router son los encargados de desplegar la vista del perfil y el historial de ventas del administrador -->
                 </div>
             </section>
         </main>
@@ -66,24 +80,23 @@
             <aside class="cart__aside" id="cart">
                 <h2 class="cart__aside-title">Carrito</h2>
                 <div class="cart__items" id="cartItems">
-                    <!-- JS CART debe desplegar los productos del carrito en tiempo real-->
+                    <!-- JS App debe desplegar los productos del carrito en tiempo real -->
                 </div>
                 <div class="empty__cart" id="emptyCartMessage">
-                    <!-- JS CART contiene un mensaje de carrito vacío -->
+                    <!-- JS APP contendria un mensjae de carrito vacío -->
                 </div>
                 <div class="cart__footer" id="cartFooter">
-                    <!-- JS CART boton de comprar y total a pagar -->
+                    <!-- JS APP debe tener un boton de comprar y finalizar compra -->
                 </div>
-
             </aside>
         </div>
         <!-- FOOTER -->
         <footer class="footer-content">
+            <!-- DEFINIMOS EL FOOTER CON VARIOS DIV PARA DIVIDIRLOS POR COLUMNAS -->
             <div class="footer__columns">
                 <div class="footer__col footer__col--about">
                     <h3><span class="footer__col-icon"><i class="fa-solid fa-book"></i></span>Papel y Luna</h3>
-                    <p class="footer__description">Creamos herramientas para que tus ideas cobren vida. Calidad, diseño
-                        y funcionalidad en cada producto.</p>
+                    <p class="footer__description">Creamos herramientas para que tus ideas cobren vida.</p>
                     <div class="footer__socials">
                         <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
                         <a href="https://www.instagram.com/papeleriapapelyluna/" aria-label="Instagram"><i
@@ -91,6 +104,10 @@
                         <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
                     </div>
                 </div>
+                <!-- Contiene las redes sociales de la empresa -->
+
+
+                <!-- Contiene categorias de proveedores, información general de la empresa etc -->
                 <div class="footer__col footer__col--categories">
                     <h3><span class="footer__col-icon"><i class="fa-solid fa-book"></i></span>Categorías</h3>
                     <ul>
@@ -115,6 +132,14 @@
             </div>
         </footer>
     </div>
+
+    <!-- ORDEN IMPORTANTE: data → state → history → router → sales → app -->
+    <script src="./js/data.js"></script>
+    <script src="./js/state.js"></script>
+    <script src="./js/history.js"></script>
+    <script src="./js/router.js"></script>
+    <script src="./js/sales/sales.js"></script>
+    <script src="./js/app.js"></script>
 </body>
 
 </html>
