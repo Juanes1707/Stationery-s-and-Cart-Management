@@ -409,7 +409,6 @@ header, main,aside, footer {
     margin-bottom: 0.75rem;
     font-size: 1.1rem;
     color: #333;
-    /* headings themselves are plain now */
 }
 
 .footer__col-icon {
