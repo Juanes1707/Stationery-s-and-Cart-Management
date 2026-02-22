@@ -89,5 +89,6 @@ export const products = [
         stock: 10,
         image: "./imagenes y recursos/marcadores.jpg",
         description: "Set de 12 marcadores de colores surtidos, ideales para dibujo y arte."
-    }
+    },
+
 ];

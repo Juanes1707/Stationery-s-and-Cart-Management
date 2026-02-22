@@ -33,7 +33,13 @@ export function increaseQuantity(id) {
 
 export function decreaseQuantity(id) {
   const product = state.cart.find(item => item.id === id);
-  if (product && product.quantity > 1) {
-    product.quantity -= 1;
+  if (product) {
+    if (product.quantity === 1) {
+      /* Si la cantidad es 1, eliminar el producto del carrito */
+      removeFromCart(id);
+    } else {
+      /* Si la cantidad es mayor a 1, solo disminuir */
+      product.quantity -= 1;
+    }
   }
 }
