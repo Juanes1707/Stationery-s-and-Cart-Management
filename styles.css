@@ -359,8 +359,6 @@ header, main,aside, footer {
     color: #333;
 }
 
-
-
 /* FOOTER SECTION */
 
 .footer-content {
@@ -371,10 +369,6 @@ header, main,aside, footer {
     font-size: 0.9rem;
     color: #555;
 }
-
-
-
-
 
 .footer__columns {
     display: flex;
