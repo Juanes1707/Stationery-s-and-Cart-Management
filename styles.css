@@ -77,16 +77,16 @@ header, main,aside, footer {
 }
 
 .header__content-button {
+    width: 2rem;
     color: #888;
     position: absolute;
-    left: 0;
-    top: 0%;
+    left: 3px;
+    top: 3px;
     background: none;
     border: none;
     cursor: pointer;
     padding: 0.5rem;
 }
-
 
 
 /* LE AGREGAMOS UN PADDING AL INPUT PARA QUE EL PLACEHOLDER LE DE ESPACIO A LA LUPA, QUITAMOS EL OUTLINE POR TEMAS ESTICOS, SE LE AGREGO EL REDONDEO AL INPUT Y AGREGAMOS UNA PEQUEÑA TRANSICION QUE AL CLICKEAR LA BARRA DE NAVEGACION SU COLOR DE FONDO CAMBIE  */
