@@ -37,11 +37,14 @@
                 <input type="text" id="searchInput" placeholder="Buscar producto..." class="header__content-input">
             </div>
             <div class="header__actions">
-                <button class="header__actions-button cart__button">
+                <button class="header__actions-button" id="cartButton">
                     <i class="fa-solid fa-cart-arrow-down"></i>
                 </button>
-                <button class="header__actions-button profile__button">
+                <button class="header__actions-button" id="profileButton">
                     <i class="fa-solid fa-user"></i>
+                </button>
+                <button class="header__actions-button" id="homeButton">
+                    <i class="fa-solid fa-house"></i>
                 </button>
             </div>
             <!-- el input de navegacion debe permitir al usuario buscar y filtrar productos por nombre y actualizar el catálogo en tiempo real -->
@@ -64,6 +67,11 @@
                 <div class="main__products-container">
                     <!-- JS DATA debe desplegar los productos del catálogo en tiempo real , poder seleccionarlos y agregarlos al carrito-->
                 </div>
+            </section>
+
+            <section class="history__content" id="historySection">
+                <!-- JS debe renderizar el historial de pedidos -->
+
             </section>
         </main>
         <!-- CARRITO -->
@@ -121,5 +129,4 @@
         </footer>
     </div>
 </body>
-
 </html>

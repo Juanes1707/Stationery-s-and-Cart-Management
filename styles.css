@@ -1,4 +1,4 @@
-/* ESTILOS GENERALES POR DEFECTO */
+﻿/* ESTILOS GENERALES POR DEFECTO */
 * {
     margin: 0;
     padding: 0;
@@ -132,12 +132,12 @@ header, main,aside, footer {
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.cart__button:hover {
+.header__actions-button:hover {
     background-color: #FFEB3B;
     transform: scale(1.1);
 }
 
-.cart__button:active {
+.header__actions-button:active {
     transform: scale(0.95);
 }
 
@@ -214,6 +214,10 @@ header, main,aside, footer {
     gap: 1.5rem;
 }
 
+/* HISTORIAL DE VENTAS */
+.history__content {
+    display: none;
+}
 
 /* CADA TAREJETA DEBE TENER UN FLEX DIRECTION COLUMN, PARA QUE SE PUEDA ACOMODAR LOS ELEMENTOS DE MANERA CORRECTA Y EL BOTON */
 .product__card {
@@ -298,6 +302,8 @@ header, main,aside, footer {
 
 
 .cart__aside {
+    position: sticky;
+    top: 110px;
     background-color: #fff;
     grid-area: aside;
     border-radius: 1rem;
