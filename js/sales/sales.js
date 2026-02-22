@@ -1,15 +1,11 @@
-function renderHistory() {
-    const historySection = document.querySelector("#historySection");
+function renderSales() {
+    const container = document.getElementById("historySection");
+    container.innerHTML = "";
 
     if (state.sales.length === 0) {
-        historySection.innerHTML = `
-            <h2 class="history-content-title">Historial de ventas</h2>
-            <p>No hay ventas registradas</p>
-        `;
+        container.innerHTML = "<p>No hay ventas registradas</p>";
         return;
     }
-
-    historySection.innerHTML = `<h2 class="history-content-title">Historial de ventas</h2>`;
 
     state.sales.forEach((sale) => {
         const saleHTML = `
@@ -27,6 +23,6 @@ function renderHistory() {
                 </div>
             </div>
         `;
-        historySection.innerHTML += saleHTML;
+        container.innerHTML += saleHTML;
     });
 }
