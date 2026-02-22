@@ -3,16 +3,18 @@ import { products } from "./data.js";
 import { state, addToCart } from "./state.js";
 import { increaseQuantity, decreaseQuantity } from "./state.js";
 import { removeFromCart } from "./state.js";
-
+import { navigate } from "./router.js";
 // SELECTORES
 const productsContainer = document.querySelector(".main__products-container");
 const cartItemsContainer = document.getElementById("cartItems");
 const emptyCartMessage = document.getElementById("emptyCartMessage");
 const cartFooter = document.getElementById("cartFooter");
 const searchInput = document.getElementById("searchInput");
-const cartButton = document.querySelector(".cart__button");
+const cartButton = document.querySelector("#cartButton");
 const cart = document.querySelector(".cart__aside");
 const appContainer = document.querySelector(".app__container");
+const profileButton = document.querySelector('#profileButton')
+const homeButton = document.querySelector("#homeButton")
 
 
 //  FUNCIÓN 1: Render catálogo
@@ -135,10 +137,22 @@ searchInput.addEventListener("input", function (event) {
 
   renderProducts(filteredProducts);
 });
-
 //  Render inicial
 renderProducts(products);
 renderCart();
 
 console.log(products);
 console.log(state);
+
+//EVENT LISTENER PARA EL HISTORIAL DE VENTAS
+if (profileButton) {
+  profileButton.addEventListener("click", () => {
+  navigate("history")
+  });
+}
+//EVENT LISTENER PARA VOLVER AL HOME DE LA PAGINA
+if (homeButton) {
+  homeButton.addEventListener("click", () => {
+    navigate("")
+  });
+}

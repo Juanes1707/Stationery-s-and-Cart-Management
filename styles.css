@@ -1,4 +1,4 @@
-/* ESTILOS GENERALES POR DEFECTO */
+﻿/* ESTILOS GENERALES POR DEFECTO */
 * {
     margin: 0;
     padding: 0;
@@ -39,6 +39,7 @@ header, main,aside, footer {
     "header header"
     "main aside"
     "footer footer";
+    place-content: center;
     transition: all 0.3s ease;
 }
 /* HEADER SECTION */
@@ -77,16 +78,16 @@ header, main,aside, footer {
 }
 
 .header__content-button {
+    width: 2rem;
     color: #888;
     position: absolute;
-    left: 0;
-    top: 0%;
+    left: 3px;
+    top: 3px;
     background: none;
     border: none;
     cursor: pointer;
     padding: 0.5rem;
 }
-
 
 
 /* LE AGREGAMOS UN PADDING AL INPUT PARA QUE EL PLACEHOLDER LE DE ESPACIO A LA LUPA, QUITAMOS EL OUTLINE POR TEMAS ESTICOS, SE LE AGREGO EL REDONDEO AL INPUT Y AGREGAMOS UNA PEQUEÑA TRANSICION QUE AL CLICKEAR LA BARRA DE NAVEGACION SU COLOR DE FONDO CAMBIE  */
@@ -108,8 +109,15 @@ header, main,aside, footer {
     background-color: #fff;
 }
 
-/* IMPLEMENTACION DE LOS ESTILOS DEL BOTON DEL CARRITO */
-.cart__button{
+/* IMPLEMENTACION DE LOS ESTILOS DEL BOTON DEL CARRITO Y EL PERFIL */
+.header__actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+
+.header__actions-button{
     width: 3.5rem;
     height: 3.5rem;
     background-color: #FC1;
@@ -124,34 +132,13 @@ header, main,aside, footer {
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.cart__button:hover {
+.header__actions-button:hover {
     background-color: #FFEB3B;
     transform: scale(1.1);
 }
 
-.cart__button:active {
+.header__actions-button:active {
     transform: scale(0.95);
-}
-
-/* MAIN SECTION */
-
-/* ASIGNACION DEL GRID AL MAIN */
-
-.main__content {
-    grid-area: main;
-    padding-left: 5%;
-
-}
-.main__content-title{
-    margin-bottom: 2rem;
-    margin-top: 1rem;
-
-}
-/* SELECCIONAMOS LA CLASE CREADA EN EL JS Y USAMOS FLEX PARA DESPLEGAR LOS PRODUCTOS EN FILA, Y LE DAMOS UN WRAP PARA QUE QUEDE UNO DEBAJO DEL OTR CUANDO TENGAN ESPACIO AL LADO EN EL CONTENEDOR */
-.main__products-container{
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
 }
 
 /* INICIO DEL HERO SECTION */
@@ -206,6 +193,31 @@ header, main,aside, footer {
     background-color: #fff4;
 }
 
+/* MAIN SECTION */
+
+/* ASIGNACION DEL GRID AL MAIN */
+
+.main__content {
+    grid-area: main;
+    padding-left: 5%;
+
+}
+.main__content-title{
+    margin-bottom: 2rem;
+    margin-top: 1rem;
+
+}
+/* SELECCIONAMOS LA CLASE CREADA EN EL JS Y USAMOS FLEX PARA DESPLEGAR LOS PRODUCTOS EN FILA, Y LE DAMOS UN WRAP PARA QUE QUEDE UNO DEBAJO DEL OTRO CUANDO TENGAN ESPACIO AL LADO EN EL CONTENEDOR */
+.main__products-container{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1.5rem;
+}
+
+/* HISTORIAL DE VENTAS */
+.history__content {
+    display: none;
+}
 
 /* CADA TAREJETA DEBE TENER UN FLEX DIRECTION COLUMN, PARA QUE SE PUEDA ACOMODAR LOS ELEMENTOS DE MANERA CORRECTA Y EL BOTON */
 .product__card {
@@ -290,6 +302,8 @@ header, main,aside, footer {
 
 
 .cart__aside {
+    position: sticky;
+    top: 110px;
     background-color: #fff;
     grid-area: aside;
     border-radius: 1rem;
