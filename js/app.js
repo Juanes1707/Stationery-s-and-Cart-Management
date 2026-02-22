@@ -1,9 +1,3 @@
-// IMPORTS
-import { products } from "./data.js";
-import { state, addToCart } from "./state.js";
-import { increaseQuantity, decreaseQuantity } from "./state.js";
-import { removeFromCart } from "./state.js";
-import { navigate } from "./router.js";
 // SELECTORES
 const productsContainer = document.querySelector(".main__products-container");
 const cartItemsContainer = document.getElementById("cartItems");
@@ -13,11 +7,10 @@ const searchInput = document.getElementById("searchInput");
 const cartButton = document.querySelector("#cartButton");
 const cart = document.querySelector(".cart__aside");
 const appContainer = document.querySelector(".app__container");
-const profileButton = document.querySelector('#profileButton')
-const homeButton = document.querySelector("#homeButton")
+const profileButton = document.querySelector('#profileButton');
+const homeButton = document.querySelector("#homeButton");
 
-
-//  FUNCIÓN 1: Render catálogo
+// FUNCIÓN 1: Render catálogo
 function renderProducts(productList) {
   productsContainer.innerHTML = "";
 
@@ -29,9 +22,7 @@ function renderProducts(productList) {
         <h3>${product.name}</h3>
         <p>${product.description}</p>
         <span class="product__price">$${product.price}</span>
-        <button data-id="${product.id}">
-        Agregar al carrito
-        </button>
+        <button data-id="${product.id}">Agregar al carrito</button>
       </div>
     </div>
     `;
@@ -39,7 +30,7 @@ function renderProducts(productList) {
   });
 }
 
-//  FUNCIÓN 2: Render carrito
+// FUNCIÓN 2: Render carrito
 function renderCart() {
   cartItemsContainer.innerHTML = "";
 
@@ -55,53 +46,51 @@ function renderCart() {
     const subtotal = (item.price * item.quantity).toLocaleString("es-CO");
 
     const cartItem = `
-        <div class="cart__item-container">
-          <div class="cart__item">
-              <img src="${item.image}" alt="${item.name}">  
-              <div class="cart__controls">
-                  <button class="decrease" data-id="${item.id}">-</button>
-                  <span class="cart__quantity">${item.quantity}</span>
-                <button class="increase" data-id="${item.id}">+</button>
-              </div>
+      <div class="cart__item-container">
+        <div class="cart__item">
+          <img src="${item.image}" alt="${item.name}">
+          <div class="cart__controls">
+            <button class="decrease" data-id="${item.id}">-</button>
+            <span class="cart__quantity">${item.quantity}</span>
+            <button class="increase" data-id="${item.id}">+</button>
+          </div>
           <div class="cart__item-info">
             <h4>${item.name}</h4>
             <p>$${subtotal}</p>
           </div>
           <button class="remove" data-id="${item.id}"><i class="fa-solid fa-trash"></i></button>
         </div>
+      </div>
     `;
-
     cartItemsContainer.innerHTML += cartItem;
   });
 
   const total = state.cart
-    .reduce((acc, item) => {
-      return acc + item.price * item.quantity;
-    }, 0)
+    .reduce((acc, item) => acc + item.price * item.quantity, 0)
     .toLocaleString("es-CO");
 
   cartFooter.innerHTML = `
-  <h3 class="cart__total">Total: $${total}</h3>
-  <button class="checkout">Finalizar Compra</button>
-`;
+    <h3 class="cart__total">Total: $${total}</h3>
+    <button class="checkout">Finalizar Compra</button>
+  `;
 }
 
-//crea un estado para el carrito (cuando se abre)
+// Abrir/cerrar carrito
 cartButton.addEventListener("click", () => {
-    appContainer.classList.toggle("cart-open");
+  appContainer.classList.toggle("cart-open");
 });
 
-//  EVENT LISTENER catálogo
+// Event listener catálogo
 productsContainer.addEventListener("click", function (event) {
   if (event.target.tagName === "BUTTON") {
     const productId = parseInt(event.target.dataset.id);
     const product = products.find((p) => p.id === productId);
-
     addToCart(product);
     renderCart();
   }
 });
 
+// Event listener carrito
 cartItemsContainer.addEventListener("click", function (event) {
   const productId = parseInt(event.target.dataset.id);
 
@@ -121,6 +110,7 @@ cartItemsContainer.addEventListener("click", function (event) {
   }
 });
 
+// Búsqueda
 searchInput.addEventListener("input", function (event) {
   const searchText = event.target.value
     .toLowerCase()
@@ -132,27 +122,34 @@ searchInput.addEventListener("input", function (event) {
       .toLowerCase()
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
-      .includes(searchText),
+      .includes(searchText)
   );
 
   renderProducts(filteredProducts);
 });
-//  Render inicial
+
+// Render inicial
 renderProducts(products);
 renderCart();
 
-console.log(products);
-console.log(state);
-
-//EVENT LISTENER PARA EL HISTORIAL DE VENTAS
+// Botón perfil / historial
 if (profileButton) {
   profileButton.addEventListener("click", () => {
-  navigate("history")
+    navigate("history");
   });
 }
-//EVENT LISTENER PARA VOLVER AL HOME DE LA PAGINA
+
+// Botón home
 if (homeButton) {
   homeButton.addEventListener("click", () => {
-    navigate("")
+    navigate("home");
   });
 }
+
+// Finalizar compra
+cartFooter.addEventListener("click", (event) => {
+  if (event.target.classList.contains("checkout")) {
+    registerSale();
+    renderCart();
+  }
+});

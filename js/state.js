@@ -1,45 +1,36 @@
-
-export const state = {
-  cart: []
+const state = {
+  cart: [],
+  sales: []
 };
 
-export function removeFromCart(id) {
+function removeFromCart(id) {
   state.cart = state.cart.filter(item => item.id !== id);
 }
 
-
-// Agregar producto al carrito
-export function addToCart(product) {
-
+function addToCart(product) {
   const existingProduct = state.cart.find(item => item.id === product.id);
-
   if (existingProduct) {
     existingProduct.quantity += 1;
   } else {
-    state.cart.push({
-      ...product,
-      quantity: 1
-    });
+    state.cart.push({ ...product, quantity: 1 });
   }
-
 }
 
-export function increaseQuantity(id) {
+function increaseQuantity(id) {
   const product = state.cart.find(item => item.id === id);
   if (product) {
     product.quantity += 1;
   }
 }
 
-export function decreaseQuantity(id) {
+function decreaseQuantity(id) {
   const product = state.cart.find(item => item.id === id);
   if (product) {
     if (product.quantity === 1) {
-      /* Si la cantidad es 1, eliminar el producto del carrito */
       removeFromCart(id);
     } else {
-      /* Si la cantidad es mayor a 1, solo disminuir */
       product.quantity -= 1;
     }
   }
 }
+
