@@ -9,6 +9,13 @@
     
 }
 
+/* hace las iamgenes responsive y evita el desborde */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
 header {
     box-shadow: 0 10px 25px rgba(0,0,0,.1) ;
 }
@@ -18,11 +25,13 @@ header, main,aside, footer {
 }
 
 
-/* tamaño imagnes */
+/* tamaño imágenes - responsive dentro de la tarjeta de producto */
 .product__card img {
-    width: 150px;
-    height: 150px;
+    width: 100%;
+    max-width: 10rem; /* límite visual que tenías antes */
+    height: auto;
     object-fit: cover;
+    display: block;
 }
 
 /* USO DE GRID CON EL OBJETIVO DE CREAR EL LAYOUT PRINCIPAL QUE VA A TENER LA PAGINA, CON AYUDA DE ESTE DEFINO LA CANTIDAD DE COLUMNAS QUE VAN A TENER, PARA QUE EL MAIN Y EL ASIDE TENGA UNA ALTURA MAYOR, SELECCIONO LAS FILAS QUE SE CREAN IMPLICITAMENTE, CON AUTO HAGO QUE LA FILA 1 Y 3 OCUPEN ESPACIO SEGUN SU CONTENIDO Y LA FILA 2 QUE CONTIENE AL MAIN Y AL ASIDE OCUPARAN EL ESPACIO DISPONIBLE QUE DEJEN EL HEADER Y EL FOOTER */
@@ -310,6 +319,10 @@ header, main,aside, footer {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     padding: 1rem;
 }
+/* Evitar que cualquier elemento (como imágenes) se salga del borde redondeado */
+.product__card {
+    overflow: hidden;
+}
 /* SELECCIONAMOS LA CLASE CREADA EN EL JS LE DAMO UN WIDTH MAXIMO */
 .product__card p {
     max-width: 9.4rem;
@@ -425,8 +438,10 @@ header, main,aside, footer {
 
 .cart__item img {
     width: 60px;
-    height: 60px;
+    max-width: 100%;
+    height: auto;
     object-fit: cover;
+    display: block;
 }
 /* SE LE APLICAN PROPIEDADES FLEX A LOS CONTROLES DE + Y - PARA CONSERVAR ESTRUCTURA */
 .cart__controls {
