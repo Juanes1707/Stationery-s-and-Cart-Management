@@ -1,28 +1,70 @@
+//FUNCION PARA RENDERIZAR LAS VENTAS, EN LA VISTA DE MANERA DINÁMICA
+
 function renderSales() {
-    const container = document.getElementById("historySection");
-    container.innerHTML = "";
+  const container = document.getElementById("historySection");
+  container.innerHTML = "";
 
-    if (state.sales.length === 0) {
-        container.innerHTML = "<p>No hay ventas registradas</p>";
-        return;
-    }
+  if (state.sales.length === 0) {
+    container.innerHTML = "<p>No hay ventas registradas</p>";
+    return;
+  }
 
-    state.sales.forEach((sale) => {
-        const saleHTML = `
+  state.sales.forEach((sale) => {
+    const saleHTML = `
             <div class="sale">
                 <h3>Venta #${sale.id}</h3>
                 <p>Fecha: ${sale.date}</p>
                 <p>Total: $${sale.total}</p>
                 <div class="sale__items">
-                    ${sale.items.map(item => `
+                    ${sale.items
+                      .map(
+                        (item) => `
                         <div class="sale__item">
                             <span>${item.name}</span>
                             <span>x${item.quantity}</span>
                         </div>
-                    `).join("")}
+                    `,
+                      )
+                      .join("")}
                 </div>
             </div>
         `;
-        container.innerHTML += saleHTML;
-    });
+    container.innerHTML += saleHTML;
+  });
+}
+
+//LOGICA Y FUNCION PARA REGISTRAS CADA UNA DE LAS VENTAS
+
+function registerSale() {
+  if (state.cart.length === 0) return;
+  {
+    //Verifica  que el carrito esta vacio, si el length del carrito es 0 no hay producto y el retunr corta
+    const total = state.cart.reduce(
+      (acc, item) => acc + item.price * item.quantity, //Utilizamos las funcion de reduce para sumar todos los subtotales con acc que va acumulando cada una de las ventas de cada uno de los item inicando por defecto desde 0, y sem multiplica el precio del producto por la cantidad.
+      0,
+    );
+    // Objeto literal que almacena las ventas y las registra con su ID unico
+    const newSale = {
+      id: Date.now(),
+      date: new Date().toLocaleString("es-CO"),
+      total: total.toLocaleString("es-CO"),
+      items: state.cart.map((item) => ({
+        name: item.name,
+        quantity: item.quantity,
+      })),
+
+      //por medio del ID con la funcion Date genera un identificador de milisegundos, evitando que se repita. el local string obtiene la fecha actual de cuando se hizo la compra y la segunda convierte el formato del numero de manera visual
+
+      //Por otro lado usamos map para transformar el carrito, recorrerlo y guardar el nombre y la cantidad del producto
+    };
+    state.sales.push(newSale); //Guarda la venta en el state, cambiando el estado de la aplicación
+
+    // Vaciar carrito
+    state.cart = []; //despues de registrar la venta el carro vuelve a su estado vacio
+
+    // Si estás en la vista historial, actualizar, se verifica si la funcion existe antes de ejecutarla
+    if (typeof renderHistory === "function") {
+      renderHistory();
+    }
+  }
 }

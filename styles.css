@@ -199,7 +199,8 @@ header, main,aside, footer {
 
 .main__content {
     grid-area: main;
-    padding-left: 5%;
+    padding-left: 0 2rem;
+    width: 100%;
 
 }
 .main__content-title{
@@ -217,6 +218,55 @@ header, main,aside, footer {
 /* HISTORIAL DE VENTAS */
 .history__content {
     display: none;
+}
+
+.history-card {
+    width: 100%;
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.history-header,
+.history-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    align-items: center;
+    padding: 12px 0;
+    gap: 1rem;
+}
+
+.history-row button {
+    justify-self: start;
+}
+
+.history-header {
+    font-weight: bold;
+    border-bottom: 2px solid #eee;
+}
+
+.history-row {
+    border-bottom: 1px solid #fff;
+}
+
+.status {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    text-align: center;
+}
+
+.status.delivered {
+    background: #d4f5e2;
+    color: #1a7f37;
+}
+
+.btn-details {
+    background: #facc15;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
 }
 
 /* CADA TAREJETA DEBE TENER UN FLEX DIRECTION COLUMN, PARA QUE SE PUEDA ACOMODAR LOS ELEMENTOS DE MANERA CORRECTA Y EL BOTON */
