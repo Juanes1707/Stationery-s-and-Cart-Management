@@ -199,7 +199,7 @@ header, main,aside, footer {
 
 .main__content {
     grid-area: main;
-    padding-left: 0 1rem;
+    padding-left: 0 2rem;
     width: 100%;
 
 }
