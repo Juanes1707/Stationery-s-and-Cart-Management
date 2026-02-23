@@ -302,7 +302,7 @@ header, main,aside, footer {
 
 
 .cart__aside {
-    position: sticky;
+    position: fixed;
     top: 110px;
     background-color: #fff;
     grid-area: aside;
@@ -315,6 +315,7 @@ header, main,aside, footer {
     height: auto;
     max-height: 90vh;
     overflow-y: auto;
+    width: 27rem;
 }
 
 
