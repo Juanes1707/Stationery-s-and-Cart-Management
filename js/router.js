@@ -3,11 +3,13 @@ function navigate(route) {
   const heroSection = document.querySelector(".hero__section");
   const cartAside = document.querySelector("#cart");
   const historySection = document.querySelector("#historySection");
+  const  checkoutSection = document.querySelector("#checkoutSection");
 
   heroSection.style.display = "none";
   mainSection.style.display = "none";
   cartAside.style.display = "none";
   historySection.style.display = "none";
+  checkoutSection.style.display = "none";
 
   if (route === "home") {
     heroSection.style.display = "block";
@@ -18,6 +20,10 @@ function navigate(route) {
   if (route === "history") {
     historySection.style.display = "block";
     renderHistory();
+  }
+
+  if (route === "checkout") {
+    checkoutSection.style.display = "block";
   }
 
   if (route === "cart") {

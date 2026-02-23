@@ -69,13 +69,13 @@ function renderCart() {
     cartItemsContainer.innerHTML += cartItem;
   });
 
-  const total = state.cart
+  const subtotalCarrito = state.cart
     .reduce((acc, item) => acc + item.price * item.quantity, 0)
     .toLocaleString("es-CO");
 
   cartFooter.innerHTML = `
-    <h3 class="cart__total">Total: $${total}</h3>
-    <button class="checkout">Finalizar Compra</button>
+    <h3 class="cart__total">Subtotal: $${subtotalCarrito}</h3>
+    <button class="checkout" href="">Finalizar Compra</button>
   `;
 }
 
@@ -183,7 +183,6 @@ if (homeButton) {
 // Finalizar compra
 cartFooter.addEventListener("click", (event) => {
   if (event.target.classList.contains("checkout")) {
-    registerSale();
-    renderCart();
+    navigate("checkout");
   }
 });
