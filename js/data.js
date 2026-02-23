@@ -5,7 +5,7 @@
     name: "Cuaderno Profesional",
     category: "Cuadernos",
     price: 8500,
-    image: "./imagenes y recursos/cuaderno.jpg",
+    image: "./imagenes y recursos/cuaderno_profesional.jpg",
     stock: 30,
     description: "Cuaderno de 100 hojas rayadas."
     },
@@ -32,7 +32,7 @@
     name: "Agenda Academica",
     category: "Cuadernos",
     price: 17000,
-    image: "./imagenes y recursos/bloc.jpg",
+    image: "./imagenes y recursos/agenda.jpg",
     stock: 14,
     description: "Agenda academica semanal para organizar tareas y clases."
     },
@@ -41,7 +41,7 @@
     name: "Cuaderno Argollado A4",
     category: "Cuadernos",
     price: 12500,
-    image: "./imagenes y recursos/cuaderno.jpg",
+    image: "./imagenes y recursos/cuaderno_argolladoA4.jpg",
     stock: 19,
     description: "Cuaderno argollado A4 de 120 hojas rayadas."
     },
@@ -106,7 +106,7 @@
     name: "Portaminas 0.5 mm",
     category: "Escritura",
     price: 4200,
-    image: "./imagenes y recursos/lapiz.jpg",
+    image: "./imagenes y recursos/portaminas.jpg",
     stock: 27,
     description: "Portaminas ergonomico de 0.5 mm para escritura precisa."
     },
@@ -144,7 +144,7 @@
     name: "Set Geometrico",
     category: "Útiles",
     price: 7900,
-    image: "./imagenes y recursos/regla.jpg",
+    image: "./imagenes y recursos/setgeometrico.jpg",
     stock: 21,
     description: "Incluye regla, escuadra y transportador."
     },
@@ -153,7 +153,7 @@
     name: "Compas Escolar",
     category: "Útiles",
     price: 6800,
-    image: "./imagenes y recursos/regla.jpg",
+    image: "./imagenes y recursos/compas.jpg",
     stock: 16,
     description: "Compas metalico para trazos de precision."
     },
@@ -162,7 +162,7 @@
     name: "Sacapuntas Doble",
     category: "Útiles",
     price: 2300,
-    image: "./imagenes y recursos/borrador.jpg",
+    image: "./imagenes y recursos/sacapuntas-doble.jpg",
     stock: 37,
     description: "Sacapuntas doble para lapiz estandar y jumbo."
     },
@@ -171,7 +171,7 @@
     name: "Pegante en Barra",
     category: "Útiles",
     price: 3200,
-    image: "./imagenes y recursos/tijeras.jpg",
+    image: "./imagenes y recursos/pegante_barra.jpg",
     stock: 29,
     description: "Pegante en barra de secado rapido y limpio."
     },
@@ -191,7 +191,7 @@
     name: "Archivador de Palanca",
     category: "Organización",
     price: 13500,
-    image: "./imagenes y recursos/carpeta.jpg",
+    image: "./imagenes y recursos/archivador_palanca.jpg",
     stock: 15,
     description: "Archivador resistente para documentos tamano carta."
     },
@@ -200,7 +200,7 @@
     name: "Separadores x8",
     category: "Organización",
     price: 3200,
-    image: "./imagenes y recursos/carpeta.jpg",
+    image: "./imagenes y recursos/separadoresx8.jpg",
     stock: 41,
     description: "Separadores de colores para clasificar materias."
     },
@@ -209,7 +209,7 @@
     name: "Carpeta Acordeon",
     category: "Organización",
     price: 11200,
-    image: "./imagenes y recursos/carpeta.jpg",
+    image: "./imagenes y recursos/carpeta_acordeon.jpg",
     stock: 18,
     description: "Carpeta acordeon de multiples divisiones."
     },
@@ -218,7 +218,7 @@
     name: "Etiquetas Adhesivas",
     category: "Organización",
     price: 2800,
-    image: "./imagenes y recursos/bloc.jpg",
+    image: "./imagenes y recursos/etiquetas_adhesivas.jpg",
     stock: 46,
     description: "Etiquetas adhesivas para marcar cuadernos y carpetas."
     },
@@ -238,7 +238,7 @@
     name: "Lapices de Color x24",
     category: "Arte",
     price: 21000,
-    image: "./imagenes y recursos/marcadores.jpg",
+    image: "./imagenes y recursos/colores.jpg",
     stock: 13,
     description: "Set de 24 lapices de color con tonos intensos."
     },
@@ -247,7 +247,7 @@
     name: "Acuarelas x12",
     category: "Arte",
     price: 17800,
-    image: "./imagenes y recursos/marcadores.jpg",
+    image: "./imagenes y recursos/acuarelas.jpg",
     stock: 11,
     description: "Caja de acuarelas con 12 colores vibrantes."
     },
@@ -256,7 +256,7 @@
     name: "Pinceles Escolares x6",
     category: "Arte",
     price: 9500,
-    image: "./imagenes y recursos/marcadores.jpg",
+    image: "./imagenes y recursos/pinceles.jpg",
     stock: 17,
     description: "Set de 6 pinceles de diferentes puntas."
     },
@@ -265,7 +265,7 @@
     name: "Temperas x6",
     category: "Arte",
     price: 12400,
-    image: "./imagenes y recursos/marcadores.jpg",
+    image: "./imagenes y recursos/Temperas.jpg",
     stock: 14,
     description: "Set de temperas escolares en 6 colores basicos."
     },
@@ -274,7 +274,7 @@
     name: "Crayones x12",
     category: "Arte",
     price: 7300,
-    image: "./imagenes y recursos/marcadores.jpg",
+    image: "./imagenes y recursos/crayones.jpg",
     stock: 22,
     description: "Caja de crayones x12 para dibujo creativo."
     }

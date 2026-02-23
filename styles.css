@@ -205,7 +205,38 @@ header, main,aside, footer {
 .main__content-title{
     margin-bottom: 2rem;
     margin-top: 1rem;
+}
 
+/* ESTILOS PARA LAS CATEGORÍAS */
+.categories__container {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.category__button {
+    padding: 0.6rem 1.2rem;
+    background-color: #f0f0f0;
+    border: 2px solid #ddd;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    color: #333;
+    font-weight: 500;
+}
+
+.category__button:hover {
+    background-color: #e8e8e8;
+    border-color: #999;
+}
+
+.category__button.active {
+    background-color: #FC1;
+    border-color: #FC1;
+    color: #000;
+    font-weight: 600;
 }
 /* SELECCIONAMOS LA CLASE CREADA EN EL JS Y USAMOS FLEX PARA DESPLEGAR LOS PRODUCTOS EN FILA, Y LE DAMOS UN WRAP PARA QUE QUEDE UNO DEBAJO DEL OTRO CUANDO TENGAN ESPACIO AL LADO EN EL CONTENEDOR */
 .main__products-container{
@@ -302,7 +333,7 @@ header, main,aside, footer {
 
 
 .cart__aside {
-    position: sticky;
+    position: fixed;
     top: 110px;
     background-color: #fff;
     grid-area: aside;

@@ -9,6 +9,10 @@ const cart = document.querySelector(".cart__aside");
 const appContainer = document.querySelector(".app__container");
 const profileButton = document.querySelector('#profileButton');
 const homeButton = document.querySelector("#homeButton");
+const categoryButtons = document.querySelectorAll(".category__button");
+
+// VARIABLE PARA CONTROLAR LA CATEGORÍA ACTUAL
+let currentCategory = "todos";
 
 // FUNCIÓN 1: Render catálogo
 function renderProducts(productList) {
@@ -75,6 +79,26 @@ function renderCart() {
   `;
 }
 
+// FUNCIÓN 3: Filtrar por categoría
+function filterByCategory(category) {
+  if (category === "todos") {
+    renderProducts(products);
+  } else {
+    const filteredProducts = products.filter(product => product.category === category);
+    renderProducts(filteredProducts);
+  }
+}
+
+// FUNCIÓN 4: Actualizar botones de categoría activos
+function updateCategoryButtons(category) {
+  categoryButtons.forEach(button => {
+    button.classList.remove("active");
+    if (button.dataset.category === category) {
+      button.classList.add("active");
+    }
+  });
+}
+
 // Abrir/cerrar carrito
 cartButton.addEventListener("click", () => {
   appContainer.classList.toggle("cart-open");
@@ -126,6 +150,16 @@ searchInput.addEventListener("input", function (event) {
   );
 
   renderProducts(filteredProducts);
+});
+
+// Event listener para categorías
+categoryButtons.forEach(button => {
+  button.addEventListener("click", function () {
+    const category = this.dataset.category;
+    currentCategory = category;
+    filterByCategory(category);
+    updateCategoryButtons(category);
+  });
 });
 
 // Render inicial
