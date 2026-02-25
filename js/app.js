@@ -51,19 +51,17 @@ function renderCart() {
 
     const cartItem = `
       <div class="cart__item-container">
-        <div class="cart__item">
-          <img src="${item.image}" alt="${item.name}">
+        <img src="${item.image}" alt="${item.name}" class="cart__item-image">
+        <div class="cart__item-info">
+          <h4>${item.name}</h4>
+          <p class="cart__item-price">$${subtotal}</p>
           <div class="cart__controls">
-            <button class="decrease" data-id="${item.id}">-</button>
+            <button class="decrease" data-id="${item.id}" ${item.quantity === 1 ? 'disabled' : ''}>−</button>
             <span class="cart__quantity">${item.quantity}</span>
             <button class="increase" data-id="${item.id}">+</button>
           </div>
-          <div class="cart__item-info">
-            <h4>${item.name}</h4>
-            <p>$${subtotal}</p>
-          </div>
-          <button class="remove" data-id="${item.id}"><i class="fa-solid fa-trash"></i></button>
         </div>
+        <button class="remove" data-id="${item.id}" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
       </div>
     `;
     cartItemsContainer.innerHTML += cartItem;
@@ -74,8 +72,10 @@ function renderCart() {
     .toLocaleString("es-CO");
 
   cartFooter.innerHTML = `
-    <h3 class="cart__total">Subtotal: $${subtotalCarrito}</h3>
-    <button class="checkout" href="">Finalizar Compra</button>
+    <div class="cart__summary">
+      <h3 class="cart__total">Subtotal: $${subtotalCarrito}</h3>
+    </div>
+    <button class="checkout">Finalizar Compra</button>
   `;
 }
 
@@ -102,7 +102,7 @@ function updateCategoryButtons(category) {
 // Abrir/cerrar carrito
 cartButton.addEventListener("click", () => {
   appContainer.classList.toggle("cart-open");
-});
+  });
 
 // Event listener catálogo
 productsContainer.addEventListener("click", function (event) {
@@ -111,6 +111,7 @@ productsContainer.addEventListener("click", function (event) {
     const product = products.find((p) => p.id === productId);
     addToCart(product);
     renderCart();
+    appContainer.classList.add("cart-open");
   }
 });
 
@@ -183,6 +184,7 @@ if (homeButton) {
 // Finalizar compra
 cartFooter.addEventListener("click", (event) => {
   if (event.target.classList.contains("checkout")) {
+    appContainer.classList.remove("cart-open");
     navigate("checkout");
   }
 });

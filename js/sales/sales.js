@@ -39,10 +39,15 @@ function registerSale() {
   if (state.cart.length === 0) return;
   {
     //Verifica  que el carrito esta vacio, si el length del carrito es 0 no hay producto y el retunr corta
-    const total = state.cart.reduce(
+    const subtotal = state.cart.reduce(
       (acc, item) => acc + item.price * item.quantity, //Utilizamos las funcion de reduce para sumar todos los subtotales con acc que va acumulando cada una de las ventas de cada uno de los item inicando por defecto desde 0, y sem multiplica el precio del producto por la cantidad.
       0,
     );
+    
+    // Calcular IVA (19%) y total
+    const iva = subtotal * 0.19;
+    const total = subtotal + iva;
+    
     // Objeto literal que almacena las ventas y las registra con su ID unico
     const newSale = {
       id: Date.now(),

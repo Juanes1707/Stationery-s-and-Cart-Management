@@ -1,7 +1,7 @@
 const state = {
   cart: [],
   sales: []
-};
+}; 
 
 function removeFromCart(id) {
   state.cart = state.cart.filter(item => item.id !== id);
@@ -34,3 +34,4 @@ function decreaseQuantity(id) {
   }
 }
 
+ 
