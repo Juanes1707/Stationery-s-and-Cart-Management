@@ -1,4 +1,4 @@
-﻿const products = [
+﻿let products = [
   // Cuadernos
     {
     id: 1,
@@ -124,7 +124,7 @@
     {
     id: 6,
     name: "Regla 30 cm",
-    category: "Útiles",
+    category: "Arte",
     price: 2500,
     image: "./imagenes y recursos/regla.jpg",
     stock: 20,
@@ -133,7 +133,7 @@
     {
     id: 7,
     name: "Tijeras Escolares",
-    category: "Útiles",
+    category: "Arte",
     price: 5000,
     image: "./imagenes y recursos/tijeras.jpg",
     stock: 18,
@@ -142,7 +142,7 @@
     {
     id: 18,
     name: "Set Geometrico",
-    category: "Útiles",
+    category: "Arte",
     price: 7900,
     image: "./imagenes y recursos/setgeometrico.jpg",
     stock: 21,
@@ -151,7 +151,7 @@
     {
     id: 19,
     name: "Compas Escolar",
-    category: "Útiles",
+    category: "Arte",
     price: 6800,
     image: "./imagenes y recursos/compas.jpg",
     stock: 16,
@@ -160,7 +160,7 @@
     {
     id: 20,
     name: "Sacapuntas Doble",
-    category: "Útiles",
+    category: "Arte",
     price: 2300,
     image: "./imagenes y recursos/sacapuntas-doble.jpg",
     stock: 37,
@@ -279,4 +279,29 @@
     description: "Caja de crayones x12 para dibujo creativo."
     }
 ];
+
+// Persistencia simple: si hay productos en localStorage los usamos
+try {
+  const stored = localStorage.getItem('productsData');
+  if (stored) {
+    const parsed = JSON.parse(stored);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      products = parsed;
+    } else {
+      localStorage.setItem('productsData', JSON.stringify(products));
+    }
+  } else {
+    localStorage.setItem('productsData', JSON.stringify(products));
+  }
+} catch (e) {
+  console.warn('No se pudo acceder a localStorage para productos', e);
+}
+
+function saveProductsToStorage() {
+  try {
+    localStorage.setItem('productsData', JSON.stringify(products));
+  } catch (e) {
+    console.warn('Error saving products', e);
+  }
+}
 

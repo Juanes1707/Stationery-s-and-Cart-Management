@@ -423,15 +423,180 @@ header, main,aside, footer {
     right: 0;
 }
 
+/* ADMIN PANEL (profile) */
+.admin__panel {
+    position: fixed;
+    top: 110px;
+    bottom: 2rem; /* evita tapar el footer */
+    right: -34rem; /* oculto por defecto fuera de pantalla */
+    background-color: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px rgba(0,0,0,.1);
+    padding: 1rem;
+    margin: 1rem;
+    width: min(360px, 90vw);
+    display: flex;
+    flex-direction: column;
+    transition: right 0.28s ease, opacity 0.25s ease;
+    z-index: 120;
+    overflow: auto;
+}
+
+.admin__panel.open {
+    right: 1rem; /* visible */
+}
+
+/* Cuando el panel admin está abierto, dar margen al main para que el listado no quede tapado */
+.app__container.admin-open .main__content-section {
+    margin-right: 400px;
+}
+
+/* when admin panel open, shrink historySection and add margin automatically */
+.app__container.admin-open #historySection,
+#historySection.admin-listing {
+    max-width: calc(100% - 420px);
+}
+
+.admin__menu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.admin__menu-btn {
+    padding: 0.6rem 0.8rem;
+    border: none;
+    background: #f5f5f5;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.admin__menu-btn.active {
+    background: #FC1;
+    color: #000;
+    font-weight: 700;
+}
+
+.admin__content {
+    overflow-y: auto;
+    flex: 1 1 auto;
+}
+
+/* ajustes responsivos: en pantallas pequeñas mostrar panel como full-width debajo del header */
+@media (max-width: 900px) {
+    .admin__panel {
+        position: fixed;
+        left: 1rem;
+        right: 1rem;
+        top: 100px;
+        bottom: 4rem;
+        width: auto;
+        border-radius: 10px;
+    }
+}
+
+/* FORMULARIO ADMIN CRUD */
+.admin__crud-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+/* estilizado para listado por tarjeta en admin */
+.admin-product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+}
+.admin-product-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+.admin-product-info p {
+    margin: 0.2rem 0;
+    font-size: 0.9rem;
+    color: #555;
+}
+.admin-product-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.6rem;
+}
+.admin-product-actions button {
+    padding: 0.4rem 0.8rem;
+    background: #FC1;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+.admin-product-actions button:hover {
+    background: #ffeb3b;
+}
+.admin__crud-form label {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+.admin__crud-form input,
+.admin__crud-form textarea,
+.admin__crud-form select {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    width: 100%;
+}
+.admin__crud-form textarea {
+    resize: vertical;
+}
+
+/* Ajustes tabla lista de productos en main area */
+#historySection table {
+    width: 100%;
+    border-collapse: collapse;
+}
+#historySection th,
+#historySection td {
+    padding: 0.6rem 0.8rem;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+#historySection tr:hover {
+    background: #f9f9f9;
+}
+#historySection button {
+    padding: 0.3rem 0.6rem;
+    background: #FC1;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+#historySection button:hover {
+    background: #ffeb3b;
+}
+
 .cart__aside-title {
     flex-shrink: 0;
     margin-bottom: 1rem;
 }
 
 .cart__items {
+    /* use flex to allow footer to remain at the bottom
+       and let the items area grow/shrink without covering the whole aside */
+    flex: 1 1 auto;
     overflow-y: auto;
     padding-right: 0.5rem;
-    height: 100%;
+    /* height removed so it doesn't push footer offscreen */
 }
 
 .cart__items::-webkit-scrollbar {

@@ -170,7 +170,13 @@ renderCart();
 // Botón perfil / historial
 if (profileButton) {
   profileButton.addEventListener("click", () => {
-    navigate("history");
+    navigate("profile");
+    // asegurar que el panel admin se inicialice y abra
+    if (typeof initAdmin === 'function') {
+      try { initAdmin(); } catch(e) { console.warn('initAdmin error', e); }
+    }
+    const adminPanelEl = document.getElementById('adminPanel');
+    if (adminPanelEl) adminPanelEl.classList.add('open');
   });
 }
 

@@ -65,9 +65,14 @@ function registerSale() {
     state.sales.push(newSale); //Guarda la venta en el state, cambiando el estado de la aplicación
 
     // Vaciar carrito
-    state.cart = []; //despues de registrar la venta el carro vuelve a su estado vacio
+    state.cart = []; // después de registrar la venta el carrito vuelve a su estado vacío
 
-    // Si estás en la vista historial, actualizar, se verifica si la funcion existe antes de ejecutarla
+    // actualizar la vista del carrito en caso de que esté visible
+    if (typeof renderCart === "function") {
+      renderCart();
+    }
+
+    // Si estás en la vista historial, actualizar, se verifica si la funcion exista antes de ejecutarla
     if (typeof renderHistory === "function") {
       renderHistory();
     }

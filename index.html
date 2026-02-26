@@ -66,7 +66,7 @@
                     <button class="category__button active" data-category="todos">Todos</button>
                     <button class="category__button" data-category="Cuadernos">Libretas y agendas</button>
                     <button class="category__button" data-category="Escritura">Bolígrafos y lápices</button>
-                    <button class="category__button" data-category="Útiles">Arte y creatividad</button>
+                    <button class="category__button" data-category="Arte">Arte y creatividad</button>
                     <button class="category__button" data-category="Organización">Organización</button>
                 </div>
                 <div class="main__products-container">
@@ -100,6 +100,16 @@
             </aside>
         </div>
         <!-- FOOTER -->
+            <!-- ADMIN PANEL (profile) -->
+            <div class="admin__panel-container">
+                <aside class="admin__panel" id="adminPanel">
+                    <div class="admin__menu">
+                        <button id="adminHistoryBtn" class="admin__menu-btn active">Historial de ventas</button>
+                        <button id="adminCrudBtn" class="admin__menu-btn">CRUD de productos</button>
+                    </div>
+                    <div class="admin__content" id="adminContent"></div>
+                </aside>
+            </div>
         <footer class="footer-content">
             <!-- DEFINIMOS EL FOOTER CON VARIOS DIV PARA DIVIDIRLOS POR COLUMNAS -->
             <div class="footer__columns">
@@ -148,6 +158,7 @@
     <script src="./js/sales/sales.js"></script>
     <script src="./js/history.js"></script>
     <script src="./js/router.js"></script>
+    <script src="./js/admin.js"></script>
     <script src="./js/checkout.js"></script>
     <script src="./js/app.js"></script>
 </body>

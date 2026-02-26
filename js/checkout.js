@@ -10,11 +10,12 @@ function renderCheckout() {
     checkoutContainer.innerHTML = `
       <h2>Compra realizada con éxito</h2>
       <p>Tu pedido ha sido registrado. ¡Gracias por tu compra!</p>
-      <button onclick="navigate('home')" class="checkout__success-button">Volver al Inicio</button>
+      <button onclick="navigate('home'); if(typeof renderCart==='function'){renderCart();}" class="checkout__success-button">Volver al Inicio</button>
     `;
     return;
   }
 
+  // calcular totales antes de renderizar
   const subtotal = state.cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const iva = subtotal * 0.19;
   const total = subtotal + iva;
