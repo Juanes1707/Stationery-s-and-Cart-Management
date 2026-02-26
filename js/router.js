@@ -46,7 +46,7 @@ function navigate(route) {
     // Mostrar historial a la izquierda y el panel admin a la derecha
     historySection.style.display = "block";
     if (adminPanel) adminPanel.classList.add('open');
-    // also ensure container margin for listing
+    // también asegurar margen al contenedor cuando se muestra la lista
     document.querySelector('.app__container')?.classList.add('admin-open');
     cartButton.style.display = "none";
     renderHistory();

@@ -35,7 +35,7 @@ function setActiveMenuButton(btn) {
 }
 
 function renderAdminHistory() {
-  // Reuse renderHistory which populates #historySection (left side)
+  // Reutiliza renderHistory que llena #historySection (lado izquierdo)
   renderHistory();
   const adminContent = document.getElementById('adminContent');
   if (!adminContent) return;
@@ -45,7 +45,7 @@ function renderAdminHistory() {
 function renderAdminCRUD() {
   const adminContent = document.getElementById('adminContent');
   if (!adminContent) return;
-  // panel placeholder, form will open when user clicks "Agregar" o "Editar"
+  // marcador de posición en el panel; el formulario se abre cuando el usuario hace clic en "Agregar" o "Editar"
   adminContent.innerHTML = '<p>Seleccione un producto de la lista para editar, o use el botón "Agregar Producto".</p>';
   renderProductsInMainArea();
 }

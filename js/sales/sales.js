@@ -49,6 +49,21 @@ function registerSale() {
     const total = subtotal + iva;
     
     // Objeto literal que almacena las ventas y las registra con su ID unico
+    // recopilar información del cliente y del pago del formulario de checkout
+    const customer = {
+      name: document.getElementById("customerName")?.value || "",
+      email: document.getElementById("customerEmail")?.value || "",
+      phone: document.getElementById("customerPhone")?.value || "",
+      address: document.getElementById("customerAddress")?.value || "",
+    };
+    const paymentMethod = document.querySelector("input[name='paymentMethod']:checked")?.value || "";
+    const payment = { method: paymentMethod };
+    if (paymentMethod === "efectivo") {
+      const received = parseInt(document.getElementById("valuePaid")?.value) || 0;
+      payment.valuePaid = received;
+      payment.change = received - Math.ceil(total);
+    }
+
     const newSale = {
       id: Date.now(),
       date: new Date().toLocaleString("es-CO"),
@@ -57,7 +72,8 @@ function registerSale() {
         name: item.name,
         quantity: item.quantity,
       })),
-
+      customer,
+      payment,
       //por medio del ID con la funcion Date genera un identificador de milisegundos, evitando que se repita. el local string obtiene la fecha actual de cuando se hizo la compra y la segunda convierte el formato del numero de manera visual
 
       //Por otro lado usamos map para transformar el carrito, recorrerlo y guardar el nombre y la cantidad del producto
