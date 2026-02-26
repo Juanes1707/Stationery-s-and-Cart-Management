@@ -63,9 +63,10 @@ function registerSale() {
       //Por otro lado usamos map para transformar el carrito, recorrerlo y guardar el nombre y la cantidad del producto
     };
     state.sales.push(newSale); //Guarda la venta en el state, cambiando el estado de la aplicación
-
+    saveSales(); //Hace que en el historial se guarden los datos
     // Vaciar carrito
     state.cart = []; // después de registrar la venta el carrito vuelve a su estado vacío
+    saveCart(); //Si no se guarda el carrito vacío, al recargar volvería a aparecer el carrito antiguo 
 
     // actualizar la vista del carrito en caso de que esté visible
     if (typeof renderCart === "function") {
