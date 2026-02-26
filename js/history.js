@@ -13,7 +13,7 @@ function renderHistory() {
     return;
   }
 
-  // 👇 Aquí metemos la estructura base que quieres
+  // Aquí metemos la estructura base que quieres
   let content = `
     <h2 class="history-content-title">Historial de ventas</h2>
     <div class="history-card">
