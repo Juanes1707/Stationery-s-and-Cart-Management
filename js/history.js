@@ -1,6 +1,6 @@
 //Funcion de renderización del historial de venta
 function renderHistory() {
-  const historySection = document.querySelector("#historySection");
+  const historySection = document.querySelector(".history__content-sales");
 
   if (!historySection) return;
 
@@ -23,6 +23,7 @@ function renderHistory() {
         <span>MONTO TOTAL</span>
         <span>ESTADO</span>
         <span>ACCIÓN</span>
+        <span>FACTURA</span>
       </div>
   `;
 
@@ -36,6 +37,9 @@ function renderHistory() {
         <span class="status delivered">Entregado</span>
         <button class="btn-details" data-id="${sale.id}">
           Ver detalles
+        </button>
+        <button class="btn-invoice" data-id="${sale.id}">
+          Ver factura
         </button>
       </div>
     `;

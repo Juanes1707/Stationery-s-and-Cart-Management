@@ -6,15 +6,18 @@ function navigate(route) {
   const heroSection = document.querySelector(".hero__section");
   const cartAside = document.querySelector("#cart");
   const historySection = document.querySelector("#historySection");
-  const  checkoutSection = document.querySelector("#checkoutSection");
+  const checkoutSection = document.querySelector("#checkoutSection");
   const adminPanel = document.querySelector("#adminPanel");
   const cartButton = document.querySelector("#cartButton");
+  const invoiceContainer = document.querySelector("#invoiceContainer");
 
   heroSection.style.display = "none";
   mainSection.style.display = "none";
   cartAside.style.display = "none";
   historySection.style.display = "none";
   checkoutSection.style.display = "none";
+  adminPanel.style.display = "none"
+  
   if (adminPanel) {
     adminPanel.classList.remove('open');
   }
@@ -42,11 +45,32 @@ function navigate(route) {
     renderHistory();
   }
 
+  if (route === "invoice") {
+    historySection.style.display = "block";
+    cartButton.style.display = "none";
+    if (adminPanel) {
+      adminPanel.style.display = "flex";
+      adminPanel.classList.add('open');
+    }
+    document.querySelector('.app__container')?.classList.add('admin-open');
+    if (typeof initAdmin === "function") {
+      initAdmin();
+    }
+    if (typeof renderHistory === "function") renderHistory();
+    if (typeof renderInvoice === "function" && typeof currentInvoiceId !== "undefined" && currentInvoiceId != null) {
+      renderInvoice(currentInvoiceId);
+      invoiceContainer?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+
   if (route === "profile") {
     // Mostrar historial a la izquierda y el panel admin a la derecha
     historySection.style.display = "block";
-    if (adminPanel) adminPanel.classList.add('open');
-    // also ensure container margin for listing
+    if (adminPanel) {
+      adminPanel.style.display = "flex";
+      adminPanel.classList.add('open');
+    }
+    // también asegura el margen del contenedor para el listado
     document.querySelector('.app__container')?.classList.add('admin-open');
     cartButton.style.display = "none";
     renderHistory();
@@ -60,7 +84,6 @@ function navigate(route) {
     cartButton.style.display = "none";
     renderCheckout();
   }
-
   if (route === "cart") {
     cartAside.style.display = "block";
   }

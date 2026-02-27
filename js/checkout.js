@@ -2,7 +2,7 @@
 const checkoutContainer = document.querySelector(".checkout__content-container");
 const checkoutSection = document.querySelector("#checkoutSection");
 
-// FUNCIÓN: Render checkout
+// FUNCIÓN: Renderizar checkout
 function renderCheckout() {
   checkoutContainer.innerHTML = "";
 

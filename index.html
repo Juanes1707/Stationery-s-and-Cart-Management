@@ -76,8 +76,10 @@
             <!-- HISTORIAL DE VENTAS -->
             <section class="history__content" id="historySection">
                 <div class="history__content-sales">
-                    <!-- El JS History y el JS router son los encargados de desplegar la vista del perfil y el historial de ventas del administrador -->
+                    <!-- El JS History y el JS router son los encargados de desplegar la vista del perfil y el historial de ventas del administrador, además contendran a la factura -->
                 </div>
+                <!-- FACTURA DE LOS PRODUCTOS -->
+                <div id="invoiceContainer"></div>
             </section>
             <section class="checkout__content" id="checkoutSection"> 
                 <div class="checkout__content-container"></div>
@@ -95,21 +97,21 @@
                 </div>
                 <div class="cart__footer" id="cartFooter">
                     <!-- JS APP debe tener un boton de comprar y finalizar compra -->
-                     <button class="cart__button" id="buttonCheckout"></button>
+                    <button class="cart__button" id="buttonCheckout"></button>
                 </div>
             </aside>
         </div>
+        <!-- ADMIN PANEL (profile) -->
+        <div class="admin__panel-container">
+            <aside class="admin__panel" id="adminPanel">
+                <div class="admin__menu">
+                    <button id="adminHistoryBtn" class="admin__menu-btn active">Historial de ventas</button>
+                    <button id="adminCrudBtn" class="admin__menu-btn">CRUD de productos</button>
+                </div>
+                <div class="admin__content" id="adminContent"></div>
+            </aside>
+        </div>
         <!-- FOOTER -->
-            <!-- ADMIN PANEL (profile) -->
-            <div class="admin__panel-container">
-                <aside class="admin__panel" id="adminPanel">
-                    <div class="admin__menu">
-                        <button id="adminHistoryBtn" class="admin__menu-btn active">Historial de ventas</button>
-                        <button id="adminCrudBtn" class="admin__menu-btn">CRUD de productos</button>
-                    </div>
-                    <div class="admin__content" id="adminContent"></div>
-                </aside>
-            </div>
         <footer class="footer-content">
             <!-- DEFINIMOS EL FOOTER CON VARIOS DIV PARA DIVIDIRLOS POR COLUMNAS -->
             <div class="footer__columns">
@@ -158,6 +160,7 @@
     <script src="./js/storage.js"></script>
     <script src="./js/sales/sales.js"></script>
     <script src="./js/history.js"></script>
+    <script src="./js/invoice.js"></script>
     <script src="./js/router.js"></script>
     <script src="./js/admin.js"></script>
     <script src="./js/checkout.js"></script>
