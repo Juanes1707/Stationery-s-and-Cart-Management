@@ -131,21 +131,25 @@ productsContainer.addEventListener("click", function (event) {
 
 // Manejador de eventos del carrito
 cartItemsContainer.addEventListener("click", function (event) {
-  const productId = parseInt(event.target.dataset.id);
+  const actionButton = event.target.closest("button");
+  if (!actionButton) return;
 
-  if (event.target.classList.contains("increase")) {
+  const productId = parseInt(actionButton.dataset.id);
+  if (Number.isNaN(productId)) return;
+
+  if (actionButton.classList.contains("increase")) {
     increaseQuantity(productId);
     saveCart(); // Ponemos la función de guardar en cada funcionalidad del carrito para que su estado se actualice constantemente
     renderCart();
   }
 
-  if (event.target.classList.contains("decrease")) {
+  if (actionButton.classList.contains("decrease")) {
     decreaseQuantity(productId);
     saveCart(); 
     renderCart();
   }
 
-  if (event.target.classList.contains("remove")) {
+  if (actionButton.classList.contains("remove")) {
     removeFromCart(productId);
     saveCart(); 
     renderCart();
