@@ -446,14 +446,14 @@ header, main,aside, footer {
 .cart__aside {
     position: fixed;
     top: 110px;
-    right: -30rem;
+    right: -28rem;
     background-color: #fff;
     border-radius: 1rem;
     box-shadow: 0 10px 25px rgba(0,0,0,.1);
     padding: 1.5rem;
     margin: 2rem;
-    height: 35rem;
-    width: 27rem;
+    height: 30rem;
+    width: 25rem;
     display: flex;
     flex-direction: column;
     transition: right 0.3s ease;

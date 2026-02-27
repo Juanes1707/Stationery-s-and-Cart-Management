@@ -71,6 +71,7 @@ function registerSale() {
       items: state.cart.map((item) => ({
         name: item.name,
         quantity: item.quantity,
+        price: item.price,
       })),
       customer,
       payment,
