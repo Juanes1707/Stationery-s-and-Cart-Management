@@ -26,7 +26,7 @@ function renderProducts(productList) {
         <h3>${product.name}</h3>
         <p>${product.description}</p>
         <span class="product__price">$${product.price}</span>
-        <button data-id="${product.id}">Agregar al carrito</button>
+        <button class="product__button" data-id="${product.id}">Agregar al carrito</button>
       </div>
     </div>
     `;
@@ -110,8 +110,22 @@ productsContainer.addEventListener("click", function (event) {
     const productId = parseInt(event.target.dataset.id);
     const product = products.find((p) => p.id === productId);
     addToCart(product);
+    saveCart(); //FUNDCIÓN DEL LOCAL STORAGE
     renderCart();
     appContainer.classList.add("cart-open");
+
+    //EFECTO VISUAL TEMPORAL "Agregado"
+    const productButton = event.target; //Representa el elemento que recibio el clic en este caso que fue el boton
+    const originalText = productButton.textContent; //Representa el texto actual que tiene el boton "Agregar al carrito"
+
+    productButton.textContent = "✔ Agregado" //Se encarga de cambiar el texto del botón inmediatamente al hacer click.
+    productButton.disabled = true; //Desactuva el boton de manera temporal, de esta manera el usuario no puede hacer más clics en lo que dura el mensaje
+    
+
+    setTimeout(() => { //Esta función es la que permite que haya un "cool down" para ejecutar algo, en este caso devolvera las propiedades originales del boton a su estado normal despues de 1000 milisegundos es decir, 1 segundo.
+      productButton.textContent = originalText;
+      productButton.disabled = false;
+    }, 1000)
   }
 });
 
@@ -121,16 +135,19 @@ cartItemsContainer.addEventListener("click", function (event) {
 
   if (event.target.classList.contains("increase")) {
     increaseQuantity(productId);
+    saveCart(); //Ponemos la función de guardar en cada una de las funcionalidades del carrito para que el state de este mismo se este actualizando constantemente
     renderCart();
   }
 
   if (event.target.classList.contains("decrease")) {
     decreaseQuantity(productId);
+    saveCart(); 
     renderCart();
   }
 
   if (event.target.classList.contains("remove")) {
     removeFromCart(productId);
+    saveCart(); 
     renderCart();
   }
 });
@@ -164,8 +181,11 @@ categoryButtons.forEach(button => {
 });
 
 // Render inicial
+loadCart(); // FUNCIONES DEL LOCAL STORAGE, se ponen primero para que los datos del carrito se renderizen de manera correcta
+loadSales();
 renderProducts(products);
 renderCart();
+renderHistory() //Agregamos el renderizado del historial para que se renderize el historial con cada una de las ventas aunque se actualice
 
 // Botón perfil / historial
 if (profileButton) {
