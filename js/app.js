@@ -14,7 +14,7 @@ const categoryButtons = document.querySelectorAll(".category__button");
 // VARIABLE PARA CONTROLAR LA CATEGORÍA ACTUAL
 let currentCategory = "todos";
 
-// FUNCIÓN 1: Render catálogo
+// FUNCIÓN 1: Renderizar catálogo
 function renderProducts(productList) {
   productsContainer.innerHTML = "";
 
@@ -34,7 +34,7 @@ function renderProducts(productList) {
   });
 }
 
-// FUNCIÓN 2: Render carrito
+// FUNCIÓN 2: Renderizar carrito
 function renderCart() {
   cartItemsContainer.innerHTML = "";
 
@@ -104,13 +104,13 @@ cartButton.addEventListener("click", () => {
   appContainer.classList.toggle("cart-open");
   });
 
-// Event listener catálogo
+// Manejador de eventos del catálogo
 productsContainer.addEventListener("click", function (event) {
   if (event.target.tagName === "BUTTON") {
     const productId = parseInt(event.target.dataset.id);
     const product = products.find((p) => p.id === productId);
     addToCart(product);
-    saveCart(); //FUNDCIÓN DEL LOCAL STORAGE
+    saveCart(); // FUNCIÓN DEL ALMACENAMIENTO LOCAL
     renderCart();
     appContainer.classList.add("cart-open");
 
@@ -118,24 +118,24 @@ productsContainer.addEventListener("click", function (event) {
     const productButton = event.target; //Representa el elemento que recibio el clic en este caso que fue el boton
     const originalText = productButton.textContent; //Representa el texto actual que tiene el boton "Agregar al carrito"
 
-    productButton.textContent = "✔ Agregado" //Se encarga de cambiar el texto del botón inmediatamente al hacer click.
+    productButton.textContent = "✔ Agregado" // Se encarga de cambiar el texto del botón inmediatamente al hacer clic.
     productButton.disabled = true; //Desactuva el boton de manera temporal, de esta manera el usuario no puede hacer más clics en lo que dura el mensaje
     
 
-    setTimeout(() => { //Esta función es la que permite que haya un "cool down" para ejecutar algo, en este caso devolvera las propiedades originales del boton a su estado normal despues de 1000 milisegundos es decir, 1 segundo.
+    setTimeout(() => { // Esta función aplica una pausa breve; luego devuelve el botón a su estado original tras 1000 ms (1 segundo).
       productButton.textContent = originalText;
       productButton.disabled = false;
     }, 1000)
   }
 });
 
-// Event listener carrito
+// Manejador de eventos del carrito
 cartItemsContainer.addEventListener("click", function (event) {
   const productId = parseInt(event.target.dataset.id);
 
   if (event.target.classList.contains("increase")) {
     increaseQuantity(productId);
-    saveCart(); //Ponemos la función de guardar en cada una de las funcionalidades del carrito para que el state de este mismo se este actualizando constantemente
+    saveCart(); // Ponemos la función de guardar en cada funcionalidad del carrito para que su estado se actualice constantemente
     renderCart();
   }
 
@@ -170,7 +170,7 @@ searchInput.addEventListener("input", function (event) {
   renderProducts(filteredProducts);
 });
 
-// Event listener para categorías
+// Manejador de eventos para categorías
 categoryButtons.forEach(button => {
   button.addEventListener("click", function () {
     const category = this.dataset.category;
@@ -180,18 +180,19 @@ categoryButtons.forEach(button => {
   });
 });
 
-// Render inicial
-loadCart(); // FUNCIONES DEL LOCAL STORAGE, se ponen primero para que los datos del carrito se renderizen de manera correcta
+
+// Renderizado inicial
+loadCart(); // FUNCIONES DE ALMACENAMIENTO LOCAL, se ejecutan primero para renderizar bien los datos del carrito
 loadSales();
 renderProducts(products);
 renderCart();
-renderHistory() //Agregamos el renderizado del historial para que se renderize el historial con cada una de las ventas aunque se actualice
+renderHistory() // Agregamos el renderizado del historial para mantener visibles las ventas al actualizar
 
 // Botón perfil / historial
 if (profileButton) {
   profileButton.addEventListener("click", () => {
     navigate("profile");
-    // asegurar que el panel admin se inicialice y abra
+    // asegurar que el panel de admin se inicialice y se abra
     if (typeof initAdmin === 'function') {
       try { initAdmin(); } catch(e) { console.warn('initAdmin error', e); }
     }

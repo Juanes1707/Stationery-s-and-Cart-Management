@@ -1,4 +1,4 @@
-// ADMIN PANEL: CRUD de productos y controles del panel derecho
+// PANEL ADMIN: CRUD de productos y controles del panel derecho
 function initAdmin() {
   const adminHistoryBtn = document.getElementById('adminHistoryBtn');
   const adminCrudBtn = document.getElementById('adminCrudBtn');
@@ -7,7 +7,7 @@ function initAdmin() {
 
   if (!adminContent || !adminPanel) return;
 
-  // evitar re-inicializar listeners
+  // evitar re-inicializar manejadores de eventos
   if (adminPanel.dataset.inited === '1') return;
   adminPanel.dataset.inited = '1';
 
@@ -36,17 +36,20 @@ function setActiveMenuButton(btn) {
 
 function renderAdminHistory() {
   // Reutiliza renderHistory que llena #historySection (lado izquierdo)
+  const historySectionEl = document.getElementById('historySection');
+  if (historySectionEl) historySectionEl.classList.remove('admin-listing');
+  const invoiceContainer = document.getElementById('invoiceContainer');
+  if (invoiceContainer) invoiceContainer.innerHTML = '';
   renderHistory();
   const adminContent = document.getElementById('adminContent');
   if (!adminContent) return;
-  adminContent.innerHTML = '<p>Historial de ventas mostrado a la izquierda.</p>';
+  adminContent.innerHTML = '';
 }
 
 function renderAdminCRUD() {
   const adminContent = document.getElementById('adminContent');
   if (!adminContent) return;
-  // marcador de posición en el panel; el formulario se abre cuando el usuario hace clic en "Agregar" o "Editar"
-  adminContent.innerHTML = '<p>Seleccione un producto de la lista para editar, o use el botón "Agregar Producto".</p>';
+  adminContent.innerHTML = '';
   renderProductsInMainArea();
 }
 
@@ -101,20 +104,21 @@ function renderAdminCRUDForm() {
 }
 
 function renderProductsInMainArea() {
-  const main = document.getElementById('historySection');
-  if (!main) return;
+  const historySection = document.getElementById('historySection');
+  const historyContent = document.querySelector('.history__content-sales');
+  if (!historySection || !historyContent) return;
   if (!Array.isArray(products)) products = [];
-  // add marker class so CSS shrinks width when form/panel open
-  main.classList.add('admin-listing');
+  // agrega clase de marca para que los estilos ajusten el ancho al abrir formulario/panel
+  historySection.classList.add('admin-listing');
 
-  // add "Agregar producto" button and table listing
+  // agrega botón "Agregar producto" y listado
   let html = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><h2>Productos</h2><button id="mainAddProduct" style="background:#FC1;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;">Agregar Producto</button></div>`;
 
   if (products.length === 0) {
     html += '<p>No hay productos</p>';
-    main.innerHTML = html;
+    historyContent.innerHTML = html;
     document.getElementById('mainAddProduct').addEventListener('click', () => {
-      // open form on right
+      // abre el formulario en el panel derecho
       setActiveMenuButton(document.getElementById('adminCrudBtn'));
       renderAdminCRUDForm();
       const adminPanel = document.getElementById('adminPanel');
@@ -139,12 +143,12 @@ function renderProductsInMainArea() {
   });
   html += '</div>';
 
-  main.innerHTML = html;
+  historyContent.innerHTML = html;
 
-  // wire buttons
-  main.querySelectorAll('.main-edit').forEach(b => b.addEventListener('click', (e) => {
+  // conecta eventos de botones
+  historyContent.querySelectorAll('.main-edit').forEach(b => b.addEventListener('click', (e) => {
     const id = Number(e.target.dataset.id);
-    // open form on right and load product
+    // abre formulario en el panel derecho y carga el producto
     setActiveMenuButton(document.getElementById('adminCrudBtn'));
     renderAdminCRUDForm();
     loadProductIntoForm(id);
@@ -153,7 +157,7 @@ function renderProductsInMainArea() {
     document.querySelector('.app__container').classList.add('admin-open');
   }));
 
-  main.querySelectorAll('.main-delete').forEach(b => b.addEventListener('click', (e) => {
+  historyContent.querySelectorAll('.main-delete').forEach(b => b.addEventListener('click', (e) => {
     const id = Number(e.target.dataset.id);
     if (confirm('¿Eliminar producto? Esta acción no se puede deshacer.')) {
       deleteProduct(id);
@@ -236,7 +240,7 @@ function handleAdminFormSubmit() {
     saveProductsToStorage();
     renderAdminProductsList();
     renderProducts(products);
-    // update main listing if visible
+    // actualiza el listado principal si está visible
     if (document.getElementById('historySection')) renderProductsInMainArea();
     clearAdminForm();
     alert('Producto actualizado');

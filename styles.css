@@ -262,18 +262,33 @@ header, main,aside, footer {
 
 .history-card {
     width: 100%;
+    max-width: 70%;
+    margin-left: auto;
+    margin-right: auto;
     background: #fff;
     border-radius: 10px;
     padding: 20px;
 }
 
+.history-content-title {
+    max-width: 70%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .history-header,
 .history-row {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: minmax(0, 2.2fr) minmax(0, 1.6fr) minmax(0, 1.2fr) minmax(0, 1fr) auto auto;
     align-items: center;
     padding: 12px 0;
     gap: 1rem;
+    width: 100%;
+}
+
+.history-header span,
+.history-row span {
+    min-width: 0;
 }
 
 .history-row button {
@@ -301,7 +316,7 @@ header, main,aside, footer {
     color: #1a7f37;
 }
 
-.btn-details {
+.btn-details,.btn-invoice {
     background: #facc15;
     border: none;
     padding: 6px 12px;
@@ -459,74 +474,112 @@ header, main,aside, footer {
 /* ADMIN PANEL (profile) */
 .admin__panel {
     position: fixed;
-    top: 110px;
-    bottom: 2rem; /* evita tapar el footer */
-    right: -34rem; /* oculto por defecto fuera de pantalla */
-    background-color: #fff;
-    border-radius: 1rem;
-    box-shadow: 0 10px 25px rgba(0,0,0,.1);
-    padding: 1rem;
-    margin: 1rem;
-    width: min(360px, 90vw);
+    top: 190px;
+    left: -270px; /* oculto fuera de pantalla */
+    right: auto;
+    background-color: #f1f1f1;
+    border-radius: 14px;
+    box-shadow: 0 8px 20px rgba(0,0,0,.08);
+    padding: 12px;
+    width: 240px;
+    height: auto;
     display: flex;
     flex-direction: column;
     transition: right 0.28s ease, opacity 0.25s ease;
     z-index: 120;
-    overflow: auto;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
 }
 
 .admin__panel.open {
-    right: 1rem; /* visible */
+    left: 2rem; /* visible a la izquierda */
+    opacity: 1;
+    pointer-events: auto;
 }
 
 /* Cuando el panel admin está abierto, dar margen al main para que el listado no quede tapado */
 .app__container.admin-open .main__content-section {
-    margin-right: 400px;
+    margin-left: 300px;
+    margin-right: 0;
 }
 
 /* when admin panel open, shrink historySection and add margin automatically */
 .app__container.admin-open #historySection,
-#historySection.admin-listing {
-    max-width: calc(100% - 420px);
+.app__container.admin-open #historySection.admin-listing {
+    max-width: 100%;
+    margin-left: 300px;
 }
 
 .admin__menu {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
+    gap: 8px;
+    margin-bottom: 0;
 }
 
 .admin__menu-btn {
-    padding: 0.6rem 0.8rem;
+    width: 100%;
+    padding: 10px 12px;
     border: none;
-    background: #f5f5f5;
-    border-radius: 6px;
+    background: transparent;
+    border-radius: 8px;
     cursor: pointer;
     text-align: left;
+    font-size: 15px;
+    font-weight: 600;
+    color: #60646b;
 }
 
 .admin__menu-btn.active {
     background: #FC1;
-    color: #000;
+    color: #151515;
     font-weight: 700;
 }
 
 .admin__content {
     overflow-y: auto;
-    flex: 1 1 auto;
+    margin-top: 8px;
+    max-height: 240px;
+    font-size: 14px;
+    color: #60646b;
+}
+
+.admin__content:empty {
+    display: none;
 }
 
 /* ajustes responsivos: en pantallas pequeñas mostrar panel como full-width debajo del header */
 @media (max-width: 900px) {
     .admin__panel {
         position: fixed;
-        left: 1rem;
-        right: 1rem;
-        top: 100px;
-        bottom: 4rem;
-        width: auto;
+        left: -270px;
+        right: auto;
+        top: 170px;
+        bottom: auto;
+        width: 240px;
+        max-width: 90vw;
+        height: auto;
+        max-height: none;
         border-radius: 10px;
+    }
+
+    /* En móvil, el panel admin se vuelve overlay: no reservar columna lateral */
+    .app__container.admin-open .main__content-section {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .app__container.admin-open #historySection,
+    .app__container.admin-open #historySection.admin-listing,
+    #historySection.admin-listing {
+        max-width: 100%;
+        margin-left: 0;
+    }
+
+    .admin__content {
+        margin-top: 8px;
+        max-height: 200px;
     }
 }
 
@@ -1112,4 +1165,197 @@ header, main,aside, footer {
 
 .checkout__success-button:hover {
     background-color: #ffb800;
+}
+
+/* FACTURA */
+/* =========================
+   INVOICE / FACTURA (estilo mockup)
+   ========================= */
+
+#invoiceContainer{
+  width: 100%;
+  max-width: 70%;
+  margin: 24px auto 0 auto;
+  padding: 0;
+}
+
+.factura-box{
+  background: #fff;
+  border: 1px solid #e8eef6;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(16, 24, 40, 0.08);
+  overflow: hidden;
+}
+
+/* Barra superior (simula header de la tarjeta) */
+.factura-box .header-legal{
+  padding: 18px 22px;
+  border-bottom: 1px solid #eef2f7;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  text-align: left;
+}
+
+/* “Logo” cuadradito amarillo como el mockup */
+.factura-box .header-legal::before{
+  content: "✦";
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #f6c90e;
+  color: #111827;
+  font-weight: 800;
+  margin-right: 10px;
+  flex: 0 0 auto;
+}
+
+/* Ajuste de bloque de texto del header */
+.factura-box .header-legal h2{
+  margin: 0 0 6px 0;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: .2px;
+  color: #111827;
+}
+.factura-box .header-legal p{
+  margin: 0;
+  color: #475467;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.factura-box .header-legal i{
+  color: #667085;
+}
+
+/* Separadores: quitamos el dashed y lo hacemos suave */
+.linea{
+  border-top: 1px solid #eef2f7;
+  margin: 0;
+}
+
+/* Body de la factura */
+#factura-contenido{
+  padding: 18px 22px 22px;
+}
+
+/* Header del “Invoice #...” (lo vamos a simular con info-venta) */
+#info-venta{
+  padding: 14px 0 12px;
+}
+
+.flex{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Estilo de “Factura #ID” tipo mockup (amarillo en el número) */
+#info-venta .flex span{
+  font-size: 13px;
+  color: #667085;
+}
+#info-venta .flex span b{
+  color: #111827;
+  font-weight: 800;
+}
+#info-venta .flex span:first-child{
+  font-size: 28px;
+  color: #111827;
+  font-weight: 900;
+  letter-spacing: .3px;
+}
+#info-venta .flex span:first-child b{
+  color: #111827;
+}
+#info-venta .flex span:first-child{
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+}
+#info-venta .flex span:first-child::before{
+  content: "";
+  color: #111827;
+  font-weight: 900;
+}
+
+#info-venta .flex span:first-child b{
+  color: #f6c90e;
+}
+
+/* Tabla: card suave como el mockup */
+.factura-box table{
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 14px 0 10px;
+  border: 1px solid #eef2f7;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.factura-box thead th{
+  background: #f8fafc;
+  color: #475467;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: none;
+  padding: 12px 14px;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.factura-box tbody td{
+  padding: 14px 14px;
+  font-size: 13px;
+  color: #101828;
+  border-bottom: 1px solid #eef2f7;
+}
+.factura-box tbody tr:last-child td{
+  border-bottom: none;
+}
+
+.text-right{
+  text-align: right;
+  font-weight: 700;
+}
+
+/* Totales: caja a la derecha tipo mockup */
+#totales-venta{
+  margin-top: 12px;
+  margin-left: auto;
+  width: min(360px, 100%);
+  padding: 14px 16px;
+  border: 1px solid #eef2f7;
+  border-radius: 12px;
+  background: #fff;
+}
+
+#totales-venta .flex{
+  padding: 6px 0;
+}
+#totales-venta .flex span:first-child{
+  color: #667085;
+  font-size: 13px;
+}
+#totales-venta .flex span:last-child{
+  color: #111827;
+  font-weight: 800;
+}
+
+/* Destacar total como botón amarillo (última fila) */
+#totales-venta .flex:last-child span:last-child b{
+  display: inline-block;
+  background: #f6c90e;
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+
+/* Print: ocultar botones */
+@media print{
+  #invoiceContainer{ padding: 0; margin: 0; }
+  .factura-box{ box-shadow: none; border: none; }
 }
