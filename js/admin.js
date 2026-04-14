@@ -204,7 +204,7 @@ function renderAdminProductsList() {
   }));
 }
 
-function handleAdminFormSubmit() {
+async function handleAdminFormSubmit() {
   const idField = document.getElementById('adminProductId');
   const name = document.getElementById('adminName').value.trim();
   const category = document.getElementById('adminCategory').value.trim();
@@ -237,7 +237,12 @@ function handleAdminFormSubmit() {
     prod.stock = stock;
     prod.image = image;
     prod.description = description;
-    saveProductsToStorage();
+    // DESPUÉS (con Google Sheets)
+// Si es producto nuevo → apiPost
+// Si es edición → apiUpdate
+  await apiPost("productos", nuevoProducto);   // crear
+  await apiUpdate("productos", productoEditado); // editar
+  await apiDelete("productos", { id: producto.id }); // eliminarsaveProductsToStorage();
     renderAdminProductsList();
     renderProducts(products);
     // actualiza el listado principal si está visible
