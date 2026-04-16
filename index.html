@@ -106,10 +106,10 @@
         <div class="admin__panel-container">
             <aside class="admin__panel" id="adminPanel">
                 <div class="admin__menu">
-                    <button id="adminHistoryBtn"   class="admin__menu-btn active">Historial</button>
-                    <button id="adminCrudBtn"       class="admin__menu-btn">Productos</button>
-                    <button id="adminPurchasesBtn"  class="admin__menu-btn">Compras</button>
-                    <button id="adminEntitiesBtn"   class="admin__menu-btn">Entidades</button>
+                    <button id="adminHistoryBtn" class="admin__menu-btn active">Historial</button>
+                    <button id="adminCrudBtn" class="admin__menu-btn">Productos</button>
+                    <button id="adminPurchasesBtn" class="admin__menu-btn">Compras</button>
+                    <button id="adminEntitiesBtn" class="admin__menu-btn">Entidades</button>
                 </div>
                 <div class="admin__content" id="adminContent"></div>
             </aside>
@@ -152,6 +152,13 @@
                 <p>© 2026 Papel y Luna. Todos los derechos reservados.</p>
             </div>
         </footer>
+    </div>
+
+    <div id="apiLoader" class="api-loader api-loader--hidden" aria-live="assertive" aria-busy="true">
+        <div class="api-loader__content">
+            <div class="api-loader__spinner"></div>
+            <p>Cargando datos...</p>
+        </div>
     </div>
 
     <!--

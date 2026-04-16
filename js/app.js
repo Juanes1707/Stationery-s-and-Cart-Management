@@ -54,11 +54,20 @@ function renderCart() {
   cartItemsContainer.innerHTML = "";
 
   if (state.cart.length === 0) {
-    emptyCartMessage.innerHTML = "<p>El carrito está vacío</p>";
+    cartItemsContainer.style.display = "none";
+    emptyCartMessage.style.display = "flex";
+    emptyCartMessage.innerHTML = `
+      <div class="cart__empty-state">
+        <i class="fa-solid fa-cart-shopping"></i>
+        <p>El carrito está vacío</p>
+      </div>
+    `;
     cartFooter.innerHTML = "";
     return;
   }
 
+  cartItemsContainer.style.display = "block";
+  emptyCartMessage.style.display = "none";
   emptyCartMessage.innerHTML = "";
 
   state.cart.forEach((item) => {

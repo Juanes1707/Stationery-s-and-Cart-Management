@@ -13,6 +13,27 @@
 const API_URL =
   "https://script.google.com/macros/s/AKfycbxgPPVl8XFIhXgssDgI8_X_FKCBUeg_h132L2xILDwrKHD_90iHZHaJDiI66BqXLDTa/exec";
 
+let apiRequestCounter = 0;
+function getApiLoaderElement() {
+  return document.getElementById("apiLoader");
+}
+
+function updateApiLoaderVisibility() {
+  const loader = getApiLoaderElement();
+  if (!loader) return;
+  loader.classList.toggle("api-loader--visible", apiRequestCounter > 0);
+}
+
+function startApiLoader() {
+  apiRequestCounter += 1;
+  updateApiLoaderVisibility();
+}
+
+function stopApiLoader() {
+  apiRequestCounter = Math.max(0, apiRequestCounter - 1);
+  updateApiLoaderVisibility();
+}
+
 // 🎨 Sistema de logging con estilos
 function logAPI(action, resource, status, data = null) {
   const timestamp = new Date().toLocaleTimeString("es-CO");
@@ -72,49 +93,54 @@ async function fetchApi(resource, options = {}, action = null) {
     message: "No se pudo conectar con el servidor.",
   };
 
-  for (const alias of aliases) {
-    const url = `${API_URL}?resource=${encodeURIComponent(alias)}${action ? `&action=${action}` : ""}`;
-    logAPI(
-      options.method || "REQUEST",
-      alias,
-      "request",
-      options.body ? JSON.parse(options.body) : null,
-    );
-
-    const response = await fetch(url, options);
-    let json;
-    try {
-      json = await response.json();
-    } catch (err) {
-      console.error(
-        `Error parseando JSON de ${options.method || "FETCH"}:`,
-        err,
+  startApiLoader();
+  try {
+    for (const alias of aliases) {
+      const url = `${API_URL}?resource=${encodeURIComponent(alias)}${action ? `&action=${action}` : ""}`;
+      logAPI(
+        options.method || "REQUEST",
+        alias,
+        "request",
+        options.body ? JSON.parse(options.body) : null,
       );
-      json = { success: false, message: "Respuesta no válida del servidor." };
+
+      const response = await fetch(url, options);
+      let json;
+      try {
+        json = await response.json();
+      } catch (err) {
+        console.error(
+          `Error parseando JSON de ${options.method || "FETCH"}:`,
+          err,
+        );
+        json = { success: false, message: "Respuesta no válida del servidor." };
+      }
+
+      if (!response.ok) {
+        json.success = false;
+        json.message =
+          json.message || `HTTP ${response.status} ${response.statusText}`;
+      }
+
+      logAPI(
+        options.method || "REQUEST",
+        alias,
+        json.success ? "success" : "error",
+        json,
+      );
+
+      if (json.success || !isSheetNotFoundError(json.message)) {
+        return json;
+      }
+
+      lastJson = json;
+      console.warn(`Reintentando con alias de recurso: ${alias}`);
     }
 
-    if (!response.ok) {
-      json.success = false;
-      json.message =
-        json.message || `HTTP ${response.status} ${response.statusText}`;
-    }
-
-    logAPI(
-      options.method || "REQUEST",
-      alias,
-      json.success ? "success" : "error",
-      json,
-    );
-
-    if (json.success || !isSheetNotFoundError(json.message)) {
-      return json;
-    }
-
-    lastJson = json;
-    console.warn(`Reintentando con alias de recurso: ${alias}`);
+    return lastJson;
+  } finally {
+    stopApiLoader();
   }
-
-  return lastJson;
 }
 
 // GET — leer todos los registros de una hoja
@@ -146,6 +172,24 @@ async function apiUpdate(resource, data) {
     },
     "update",
   );
+  return json;
+}
+
+// DELETE — borrar registro existente por id
+async function apiDelete(resource, data) {
+  const json = await fetchApi(
+    resource,
+    {
+      method: "POST",
+      body: JSON.stringify(data),
+    },
+    "delete",
+  );
+
+  if (!json.success) {
+    throw new Error(json.message || "Error eliminando en Sheets.");
+  }
+
   return json;
 }
 

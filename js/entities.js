@@ -217,16 +217,25 @@ function renderEntityList(entityName, items) {
           "color: #f44336; font-weight: bold;",
         );
         await apiDelete(entityName, { id });
+
+        // Actualizar lista local y recargar sólo si Sheet confirmó la eliminación
+        const updated = getLocalEntity(entityName).filter(
+          (i) => String(i.id) !== String(id),
+        );
+        saveLocalEntity(entityName, updated);
+        renderEntityList(entityName, updated);
+        if (typeof showToast === "function") {
+          showToast(`${entityName} eliminado correctamente.`, "success");
+        }
       } catch (err) {
         console.error("Error eliminando en Sheets:", err);
+        if (typeof showToast === "function") {
+          showToast(
+            `No se pudo eliminar en Sheets. Intenta de nuevo.`,
+            "error",
+          );
+        }
       }
-
-      // Actualizar lista local y recargar
-      const updated = getLocalEntity(entityName).filter(
-        (i) => String(i.id) !== String(id),
-      );
-      saveLocalEntity(entityName, updated);
-      renderEntityList(entityName, updated);
 
       // Si se eliminó una categoría, regenerar botones de filtro
       if (

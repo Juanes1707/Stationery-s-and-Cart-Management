@@ -370,17 +370,16 @@ function renderProductsInMainArea() {
 }
 
 async function deleteProduct(id) {
-  products.splice(
-    products.findIndex((p) => p.id === id),
-    1,
-  );
   try {
     await apiDelete("productos", { id });
+    products = products.filter((p) => p.id !== id);
     showToast("Producto eliminado.");
   } catch (e) {
-    console.error(e);
-    showToast("Eliminado localmente. Error en Sheets.", "error");
+    console.error("Error eliminando producto en Sheets:", e);
+    showToast("No se pudo eliminar en Sheets. Intenta de nuevo.", "error");
+    return;
   }
+
   renderProducts(products);
   if (typeof rebuildCategoryButtons === "function") rebuildCategoryButtons();
   renderProductsInMainArea();
