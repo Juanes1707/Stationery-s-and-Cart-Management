@@ -496,7 +496,10 @@ function renderEntityForm(entityName, item) {
           !document.getElementById(`ef-${col.key}`).value.trim(),
       );
       if (missing.length > 0) {
-        alert(`Por favor completa: ${missing.map((c) => c.label).join(", ")}`);
+        showToast(
+          `Por favor completa: ${missing.map((c) => c.label).join(", ")}`,
+          "error",
+        );
         return;
       }
 
@@ -548,8 +551,9 @@ function renderEntityForm(entityName, item) {
       }
 
       adminContent.innerHTML = "";
-      alert(
+      showToast(
         `${labels.singular} ${isEdit ? "actualizada" : "creada"} correctamente.`,
+        "success",
       );
     });
 }
