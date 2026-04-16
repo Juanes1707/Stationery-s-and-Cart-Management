@@ -44,11 +44,11 @@
                     <i class="fa-solid fa-house"></i>
                 </button>
             </div>
-            <!-- el input de navegación debe permitirle al usuario buscar y filtrar productos por nombre y actualizarlo en tiempo real, por otro lado los botones deben ser interactivos, el primero debe desplegar el carrito, el segundo guiar al usuario a la ventana dd perfil e historial de ventas y el tercero debe devolver al usuario al main principal cuando este lo desee -->
         </header>
+
         <!-- MAIN -->
         <main class="main__content">
-            <!-- ESTRUCTURA DE LA PORTADA DEL SITIO -->
+            <!-- HERO -->
             <section class="hero__section">
                 <div class="hero__section-content">
                     <h2>Tu mundo creativo comienza aquí</h2>
@@ -58,8 +58,8 @@
                     <button id="hero__section-button">Novedades</button>
                 </div>
             </section>
-            <!-- INICIO DEL MAIN Y EL CATALOGO -->
 
+            <!-- CATÁLOGO -->
             <section class="main__content-section">
                 <h2 class="main__content-title">Nuestros Productos</h2>
                 <div class="categories__container">
@@ -70,65 +70,65 @@
                     <button class="category__button" data-category="Organización">Organización</button>
                 </div>
                 <div class="main__products-container">
-                    <!-- JS DATA debe desplegar los productos del catálogo  en tiempo real, poer seleccionarlos y agregarlos al carrito -->
+                    <!-- Los productos se renderizan dinámicamente desde data.js -->
                 </div>
             </section>
+
             <!-- HISTORIAL DE VENTAS -->
             <section class="history__content" id="historySection">
                 <div class="history__content-sales">
-                    <!-- El JS History y el JS router son los encargados de desplegar la vista del perfil y el historial de ventas del administrador, además contendran a la factura -->
+                    <!-- history.js renderiza el historial aquí -->
                 </div>
-                <!-- FACTURA DE LOS PRODUCTOS -->
+                <!-- FACTURA -->
                 <div id="invoiceContainer"></div>
             </section>
-            <section class="checkout__content" id="checkoutSection"> 
+
+            <!-- CHECKOUT -->
+            <section class="checkout__content" id="checkoutSection">
                 <div class="checkout__content-container"></div>
             </section>
         </main>
+
         <!-- CARRITO -->
         <div class="cart__aside-container">
             <aside class="cart__aside" id="cart">
                 <h2 class="cart__aside-title">Carrito</h2>
-                <div class="cart__items" id="cartItems">
-                    <!-- JS App debe desplegar los productos del carrito en tiempo real -->
-                </div>
-                <div class="empty__cart" id="emptyCartMessage">
-                    <!-- JS APP contendria un mensjae de carrito vacío -->
-                </div>
+                <div class="cart__items" id="cartItems"></div>
+                <div class="empty__cart" id="emptyCartMessage"></div>
                 <div class="cart__footer" id="cartFooter">
-                    <!-- JS APP debe tener un boton de comprar y finalizar compra -->
-                    <button class="cart__button" id="buttonCheckout"></button>
+                    <!-- app.js renderiza los botones aquí -->
                 </div>
             </aside>
         </div>
-        <!-- ADMIN PANEL (profile) -->
+
+        <!-- ADMIN PANEL -->
+        <!-- Se agregaron los botones de Compras y Entidades (MVP2) -->
         <div class="admin__panel-container">
             <aside class="admin__panel" id="adminPanel">
                 <div class="admin__menu">
-                    <button id="adminHistoryBtn" class="admin__menu-btn active">Historial de ventas</button>
-                    <button id="adminCrudBtn" class="admin__menu-btn">CRUD de productos</button>
+                    <button id="adminHistoryBtn"   class="admin__menu-btn active">Historial</button>
+                    <button id="adminCrudBtn"       class="admin__menu-btn">Productos</button>
+                    <button id="adminPurchasesBtn"  class="admin__menu-btn">Compras</button>
+                    <button id="adminEntitiesBtn"   class="admin__menu-btn">Entidades</button>
                 </div>
                 <div class="admin__content" id="adminContent"></div>
             </aside>
         </div>
+
         <!-- FOOTER -->
         <footer class="footer-content">
-            <!-- DEFINIMOS EL FOOTER CON VARIOS DIV PARA DIVIDIRLOS POR COLUMNAS -->
             <div class="footer__columns">
                 <div class="footer__col footer__col--about">
                     <h3><span class="footer__col-icon"><i class="fa-solid fa-book"></i></span>Papel y Luna</h3>
                     <p class="footer__description">Creamos herramientas para que tus ideas cobren vida.</p>
                     <div class="footer__socials">
                         <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a href="https://www.instagram.com/papeleriapapelyluna/" aria-label="Instagram"><i
-                                class="fab fa-instagram"></i></a>
+                        <a href="https://www.instagram.com/papeleriapapelyluna/" aria-label="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
                         <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
                     </div>
                 </div>
-                <!-- Contiene las redes sociales de la empresa -->
-
-
-                <!-- Contiene categorias de proveedores, información general de la empresa etc -->
                 <div class="footer__col footer__col--categories">
                     <h3><span class="footer__col-icon"><i class="fa-solid fa-book"></i></span>Categorías</h3>
                     <ul>
@@ -154,7 +154,22 @@
         </footer>
     </div>
 
-    <!-- ORDEN IMPORTANTE: data → state → sales → history → router → checkout → app -->
+    <!--
+      ORDEN DE CARGA DE SCRIPTS — muy importante no cambiar este orden:
+      1. api.js       → define apiGet, apiPost, apiUpdate, apiDelete (todo lo demás depende de esto)
+      2. data.js      → carga productos desde Sheets, define normalizeProduct y loadProductsFromAPI
+      3. state.js     → define state, addToCart, removeFromCart, etc.
+      4. storage.js   → define saveCart, loadCart, saveSales, loadSales
+      5. sales.js     → define registerSale, holdCurrentSale, renderOpenSales
+      6. history.js   → define renderHistory, showSaleDetails
+      7. invoice.js   → define renderInvoice
+      8. router.js    → define navigate
+      9. purchases.js → define renderPurchasesModule, renderPurchaseForm (nuevo MVP2)
+     10. entities.js  → define renderEntitiesModule, CRUD de categorías/proveedores/clientes (nuevo MVP2)
+     11. admin.js     → define initAdmin, renderAdminCRUD, deleteProduct, etc.
+     12. checkout.js  → define renderCheckout
+     13. app.js       → punto de entrada principal, inicializa la UI
+    -->
     <script src="./js/api.js"></script>
     <script src="./js/data.js"></script>
     <script src="./js/state.js"></script>
@@ -163,6 +178,8 @@
     <script src="./js/history.js"></script>
     <script src="./js/invoice.js"></script>
     <script src="./js/router.js"></script>
+    <script src="./js/purchases.js"></script>
+    <script src="./js/entities.js"></script>
     <script src="./js/admin.js"></script>
     <script src="./js/checkout.js"></script>
     <script src="./js/app.js"></script>

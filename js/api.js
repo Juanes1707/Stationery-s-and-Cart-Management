@@ -1,54 +1,48 @@
 // ============================================================
 // api.js - Comunicación con Google Sheets via Apps Script
-// Todas las operaciones de datos pasan por este archivo
+// ============================================================
+// IMPORTANTE SOBRE CORS:
+// Google Apps Script publicado como Web App anónima acepta POST,
+// PERO si se envía Content-Type: application/json el navegador
+// hace un "preflight" OPTIONS que Apps Script no soporta → falla.
+// La solución es omitir el header Content-Type y enviar el JSON
+// como texto plano. El Apps Script igual recibe el body en
+// e.postData.contents y JSON.parse() lo procesa correctamente.
 // ============================================================
 
 const API_URL = "https://script.google.com/macros/s/AKfycbxgPPVl8XFIhXgssDgI8_X_FKCBUeg_h132L2xILDwrKHD_90iHZHaJDiI66BqXLDTa/exec";
 
-// ============================================================
-// GET - Leer todos los registros de una hoja
-// Ejemplo: apiGet("productos") trae todos los productos
-// ============================================================
+// GET — leer todos los registros de una hoja
 async function apiGet(resource) {
   const response = await fetch(`${API_URL}?resource=${resource}`);
   const json = await response.json();
-  return json.data; // Devuelve el array de objetos
+  return json.data;
 }
 
-// ============================================================
-// POST - Crear un nuevo registro en una hoja
-// Ejemplo: apiPost("productos", { id: "1", nombre: "Lápiz" })
-// ============================================================
+// POST — crear nuevo registro (sin Content-Type para evitar preflight CORS)
 async function apiPost(resource, data) {
   const response = await fetch(`${API_URL}?resource=${resource}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data)
+    // NO incluir headers: { "Content-Type": "application/json" }
+    // Apps Script lo recibe igual via e.postData.contents
   });
   return await response.json();
 }
 
-// ============================================================
-// UPDATE - Editar un registro existente buscándolo por id
-// Ejemplo: apiUpdate("productos", { id: "1", nombre: "Lápiz HB" })
-// ============================================================
+// UPDATE — editar registro existente por id
 async function apiUpdate(resource, data) {
   const response = await fetch(`${API_URL}?resource=${resource}&action=update`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data)
   });
   return await response.json();
 }
 
-// ============================================================
-// DELETE - Eliminar un registro buscándolo por id
-// Ejemplo: apiDelete("productos", { id: "1" })
-// ============================================================
+// DELETE — eliminar registro por id
 async function apiDelete(resource, data) {
   const response = await fetch(`${API_URL}?resource=${resource}&action=delete`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data)
   });
   return await response.json();
