@@ -6,17 +6,33 @@
 //   "categorias", "proveedores", "clientes"
 // ============================================================
 
+// ── Función auxiliar: escapar HTML ─────────────────────────
+function escapeHtml(str) {
+  if (!str) return "";
+  return str.replace(
+    /[&<>"']/g,
+    (m) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      })[m],
+  );
+}
+
 // ============================================================
 // MÓDULO PRINCIPAL — selector de entidad
 // Se renderiza en el área principal (historyContent)
 // El panel derecho (adminContent) muestra el formulario
 // ============================================================
 function renderEntitiesModule() {
-  const historySection = document.getElementById('historySection');
-  const historyContent = document.querySelector('.history__content-sales');
+  const historySection = document.getElementById("historySection");
+  const historyContent = document.querySelector(".history__content-sales");
   if (!historySection || !historyContent) return;
 
-  historySection.classList.add('admin-listing');
+  historySection.classList.add("admin-listing");
 
   historyContent.innerHTML = `
     <h2>Gestión de Entidades</h2>
@@ -38,22 +54,22 @@ function renderEntitiesModule() {
   `;
 
   // Cargar categorías por defecto
-  loadEntityList('categorias');
+  loadEntityList("categorias");
 
   // Tabs de navegación entre entidades
-  historyContent.querySelectorAll('.entity-tab-btn').forEach(btn => {
-    btn.addEventListener('click', e => {
+  historyContent.querySelectorAll(".entity-tab-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
       // Estilo activo
-      historyContent.querySelectorAll('.entity-tab-btn').forEach(b => {
-        b.style.background = '#eee';
-        b.classList.remove('active');
+      historyContent.querySelectorAll(".entity-tab-btn").forEach((b) => {
+        b.style.background = "#eee";
+        b.classList.remove("active");
       });
-      e.currentTarget.style.background = '#FC1';
-      e.currentTarget.classList.add('active');
+      e.currentTarget.style.background = "#FC1";
+      e.currentTarget.classList.add("active");
 
       // Limpiar panel derecho y cargar lista
-      const adminContent = document.getElementById('adminContent');
-      if (adminContent) adminContent.innerHTML = '';
+      const adminContent = document.getElementById("adminContent");
+      if (adminContent) adminContent.innerHTML = "";
       loadEntityList(e.currentTarget.dataset.entity);
     });
   });
@@ -63,14 +79,14 @@ function renderEntitiesModule() {
 // Cargar y renderizar lista de una entidad desde Google Sheets
 // ============================================================
 async function loadEntityList(entityName) {
-  const container = document.getElementById('entityListContainer');
+  const container = document.getElementById("entityListContainer");
   if (!container) return;
 
-  container.innerHTML = '<p>Cargando...</p>';
+  container.innerHTML = "<p>Cargando...</p>";
 
   let items = [];
   try {
-    items = await apiGet(entityName) || [];
+    items = (await apiGet(entityName)) || [];
   } catch (e) {
     console.error(`Error cargando ${entityName}:`, e);
     items = getLocalEntity(entityName); // fallback a localStorage
@@ -86,7 +102,7 @@ async function loadEntityList(entityName) {
 // Renderizar tabla + botón agregar de una entidad
 // ============================================================
 function renderEntityList(entityName, items) {
-  const container = document.getElementById('entityListContainer');
+  const container = document.getElementById("entityListContainer");
   if (!container) return;
 
   const labels = getEntityLabels(entityName);
@@ -113,15 +129,15 @@ function renderEntityList(entityName, items) {
     html += `
       <div class="history-card">
         <div class="history-header" style="grid-template-columns: repeat(${labels.columns.length + 1}, 1fr);">
-          ${labels.columns.map(c => `<span>${c.label.toUpperCase()}</span>`).join('')}
+          ${labels.columns.map((c) => `<span>${c.label.toUpperCase()}</span>`).join("")}
           <span>ACCIONES</span>
         </div>
     `;
 
-    items.forEach(item => {
+    items.forEach((item) => {
       html += `<div class="history-row" style="grid-template-columns: repeat(${labels.columns.length + 1}, 1fr);">`;
-      labels.columns.forEach(col => {
-        html += `<span>${item[col.key] || '-'}</span>`;
+      labels.columns.forEach((col) => {
+        html += `<span>${item[col.key] || "-"}</span>`;
       });
       html += `
           <span style="display:flex; gap:6px;">
@@ -144,78 +160,310 @@ function renderEntityList(entityName, items) {
   container.innerHTML = html;
 
   // ── Buscador en tiempo real ───────────────────────────────
-  document.getElementById('entitySearch').addEventListener('input', function () {
-    const term = this.value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    const filtered = items.filter(item =>
-      labels.columns.some(col =>
-        String(item[col.key] || '').toLowerCase().normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '').includes(term)
-      )
-    );
-    renderEntityList(entityName, filtered);
-    // Restaurar el texto del buscador después de re-renderizar
-    const newSearch = document.getElementById('entitySearch');
-    if (newSearch) { newSearch.value = this.value; newSearch.focus(); }
-  });
+  document
+    .getElementById("entitySearch")
+    .addEventListener("input", function () {
+      const term = this.value
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+      const filtered = items.filter((item) =>
+        labels.columns.some((col) =>
+          String(item[col.key] || "")
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .includes(term),
+        ),
+      );
+      renderEntityList(entityName, filtered);
+      // Restaurar el texto del buscador después de re-renderizar
+      const newSearch = document.getElementById("entitySearch");
+      if (newSearch) {
+        newSearch.value = this.value;
+        newSearch.focus();
+      }
+    });
 
   // ── Botón Agregar ─────────────────────────────────────────
-  document.getElementById('btnAddEntity').addEventListener('click', () => {
-    renderEntityForm(entityName, null);
+  document.getElementById("btnAddEntity").addEventListener("click", () => {
+    openEntityModal(entityName, null, items);
   });
 
   // ── Botón Editar ──────────────────────────────────────────
-  container.querySelectorAll('.btn-edit-entity').forEach(btn => {
-    btn.addEventListener('click', e => {
-      const id   = e.currentTarget.dataset.id;
-      const item = items.find(i => String(i.id) === String(id));
-      if (item) renderEntityForm(entityName, item);
+  container.querySelectorAll(".btn-edit-entity").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const id = e.currentTarget.dataset.id;
+      const item = items.find((i) => String(i.id) === String(id));
+      if (item) openEntityModal(entityName, item, items);
     });
   });
 
   // ── Botón Eliminar ────────────────────────────────────────
-  container.querySelectorAll('.btn-delete-entity').forEach(btn => {
-    btn.addEventListener('click', async e => {
+  container.querySelectorAll(".btn-delete-entity").forEach((btn) => {
+    btn.addEventListener("click", async (e) => {
       const id = e.currentTarget.dataset.id;
-      if (!confirm('¿Eliminar este registro? Esta acción no se puede deshacer.')) return;
+      const confirmMessage =
+        "¿Eliminar este registro? Esta acción no se puede deshacer.";
+      const allowed =
+        typeof showConfirm === "function"
+          ? await showConfirm(confirmMessage)
+          : confirm(confirmMessage);
+      if (!allowed) return;
 
       try {
+        console.log(
+          `%c🗑️ Eliminando ${entityName} con ID: ${id}`,
+          "color: #f44336; font-weight: bold;",
+        );
         await apiDelete(entityName, { id });
       } catch (err) {
-        console.error('Error eliminando en Sheets:', err);
+        console.error("Error eliminando en Sheets:", err);
       }
 
       // Actualizar lista local y recargar
-      const updated = getLocalEntity(entityName).filter(i => String(i.id) !== String(id));
+      const updated = getLocalEntity(entityName).filter(
+        (i) => String(i.id) !== String(id),
+      );
       saveLocalEntity(entityName, updated);
       renderEntityList(entityName, updated);
+
+      // Si se eliminó una categoría, regenerar botones de filtro
+      if (
+        entityName === "categorias" &&
+        typeof rebuildCategoryButtons === "function"
+      ) {
+        rebuildCategoryButtons();
+        console.log(
+          "%c✅ Botones de categoría regenerados después de eliminar categoría",
+          "color: #4CAF50; font-weight: bold;",
+        );
+      }
     });
   });
 }
 
 // ============================================================
-// Formulario agregar / editar entidad (panel derecho)
+// Modal flotante para agregar / editar entidad
+// ============================================================
+function openEntityModal(entityName, item, allItems) {
+  const labels = getEntityLabels(entityName);
+  const isEdit = item !== null;
+  const title = isEdit
+    ? `Editar ${labels.singular}`
+    : `Agregar ${labels.singular}`;
+
+  // Construir campos del formulario
+  let fieldsHtml = labels.columns
+    .filter((col) => col.key !== "id")
+    .map((col) => {
+      const value = isEdit ? item[col.key] || "" : "";
+      const required = col.required ? "required" : "";
+      return `
+        <div class="admin__form-group">
+          <label>${col.label}${col.required ? " *" : ""}</label>
+          <input 
+            id="emf-${col.key}"
+            type="${col.type || "text"}"
+            value="${escapeHtml(String(value))}"
+            placeholder="${col.label}"
+            ${required}
+            style="width:100%; padding:8px; border:1px solid #ddd; border-radius:6px; box-sizing:border-box;">
+        </div>
+      `;
+    })
+    .join("");
+
+  const formHtml = `
+    <button class="close-btn">&times;</button>
+    <h3 class="admin__form-title">${title}</h3>
+    <form id="floatingEntityForm" autocomplete="off">
+      <input type="hidden" id="emf-id" value="${isEdit ? item.id : ""}">
+      ${fieldsHtml}
+      <div class="admin__form-actions">
+        <button type="submit" class="btn-save">💾 Guardar</button>
+        <button type="button" id="emf-cancel" class="btn-clear">Cancelar</button>
+      </div>
+    </form>
+  `;
+
+  const modal = openFloatingModal(formHtml, (m) => {
+    m.querySelector(".close-btn").addEventListener("click", () => m.remove());
+    m.querySelector("#emf-cancel").addEventListener("click", () => m.remove());
+
+    m.querySelector("#floatingEntityForm").addEventListener(
+      "submit",
+      async (e) => {
+        e.preventDefault();
+
+        const editableColumns = labels.columns.filter(
+          (col) => col.key !== "id",
+        );
+
+        // Validar campos obligatorios
+        const missing = editableColumns.filter(
+          (col) =>
+            col.required &&
+            !document.getElementById(`emf-${col.key}`).value.trim(),
+        );
+        if (missing.length > 0) {
+          showToast(
+            `Por favor completa: ${missing.map((c) => c.label).join(", ")}`,
+            "error",
+          );
+          return;
+        }
+
+        // Construir objeto con valores
+        const newItem = {};
+        editableColumns.forEach((col) => {
+          newItem[col.key] = document
+            .getElementById(`emf-${col.key}`)
+            .value.trim();
+        });
+
+        if (isEdit) {
+          // ── EDITAR ──────────────────────────────────────────
+          newItem.id = item.id;
+          console.log(
+            `%c✏️ Editando ${labels.singular}:`,
+            "color: #ff9800; font-weight: bold;",
+          );
+          console.log(newItem);
+
+          try {
+            await apiUpdate(entityName, newItem);
+            showToast(
+              `${labels.singular} actualizada correctamente.`,
+              "success",
+            );
+
+            // Si se editó una categoría, regenerar botones de filtro
+            if (
+              entityName === "categorias" &&
+              typeof rebuildCategoryButtons === "function"
+            ) {
+              rebuildCategoryButtons();
+              console.log(
+                "%c✅ Botones de categoría regenerados después de editar categoría",
+                "color: #4CAF50; font-weight: bold;",
+              );
+            }
+          } catch (e) {
+            console.error(`Error actualizando en Sheets:`, e);
+            showToast(
+              `Error actualizando ${labels.singular.toLowerCase()}.`,
+              "error",
+            );
+          }
+
+          // Actualizar en lista local
+          const local = getLocalEntity(entityName);
+          const idx = local.findIndex((i) => String(i.id) === String(item.id));
+          if (idx >= 0) local[idx] = newItem;
+          saveLocalEntity(entityName, local);
+          renderEntityList(entityName, local);
+        } else {
+          // ── CREAR ────────────────────────────────────────────
+          newItem.id = Date.now();
+          console.log(
+            `%c📝 Creando nueva ${labels.singular}:`,
+            "color: #0066cc; font-weight: bold;",
+          );
+          console.log(newItem);
+
+          let createdSuccessfully = false;
+          let apiMessage = null;
+
+          try {
+            const result = await apiPost(entityName, newItem);
+            console.log(
+              "%c📡 Respuesta de API:",
+              "color: #9c27b0; font-weight: bold;",
+            );
+            console.log(result);
+
+            if (result && result.success) {
+              createdSuccessfully = true;
+              showToast(`${labels.singular} creada correctamente.`, "success");
+
+              // Si se creó una categoría, regenerar botones de filtro
+              if (
+                entityName === "categorias" &&
+                typeof rebuildCategoryButtons === "function"
+              ) {
+                rebuildCategoryButtons();
+                console.log(
+                  "%c✅ Botones de categoría regenerados después de crear nueva categoría",
+                  "color: #4CAF50; font-weight: bold;",
+                );
+              }
+            } else {
+              apiMessage = result?.message || "Respuesta inválida de la API.";
+              console.error(
+                "%c❌ Error en respuesta de API:",
+                "color: #f44336; font-weight: bold;",
+              );
+              console.error(result);
+              showToast(
+                `Error creando ${labels.singular.toLowerCase()}: ${apiMessage}`,
+                "error",
+              );
+            }
+          } catch (e) {
+            apiMessage = e?.message || "Error desconocido";
+            console.error(
+              `%c💥 Error creando en Sheets:`,
+              "color: #f44336; font-weight: bold; font-size: 14px;",
+            );
+            console.error(e);
+            showToast(
+              `Error creando ${labels.singular.toLowerCase()}: ${apiMessage}`,
+              "error",
+            );
+          }
+
+          if (createdSuccessfully) {
+            const local = getLocalEntity(entityName);
+            local.push(newItem);
+            saveLocalEntity(entityName, local);
+            renderEntityList(entityName, local);
+          }
+        }
+
+        m.remove();
+      },
+    );
+  });
+}
+
+// ============================================================
+// Formulario agregar / editar entidad (panel derecho - LEGACY)
 // ============================================================
 function renderEntityForm(entityName, item) {
-  const adminContent = document.getElementById('adminContent');
+  const adminContent = document.getElementById("adminContent");
   if (!adminContent) return;
 
-  const labels  = getEntityLabels(entityName);
-  const isEdit  = item !== null;
+  const labels = getEntityLabels(entityName);
+  const isEdit = item !== null;
 
   let fieldsHtml = labels.columns
-    .filter(col => col.key !== 'id') // el id es automático
-    .map(col => `
+    .filter((col) => col.key !== "id") // el id es automático
+    .map(
+      (col) => `
       <label>${col.label}</label>
       <input id="ef-${col.key}"
-        value="${isEdit ? (item[col.key] || '') : ''}"
-        type="${col.type || 'text'}"
+        value="${isEdit ? item[col.key] || "" : ""}"
+        type="${col.type || "text"}"
         placeholder="${col.label}"
         style="width:100%; padding:8px; border:1px solid #ddd; border-radius:6px; margin-bottom:10px; box-sizing:border-box;">
-    `).join('');
+    `,
+    )
+    .join("");
 
   adminContent.innerHTML = `
     <div class="admin__crud-form">
-      <h3>${isEdit ? 'Editar' : 'Agregar'} ${labels.singular}</h3>
+      <h3>${isEdit ? "Editar" : "Agregar"} ${labels.singular}</h3>
       ${fieldsHtml}
       <div style="display:flex; gap:8px; margin-top:8px;">
         <button id="btnSaveEntity"
@@ -231,64 +479,79 @@ function renderEntityForm(entityName, item) {
   `;
 
   // Cancelar
-  document.getElementById('btnCancelEntity').addEventListener('click', () => {
-    adminContent.innerHTML = '';
+  document.getElementById("btnCancelEntity").addEventListener("click", () => {
+    adminContent.innerHTML = "";
   });
 
   // Guardar
-  document.getElementById('btnSaveEntity').addEventListener('click', async () => {
-    const editableColumns = labels.columns.filter(col => col.key !== 'id');
+  document
+    .getElementById("btnSaveEntity")
+    .addEventListener("click", async () => {
+      const editableColumns = labels.columns.filter((col) => col.key !== "id");
 
-    // Validar campos obligatorios
-    const missing = editableColumns.filter(col =>
-      col.required && !document.getElementById(`ef-${col.key}`).value.trim()
-    );
-    if (missing.length > 0) {
-      alert(`Por favor completa: ${missing.map(c => c.label).join(', ')}`);
-      return;
-    }
+      // Validar campos obligatorios
+      const missing = editableColumns.filter(
+        (col) =>
+          col.required &&
+          !document.getElementById(`ef-${col.key}`).value.trim(),
+      );
+      if (missing.length > 0) {
+        alert(`Por favor completa: ${missing.map((c) => c.label).join(", ")}`);
+        return;
+      }
 
-    // Construir objeto con los valores del formulario
-    const newItem = {};
-    editableColumns.forEach(col => {
-      newItem[col.key] = document.getElementById(`ef-${col.key}`).value.trim();
+      // Construir objeto con los valores del formulario
+      const newItem = {};
+      editableColumns.forEach((col) => {
+        newItem[col.key] = document
+          .getElementById(`ef-${col.key}`)
+          .value.trim();
+      });
+
+      if (isEdit) {
+        // ── EDITAR ──────────────────────────────────────────
+        newItem.id = item.id;
+        try {
+          await apiUpdate(entityName, newItem);
+        } catch (e) {
+          console.error("Error actualizando en Sheets:", e);
+        }
+
+        // Actualizar en lista local
+        const local = getLocalEntity(entityName);
+        const idx = local.findIndex((i) => String(i.id) === String(item.id));
+        if (idx >= 0) local[idx] = newItem;
+        saveLocalEntity(entityName, local);
+        renderEntityList(entityName, local);
+      } else {
+        // ── CREAR ────────────────────────────────────────────
+        newItem.id = Date.now();
+        let createResult;
+        try {
+          createResult = await apiPost(entityName, newItem);
+        } catch (e) {
+          createResult = {
+            success: false,
+            message: e?.message || "Error desconocido",
+          };
+          console.error("Error creando en Sheets:", e);
+        }
+
+        if (createResult && createResult.success) {
+          const local = getLocalEntity(entityName);
+          local.push(newItem);
+          saveLocalEntity(entityName, local);
+          renderEntityList(entityName, local);
+        } else {
+          console.error("No se pudo crear la entidad:", createResult);
+        }
+      }
+
+      adminContent.innerHTML = "";
+      alert(
+        `${labels.singular} ${isEdit ? "actualizada" : "creada"} correctamente.`,
+      );
     });
-
-    if (isEdit) {
-      // ── EDITAR ──────────────────────────────────────────
-      newItem.id = item.id;
-      try {
-        await apiUpdate(entityName, newItem);
-      } catch (e) {
-        console.error('Error actualizando en Sheets:', e);
-      }
-
-      // Actualizar en lista local
-      const local = getLocalEntity(entityName);
-      const idx   = local.findIndex(i => String(i.id) === String(item.id));
-      if (idx >= 0) local[idx] = newItem;
-      saveLocalEntity(entityName, local);
-      renderEntityList(entityName, local);
-
-    } else {
-      // ── CREAR ────────────────────────────────────────────
-      newItem.id = Date.now();
-      try {
-        await apiPost(entityName, newItem);
-      } catch (e) {
-        console.error('Error creando en Sheets:', e);
-      }
-
-      // Agregar a lista local
-      const local = getLocalEntity(entityName);
-      local.push(newItem);
-      saveLocalEntity(entityName, local);
-      renderEntityList(entityName, local);
-    }
-
-    adminContent.innerHTML = '';
-    alert(`${labels.singular} ${isEdit ? 'actualizada' : 'creada'} correctamente.`);
-  });
 }
 
 // ============================================================
@@ -314,38 +577,43 @@ function saveLocalEntity(entityName, items) {
 function getEntityLabels(entityName) {
   const config = {
     categorias: {
-      title:    'Categorías',
-      singular: 'Categoría',
+      title: "Categorías",
+      singular: "Categoría",
       columns: [
-        { key: 'id',     label: 'ID',     required: false },
-        { key: 'nombre', label: 'Nombre', required: true  }
-      ]
+        { key: "id", label: "ID", required: false },
+        { key: "nombre", label: "Nombre", required: true },
+      ],
     },
     proveedores: {
-      title:    'Proveedores',
-      singular: 'Proveedor',
+      title: "Proveedores",
+      singular: "Proveedor",
       columns: [
-        { key: 'id',       label: 'ID',       required: false },
-        { key: 'nombre',   label: 'Nombre',   required: true  },
-        { key: 'telefono', label: 'Teléfono', required: false },
-        { key: 'correo',   label: 'Correo',   required: false, type: 'email' }
-      ]
+        { key: "id", label: "ID", required: false },
+        { key: "nombre", label: "Nombre", required: true },
+        { key: "telefono", label: "Teléfono", required: false },
+        { key: "correo", label: "Correo", required: false, type: "email" },
+      ],
     },
     clientes: {
-      title:    'Clientes',
-      singular: 'Cliente',
+      title: "Clientes",
+      singular: "Cliente",
       columns: [
-        { key: 'id',       label: 'ID',       required: false },
-        { key: 'nombre',   label: 'Nombre',   required: true  },
-        { key: 'telefono', label: 'Teléfono', required: false },
-        { key: 'correo',   label: 'Correo',   required: false, type: 'email' }
-      ]
-    }
+        { key: "id", label: "ID", required: false },
+        { key: "nombre", label: "Nombre", required: true },
+        { key: "telefono", label: "Teléfono", required: false },
+        { key: "correo", label: "Correo", required: false, type: "email" },
+      ],
+    },
   };
 
-  return config[entityName] || {
-    title:    entityName,
-    singular: entityName,
-    columns:  [{ key: 'id', label: 'ID' }, { key: 'nombre', label: 'Nombre' }]
-  };
+  return (
+    config[entityName] || {
+      title: entityName,
+      singular: entityName,
+      columns: [
+        { key: "id", label: "ID" },
+        { key: "nombre", label: "Nombre" },
+      ],
+    }
+  );
 }

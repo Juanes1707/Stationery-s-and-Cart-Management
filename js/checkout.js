@@ -2,8 +2,10 @@
 // checkout.js - Flujo de pago y confirmación de venta
 // ============================================================
 
-const checkoutContainer = document.querySelector(".checkout__content-container");
-const checkoutSection   = document.querySelector("#checkoutSection");
+const checkoutContainer = document.querySelector(
+  ".checkout__content-container",
+);
+const checkoutSection = document.querySelector("#checkoutSection");
 
 // ============================================================
 // PANTALLA DE ÉXITO — se muestra después de confirmar la compra
@@ -22,16 +24,20 @@ function renderSaleSuccess(saleData) {
         </div>
         <div class="sale-success__row">
           <span>Método de pago</span>
-          <strong>${saleData.payment?.method || '-'}</strong>
+          <strong>${saleData.payment?.method || "-"}</strong>
         </div>
-        ${saleData.payment?.method === 'efectivo' ? `
+        ${
+          saleData.payment?.method === "efectivo"
+            ? `
         <div class="sale-success__row">
           <span>Cambio entregado</span>
-          <strong>$${Number(saleData.payment.change || 0).toLocaleString('es-CO')}</strong>
-        </div>` : ''}
+          <strong>$${Number(saleData.payment.change || 0).toLocaleString("es-CO")}</strong>
+        </div>`
+            : ""
+        }
         <div class="sale-success__row">
           <span>Cliente</span>
-          <strong>${saleData.customer?.name || '-'}</strong>
+          <strong>${saleData.customer?.name || "-"}</strong>
         </div>
         <div class="sale-success__row">
           <span>Productos</span>
@@ -58,16 +64,19 @@ function renderCheckout() {
   checkoutContainer.innerHTML = "";
 
   if (state.cart.length === 0) {
-    renderSaleSuccess({ total: '0', payment: {}, customer: {}, items: [] });
+    renderSaleSuccess({ total: "0", payment: {}, customer: {}, items: [] });
     return;
   }
 
-  const subtotal = state.cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  const iva      = subtotal * 0.19;
-  const total    = subtotal + iva;
+  const subtotal = state.cart.reduce(
+    (acc, item) => acc + item.price * item.quantity,
+    0,
+  );
+  const iva = subtotal * 0.19;
+  const total = subtotal + iva;
 
   let cartItemsHTML = "";
-  state.cart.forEach(item => {
+  state.cart.forEach((item) => {
     cartItemsHTML += `
       <div class="checkout__item">
         <h4>${item.name}</h4>
@@ -127,13 +136,15 @@ function renderCheckout() {
     </form>
   `;
 
-  const checkoutForm    = document.getElementById("checkoutForm");
-  const paymentMethods  = document.querySelectorAll("input[name='paymentMethod']");
-  const efectivoFields  = document.getElementById("efectivoFields");
-  const valuePaidInput  = document.getElementById("valuePaid");
-  const changeDisplay   = document.getElementById("changeDisplay");
+  const checkoutForm = document.getElementById("checkoutForm");
+  const paymentMethods = document.querySelectorAll(
+    "input[name='paymentMethod']",
+  );
+  const efectivoFields = document.getElementById("efectivoFields");
+  const valuePaidInput = document.getElementById("valuePaid");
+  const changeDisplay = document.getElementById("changeDisplay");
 
-  paymentMethods.forEach(method => {
+  paymentMethods.forEach((method) => {
     method.addEventListener("change", function () {
       if (this.value === "efectivo") {
         efectivoFields.classList.remove("payment__fields--hidden");
@@ -148,7 +159,7 @@ function renderCheckout() {
 
   valuePaidInput.addEventListener("input", function () {
     const received = parseInt(this.value) || 0;
-    const change   = received - Math.ceil(total);
+    const change = received - Math.ceil(total);
     if (this.value !== "") {
       if (change >= 0) {
         changeDisplay.textContent = `Cambio: $${change.toLocaleString("es-CO")}`;
@@ -162,39 +173,110 @@ function renderCheckout() {
 
   checkoutForm.addEventListener("submit", async function (event) {
     event.preventDefault();
-    const paymentMethod = document.querySelector("input[name='paymentMethod']:checked")?.value;
+    const paymentMethod = document.querySelector(
+      "input[name='paymentMethod']:checked",
+    )?.value;
     if (!paymentMethod) {
-      showToast('Selecciona un método de pago.', 'error');
+      showToast("Selecciona un método de pago.", "error");
       return;
     }
     if (paymentMethod === "efectivo") {
       const received = parseInt(valuePaidInput.value);
       if (!received || received < Math.ceil(total)) {
-        showToast('El valor recibido es insuficiente.', 'error');
+        showToast("El valor recibido es insuficiente.", "error");
         return;
       }
     }
 
-    // Actualizar stock de productos vendidos antes de registrar la venta
-    state.cart.forEach(item => {
-      const prod = products.find(p => p.id === item.id);
-      if (prod && prod.tracking !== false) {
-        prod.stock = Math.max(0, (prod.stock || 0) - item.quantity);
-        // Sincronizar stock con Sheets en segundo plano
-        apiUpdate('productos', {
-          id: prod.id, nombre: prod.name, categoria: prod.category,
-          precio: prod.price, costo: prod.cost, codigo: prod.code,
-          seguimientoInventario: prod.tracking, stock: prod.stock,
-          imagen: prod.image, descripcion: prod.description
-        }).catch(e => console.error('Error actualizando stock:', e));
-      }
+    // Actualizar stock de TODOS los productos vendidos en Google Sheets
+    console.log(
+      "%c📦 INICIANDO ACTUALIZACIÓN DE STOCK",
+      "color: #0066cc; font-weight: bold; font-size: 14px;",
+    );
+
+    const stockUpdatePromises = state.cart.map((item) => {
+      const prod = products.find((p) => p.id === item.id);
+      if (!prod) return Promise.resolve();
+
+      // Actualizar en memoria
+      const oldStock = prod.stock || 0;
+      prod.stock = Math.max(0, oldStock - item.quantity);
+
+      console.log(`%c🔄 Producto: ${prod.name}`, "color: #666;");
+      console.log(`   Cantidad vendida: ${item.quantity}`);
+      console.log(
+        `   Stock anterior: ${oldStock} → Stock nuevo: ${prod.stock}`,
+      );
+
+      // Sincronizar con Google Sheets
+      console.log(
+        "%c   ⬆️ ENVIANDO UPDATE STOCK:",
+        "color: #FF9800; font-weight: bold;",
+      );
+      const updateData = {
+        id: prod.id,
+        nombre: prod.name,
+        categoria: prod.category,
+        precio: prod.price,
+        costo: prod.cost,
+        codigo: prod.code,
+        seguimientoInventario: prod.tracking !== false,
+        stock: prod.stock,
+        imagen: prod.image,
+        descripcion: prod.description,
+      };
+      console.log(updateData);
+
+      return apiUpdate("productos", updateData)
+        .then((response) => {
+          console.log(
+            "%c   ✅ RESPUESTA EXITOSA:",
+            "color: #4CAF50; font-weight: bold;",
+          );
+          console.log(response);
+          return response;
+        })
+        .catch((e) => {
+          console.error(
+            "%c   ❌ ERROR actualizando stock:",
+            "color: #f44336; font-weight: bold;",
+          );
+          console.error(e);
+          throw e;
+        });
     });
 
-    // Registrar la venta
-    const saleData = await registerSale();
-    renderHistory();
+    try {
+      // Esperar a que se actualice TODO el stock antes de registrar
+      await Promise.all(stockUpdatePromises);
 
-    // Mostrar pantalla de éxito con los datos de la venta
-    renderSaleSuccess(saleData);
+      console.log(
+        "%c✅ TODOS LOS STOCKS ACTUALIZADOS EN GOOGLE SHEETS",
+        "color: #4CAF50; font-weight: bold; font-size: 13px;",
+      );
+
+      // Ahora registrar la venta
+      console.log(
+        "%c📝 Registrando la venta...",
+        "color: #0066cc; font-weight: bold;",
+      );
+      const saleData = await registerSale();
+      renderHistory();
+
+      console.log(
+        "%c✅ VENTA REGISTRADA EXITOSAMENTE",
+        "color: #4CAF50; font-weight: bold; font-size: 13px;",
+      );
+
+      // Mostrar pantalla de éxito con los datos de la venta
+      renderSaleSuccess(saleData);
+    } catch (error) {
+      console.error(
+        "%c❌ ERROR EN EL PROCESO DE VENTA:",
+        "color: #f44336; font-weight: bold; font-size: 13px;",
+      );
+      console.error(error);
+      showToast("Error al procesar la venta. Intenta de nuevo.", "error");
+    }
   });
 }

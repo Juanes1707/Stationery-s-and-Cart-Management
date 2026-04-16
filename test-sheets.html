@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba Google Sheets</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        .success {
+            color: green;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .info {
+            color: blue;
+        }
+
+        pre {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 3px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🧪 Prueba de Conexión con Google Sheets</h1>
+
+    <div class="test-section">
+        <h2>1. Probar Conexión Básica</h2>
+        <button onclick="testBasicConnection()">Probar GET</button>
+        <div id="basic-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Probar Creación de Categoría</h2>
+        <input type="text" id="categoria-nombre" placeholder="Nombre de categoría" value="Categoría de Prueba">
+        <button onclick="testCreateCategoria()">Crear Categoría</button>
+        <div id="create-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Diagnóstico Completo</h2>
+        <button onclick="runFullDiagnosis()">Ejecutar Diagnóstico</button>
+        <div id="diagnosis-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Logs de Consola</h2>
+        <button onclick="clearLogs()">Limpiar Logs</button>
+        <div id="console-logs"></div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        // URL de la API
+        const API_URL = "https://script.google.com/macros/s/AKfycbxgPPVl8XFIhXgssDgI8_X_FKCBUeg_h132L2xILDwrKHD_90iHZHaJDiI66BqXLDTa/exec";
+
+        // Función para mostrar resultados
+        function showResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="${type}">${message}</div>`;
+        }
+
+        // Función para agregar logs
+        function addLog(message, type = 'info') {
+            const logsElement = document.getElementById('console-logs');
+            const timestamp = new Date().toLocaleTimeString();
+            logsElement.innerHTML += `<div class="${type}">[${timestamp}] ${message}</div>`;
+            console.log(`[${timestamp}] ${message}`);
+        }
+
+        // Limpiar logs
+        function clearLogs() {
+            document.getElementById('console-logs').innerHTML = '';
+        }
+
+        // Probar conexión básica
+        async function testBasicConnection() {
+            showResult('basic-result', 'Probando conexión...', 'info');
+            addLog('Iniciando prueba de conexión básica');
+
+            try {
+                const response = await fetch(`${API_URL}?resource=categorias`);
+                addLog(`Respuesta HTTP: ${response.status} ${response.statusText}`);
+
+                if (!response.ok) {
+                    showResult('basic-result', `Error HTTP: ${response.status}`, 'error');
+                    return;
+                }
+
+                const json = await response.json();
+                addLog('Respuesta JSON recibida');
+                console.log('Respuesta GET:', json);
+
+                if (json.success !== undefined) {
+                    showResult('basic-result', '✅ Conexión exitosa. Respuesta tiene formato correcto.', 'success');
+                    addLog('✅ Conexión exitosa');
+                } else {
+                    showResult('basic-result', '⚠️ Respuesta sin propiedad "success". Ver consola para detalles.', 'error');
+                    addLog('⚠️ Respuesta sin propiedad "success"');
+                }
+            } catch (error) {
+                showResult('basic-result', `❌ Error: ${error.message}`, 'error');
+                addLog(`❌ Error: ${error.message}`);
+            }
+        }
+
+        // Probar creación de categoría
+        async function testCreateCategoria() {
+            const nombre = document.getElementById('categoria-nombre').value.trim();
+            if (!nombre) {
+                showResult('create-result', 'Por favor ingresa un nombre', 'error');
+                return;
+            }
+
+            showResult('create-result', 'Creando categoría...', 'info');
+            addLog(`Creando categoría: ${nombre}`);
+
+            const testData = {
+                id: Date.now(),
+                nombre: nombre
+            };
+
+            try {
+                const response = await fetch(`${API_URL}?resource=categorias`, {
+                    method: "POST",
+                    body: JSON.stringify(testData),
+                });
+
+                addLog(`Respuesta HTTP POST: ${response.status} ${response.statusText}`);
+
+                if (!response.ok) {
+                    showResult('create-result', `Error HTTP: ${response.status}`, 'error');
+                    return;
+                }
+
+                const json = await response.json();
+                console.log('Respuesta POST:', json);
+                addLog('Respuesta POST recibida');
+
+                if (json.success) {
+                    showResult('create-result', '✅ Categoría creada exitosamente', 'success');
+                    addLog('✅ Categoría creada exitosamente');
+                } else {
+                    showResult('create-result', `❌ Error: ${json.message || 'Sin mensaje'}`, 'error');
+                    addLog(`❌ Error: ${json.message || 'Sin mensaje'}`);
+                }
+            } catch (error) {
+                showResult('create-result', `❌ Error: ${error.message}`, 'error');
+                addLog(`❌ Error: ${error.message}`);
+            }
+        }
+
+        // Ejecutar diagnóstico completo
+        async function runFullDiagnosis() {
+            showResult('diagnosis-result', 'Ejecutando diagnóstico...', 'info');
+            addLog('Iniciando diagnóstico completo');
+
+            if (typeof diagnoseSheets === 'function') {
+                await diagnoseSheets();
+                showResult('diagnosis-result', 'Diagnóstico completado. Revisa la consola.', 'success');
+            } else {
+                showResult('diagnosis-result', 'Función de diagnóstico no encontrada', 'error');
+            }
+        }
+
+        // Inicializar
+        addLog('Página de prueba cargada');
+    </script>
+</body>
+
+</html>
