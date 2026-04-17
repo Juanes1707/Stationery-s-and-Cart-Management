@@ -15,6 +15,15 @@ function findSaleById(saleId) {
 function getInvoiceContainer() {
   return document.querySelector("#invoiceContainer");
 }
+
+// Quita la factura de la pantalla y “olvida” cuál venta estabas viendo.
+// Hace falta al cambiar de pestaña en el menú lateral: la factura va aparte del
+// listado, y si no la cerramos aquí se quedaría abajo aunque ya no mires el historial.
+function clearInvoicePanel() {
+  currentInvoiceId = null;
+  const inv = getInvoiceContainer();
+  if (inv) inv.innerHTML = "";
+}
 //Devuelve el precio unitario del producto
 function getItemPrice(item) {
   if (item.price != null) return Number(item.price);
@@ -136,13 +145,16 @@ function renderInvoiceTotals(invoiceContainer, subtotal, totalVenta) {
     <div class="flex"><span><b>Total:</b></span><span><b>$${formatCOP(totalVenta)}</b></span></div>
   `;
 }
-//
+// Muestra en pantalla la factura de una venta (el recuadro de abajo).
 function renderInvoice(saleId) {
   const sale = findSaleById(saleId);
   if (!sale) {
     alert("No se encontró la venta.");
     return;
   }
+
+  const invoiceContainer = getInvoiceContainer();
+  if (!invoiceContainer) return;
 
   renderInvoiceBase(invoiceContainer); //Estructura
   renderInvoiceInfo(invoiceContainer, sale); //Id y fecha
@@ -153,11 +165,20 @@ function renderInvoice(saleId) {
   renderInvoiceTotals(invoiceContainer, subtotal, totalVenta);
 }
 
-//Event listener (con . y usando btn.dataset)
+// Botón Factura: un segundo clic en la misma venta la cierra; si tocas Factura en otra fila, ves esa.
 document.addEventListener("click", (event) => {
   const btn = event.target.closest(".btn-invoice"); //Revisa que si lo que clickie esta dentro de un boton
   if (!btn) return;
 
-  currentInvoiceId = btn.dataset.id; // guarda el ID de esa ventana
+  const saleId = btn.dataset.id;
+  const inv = getInvoiceContainer();
+  const visible = Boolean(inv?.querySelector("#factura-contenido"));
+
+  if (visible && String(currentInvoiceId) === String(saleId)) {
+    clearInvoicePanel();
+    return;
+  }
+
+  currentInvoiceId = saleId;
   navigate("invoice"); // Vista de la factura
 });

@@ -62,6 +62,7 @@ footer {
     background-color: #fff;
     position: sticky;
     top: 0;
+    z-index: 40;
     grid-area: header;
     display: flex;
     justify-content: space-between;
@@ -503,7 +504,38 @@ footer {
     right: 0;
 }
 
-/* ADMIN PANEL (profile) */
+/* ADMIN PANEL — dentro del main, al lado del historial (no fixed encima de todo) */
+.admin-history-workspace {
+    width: 100%;
+}
+
+.app__container.admin-open .admin-history-workspace {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 1rem;
+    width: 100%;
+}
+
+.admin__panel-container {
+    flex: 0 0 240px;
+    width: 240px;
+    max-width: 100%;
+    min-width: 0;
+    position: sticky;
+    top: 1rem;
+    align-self: flex-start;
+    z-index: 0;
+}
+
+.app__container.admin-open #historySection,
+.app__container.admin-open #historySection.admin-listing {
+    flex: 1;
+    min-width: 0;
+    max-width: none;
+    margin-left: 0;
+}
+
 .admin__panel {
     position: fixed;
     top: 190px;
@@ -514,8 +546,7 @@ footer {
     border-radius: 14px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, .08);
     padding: 12px;
-    width: 240px;
-    height: auto;
+    width: 100%;
     display: flex;
     flex-direction: column;
     transition: right 0.28s ease, opacity 0.25s ease;
@@ -530,19 +561,6 @@ footer {
     /* visible a la izquierda */
     opacity: 1;
     pointer-events: auto;
-}
-
-/* Cuando el panel admin está abierto, dar margen al main para que el listado no quede tapado */
-.app__container.admin-open .main__content-section {
-    margin-left: 300px;
-    margin-right: 0;
-}
-
-/* when admin panel open, shrink historySection and add margin automatically */
-.app__container.admin-open #historySection,
-.app__container.admin-open #historySection.admin-listing {
-    max-width: 100%;
-    margin-left: 300px;
 }
 
 .admin__menu {
@@ -583,25 +601,18 @@ footer {
     display: none;
 }
 
-/* ajustes responsivos: en pantallas pequeñas mostrar panel como full-width debajo del header */
-@media (max-width: 900px) {
-    .admin__panel {
-        position: fixed;
-        left: -270px;
-        right: auto;
-        top: 170px;
-        bottom: auto;
-        width: 240px;
-        max-width: 90vw;
-        height: auto;
-        max-height: none;
-        border-radius: 10px;
+/* Móvil y tablet: sin sticky en el menú CRUD (evita que suba y tape el header al hacer scroll) */
+@media (max-width: 1024px) {
+    .app__container.admin-open .admin-history-workspace {
+        flex-direction: column;
     }
 
-    /* En móvil, el panel admin se vuelve overlay: no reservar columna lateral */
-    .app__container.admin-open .main__content-section {
-        margin-left: 0;
-        margin-right: 0;
+    .admin__panel-container {
+        position: static;
+        width: 100%;
+        flex: 0 0 auto;
+        top: auto;
+        z-index: auto;
     }
 
     .app__container.admin-open #historySection,
@@ -609,6 +620,10 @@ footer {
     #historySection.admin-listing {
         max-width: 100%;
         margin-left: 0;
+    }
+
+    .admin__panel {
+        max-width: none;
     }
 
     .admin__content {
@@ -1637,18 +1652,6 @@ footer {
         right: 0.75rem;
     }
 
-    .admin__panel {
-        left: -120%;
-        top: 92px;
-        width: calc(100vw - 1.5rem);
-        max-width: none;
-        border-radius: 12px;
-    }
-
-    .admin__panel.open {
-        left: 0.75rem;
-    }
-
     .history-card,
     .history-content-title,
     #invoiceContainer {
@@ -1729,15 +1732,6 @@ footer {
         right: 0.5rem;
     }
 
-    .admin__panel {
-        width: calc(100vw - 1rem);
-        top: 84px;
-    }
-
-    .admin__panel.open {
-        left: 0.5rem;
-    }
-
     .history-row {
         grid-template-columns: 1fr;
     }
@@ -1802,7 +1796,7 @@ footer {
    MEJORAS MVP2 — Panel admin, toast, modales, ventas abiertas
    ============================================================ */
 
-/* ── Panel admin: más alto y con scroll ─────────────────── */
+/* ── Panel admin: scroll interno si el menú es muy largo ─── */
 .admin__panel {
     max-height: calc(100vh - 210px);
     overflow-y: auto;
