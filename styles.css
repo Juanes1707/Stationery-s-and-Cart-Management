@@ -57,6 +57,7 @@ header, main,aside, footer {
     background-color: #fff;
     position: sticky;
     top: 0;
+    z-index: 40;
     grid-area: header;
     display: flex;
     justify-content: space-between;
@@ -471,44 +472,50 @@ header, main,aside, footer {
     right: 0;
 }
 
-/* ADMIN PANEL (profile) */
+/* ADMIN PANEL — dentro del main, al lado del historial (no fixed encima de todo) */
+.admin-history-workspace {
+    width: 100%;
+}
+
+.app__container.admin-open .admin-history-workspace {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 1rem;
+    width: 100%;
+}
+
+.admin__panel-container {
+    flex: 0 0 240px;
+    width: 240px;
+    max-width: 100%;
+    min-width: 0;
+    position: sticky;
+    top: 1rem;
+    align-self: flex-start;
+    z-index: 0;
+}
+
+.app__container.admin-open #historySection,
+.app__container.admin-open #historySection.admin-listing {
+    flex: 1;
+    min-width: 0;
+    max-width: none;
+    margin-left: 0;
+}
+
 .admin__panel {
-    position: fixed;
-    top: 190px;
-    left: -270px; /* oculto fuera de pantalla */
-    right: auto;
+    position: relative;
     background-color: #f1f1f1;
     border-radius: 14px;
     box-shadow: 0 8px 20px rgba(0,0,0,.08);
     padding: 12px;
-    width: 240px;
-    height: auto;
+    width: 100%;
     display: flex;
     flex-direction: column;
-    transition: right 0.28s ease, opacity 0.25s ease;
-    z-index: 120;
-    overflow: hidden;
-    opacity: 0;
-    pointer-events: none;
-}
-
-.admin__panel.open {
-    left: 2rem; /* visible a la izquierda */
+    z-index: 1;
     opacity: 1;
     pointer-events: auto;
-}
-
-/* Cuando el panel admin está abierto, dar margen al main para que el listado no quede tapado */
-.app__container.admin-open .main__content-section {
-    margin-left: 300px;
-    margin-right: 0;
-}
-
-/* when admin panel open, shrink historySection and add margin automatically */
-.app__container.admin-open #historySection,
-.app__container.admin-open #historySection.admin-listing {
-    max-width: 100%;
-    margin-left: 300px;
 }
 
 .admin__menu {
@@ -549,25 +556,18 @@ header, main,aside, footer {
     display: none;
 }
 
-/* ajustes responsivos: en pantallas pequeñas mostrar panel como full-width debajo del header */
-@media (max-width: 900px) {
-    .admin__panel {
-        position: fixed;
-        left: -270px;
-        right: auto;
-        top: 170px;
-        bottom: auto;
-        width: 240px;
-        max-width: 90vw;
-        height: auto;
-        max-height: none;
-        border-radius: 10px;
+/* Móvil y tablet: sin sticky en el menú CRUD (evita que suba y tape el header al hacer scroll) */
+@media (max-width: 1024px) {
+    .app__container.admin-open .admin-history-workspace {
+        flex-direction: column;
     }
 
-    /* En móvil, el panel admin se vuelve overlay: no reservar columna lateral */
-    .app__container.admin-open .main__content-section {
-        margin-left: 0;
-        margin-right: 0;
+    .admin__panel-container {
+        position: static;
+        width: 100%;
+        flex: 0 0 auto;
+        top: auto;
+        z-index: auto;
     }
 
     .app__container.admin-open #historySection,
@@ -575,6 +575,10 @@ header, main,aside, footer {
     #historySection.admin-listing {
         max-width: 100%;
         margin-left: 0;
+    }
+
+    .admin__panel {
+        max-width: none;
     }
 
     .admin__content {
@@ -1354,8 +1358,822 @@ header, main,aside, footer {
   padding: 8px 12px;
 }
 
+/* =========================
+   RESPONSIVE
+   ========================= */
+@media (max-width: 1024px) {
+    header, main, aside, footer {
+        padding: 1rem;
+    }
+
+    .header__content {
+        gap: 0.75rem;
+    }
+
+    .header__content-elements {
+        margin-right: 0;
+        min-width: 0;
+    }
+
+    .header__content-title {
+        font-size: 1.5rem;
+    }
+
+    .header__content-input-container {
+        width: min(45vw, 420px);
+    }
+
+    .header__content-input {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .main__products-container {
+        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    }
+
+    .cart__aside {
+        width: 22rem;
+        margin: 1rem;
+    }
+
+    .history-card,
+    .history-content-title,
+    #invoiceContainer {
+        max-width: 90%;
+    }
+
+    .checkout__content-container {
+        width: min(92vw, 800px);
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .app__container {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+        "header"
+        "main"
+        "footer";
+        border-radius: 0;
+    }
+
+    .header__content {
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .header__content-elements {
+        gap: 0.6rem;
+        flex: 1 1 auto;
+    }
+
+    .header__content-logo {
+        max-width: 4rem;
+    }
+
+    .header__content-title {
+        font-size: 1.25rem;
+    }
+
+    .header__content-input-container {
+        order: 3;
+        width: 100%;
+    }
+
+    .header__actions {
+        gap: 0.5rem;
+    }
+
+    .header__actions-button {
+        width: 2.75rem;
+        height: 2.75rem;
+        font-size: 1rem;
+    }
+
+    .hero__section {
+        min-height: 260px;
+    }
+
+    .hero__section-content {
+        max-width: 100%;
+        padding: 1.25rem;
+    }
+
+    .hero__section-content h2 {
+        font-size: 1.5rem;
+    }
+
+    .main__products-container {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+    }
+
+    .product__card p {
+        max-width: 100%;
+    }
+
+    .categories__container {
+        gap: 0.6rem;
+    }
+
+    .category__button {
+        font-size: 0.85rem;
+        padding: 0.5rem 0.9rem;
+    }
+
+    .cart__aside {
+        top: 92px;
+        right: -110%;
+        width: min(92vw, 360px);
+        height: auto;
+        max-height: 70vh;
+        margin: 0;
+    }
+
+    .app__container.cart-open {
+        grid-template-columns: 1fr;
+    }
+
+    .app__container.cart-open .cart__aside {
+        right: 0.75rem;
+    }
+
+    .history-card,
+    .history-content-title,
+    #invoiceContainer {
+        max-width: 100%;
+    }
+
+    .history-header {
+        display: none;
+    }
+
+    .history-row {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+        border-bottom: 1px solid #eee;
+        padding: 0.9rem 0;
+    }
+
+    .history-row button {
+        justify-self: stretch;
+    }
+
+    .admin-product-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .checkout__content {
+        min-height: auto;
+    }
+
+    .checkout__content-container {
+        width: 100%;
+        padding: 1rem;
+    }
+
+    .factura-box .header-legal {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .factura-box table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .footer__columns {
+        gap: 1rem;
+    }
+
+    .footer__col {
+        flex: 1 1 100%;
+    }
+}
+
+@media (max-width: 576px) {
+    .header__content-title {
+        display: none;
+    }
+
+    .main__products-container {
+        grid-template-columns: 1fr;
+    }
+
+    .product__card img {
+        max-width: 100%;
+    }
+
+    .cart__aside {
+        width: min(90vw, 340px);
+        margin: 0;
+        top: 84px;
+        height: auto;
+        max-height: 68vh;
+        padding: 1rem;
+    }
+
+    .app__container.cart-open .cart__aside {
+        right: 0.5rem;
+    }
+
+    .history-row {
+        grid-template-columns: 1fr;
+    }
+
+    .checkout__totals {
+        text-align: left;
+    }
+
+    #totales-venta {
+        width: 100%;
+    }
+}
+
+@media (max-width: 420px) {
+    .hero__section-content {
+        padding: 1rem;
+    }
+
+    .hero__section-content h2 {
+        font-size: 1.25rem;
+    }
+
+    .hero__section-content p {
+        font-size: 0.9rem;
+    }
+
+    .hero__section-content button,
+    #checkoutForm button,
+    .checkout__success-button {
+        width: 100%;
+    }
+
+    .header__actions-button {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+
+    .cart__item-container {
+        gap: 0.7rem;
+    }
+
+    .cart__item-image {
+        width: 64px;
+        height: 64px;
+    }
+}
+
 /* Print: ocultar botones */
 @media print{
   #invoiceContainer{ padding: 0; margin: 0; }
   .factura-box{ box-shadow: none; border: none; }
+}
+
+/* ============================================================
+   MEJORAS MVP2 — Panel admin, toast, modales, ventas abiertas
+   ============================================================ */
+
+/* ── Panel admin: scroll interno si el menú es muy largo ─── */
+.admin__panel {
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+}
+.admin__content {
+  max-height: none !important; /* quitar el límite de 240px que aplastaba el formulario */
+  overflow-y: visible;
+}
+
+/* ── Menú del panel: botones más compactos ──────────────── */
+.admin__menu {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.admin__menu-btn {
+  font-size: 13px;
+  padding: 8px 6px;
+  text-align: center;
+  border-radius: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Formulario de producto: mejor espaciado ────────────── */
+.admin__form-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #FC1;
+}
+.admin__form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+.admin__form-group label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.admin__form-group input,
+.admin__form-group select,
+.admin__form-group textarea {
+  padding: 7px 9px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+.admin__form-group input:focus,
+.admin__form-group select:focus,
+.admin__form-group textarea:focus {
+  outline: none;
+  border-color: #FC1;
+  box-shadow: 0 0 0 2px rgba(255,204,0,0.2);
+}
+.admin__form-group textarea { resize: vertical; }
+
+/* Dos columnas dentro del formulario */
+.admin__form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+/* Botones de guardar / limpiar */
+.admin__form-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+.btn-save {
+  flex: 1;
+  padding: 9px;
+  background: #FC1;
+  border: none;
+  border-radius: 7px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-save:hover { background: #ffb800; }
+.btn-clear {
+  padding: 9px 14px;
+  background: #eee;
+  border: none;
+  border-radius: 7px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-clear:hover { background: #ddd; }
+
+/* ── Encabezado del listado de productos ────────────────── */
+.admin__list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.admin__list-header h2 { font-size: 1.1rem; }
+.btn-add-product {
+  background: #FC1;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 7px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+.btn-add-product:hover { background: #ffb800; }
+.admin__empty { color: #888; font-size: 0.9rem; }
+
+/* ── Tarjetas de producto en admin ──────────────────────── */
+.admin-product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+.admin-product-card {
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  transition: box-shadow 0.2s;
+}
+.admin-product-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.admin-product-name {
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: #222;
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+.admin-product-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.admin-product-cat {
+  background: #f0f0f0;
+  border-radius: 20px;
+  padding: 2px 9px;
+  font-size: 0.78rem;
+  color: #555;
+  white-space: nowrap;
+}
+.admin-product-price {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #333;
+}
+.admin-product-stock {
+  font-size: 0.82rem;
+  color: #777;
+  margin-top: 2px;
+}
+.admin-product-actions {
+  display: flex;
+  gap: 6px;
+}
+.btn-edit {
+  flex: 1;
+  padding: 6px 8px;
+  background: #e3f2fd;
+  color: #1565c0;
+  border: 1px solid #bbdefb;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: background 0.2s;
+  text-align: center;
+}
+.btn-edit:hover { background: #bbdefb; }
+.btn-delete {
+  flex: 1;
+  padding: 6px 8px;
+  background: #fdecea;
+  color: #c62828;
+  border: 1px solid #ffcdd2;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: background 0.2s;
+  text-align: center;
+}
+.btn-delete:hover { background: #ffcdd2; }
+
+/* ── Historial de ventas: filas legibles ────────────────── */
+.history-header,
+.history-row {
+  grid-template-columns: 1.8fr 1.6fr 1.2fr 0.9fr auto auto;
+  gap: 8px;
+  font-size: 0.85rem;
+}
+.history-header span,
+.history-row span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.history-row button {
+  font-size: 0.78rem;
+  padding: 5px 10px;
+  white-space: nowrap;
+}
+
+/* ── Toast de notificación (reemplaza alert) ────────────── */
+.app-toast {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  background: #323232;
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  z-index: 9999;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.25s, transform 0.25s;
+  pointer-events: none;
+  max-width: 340px;
+}
+.app-toast--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.app-toast--success { background: #2e7d32; }
+.app-toast--error   { background: #c62828; }
+
+/* ── Modal de confirmación (reemplaza confirm) ──────────── */
+.confirm-box { max-width: 380px; }
+.confirm-btn {
+  padding: 9px 20px;
+  border: none;
+  border-radius: 7px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.confirm-btn--no  { background: #eee; color: #333; }
+.confirm-btn--no:hover  { background: #ddd; }
+.confirm-btn--yes { background: #c62828; color: #fff; }
+.confirm-btn--yes:hover { background: #b71c1c; }
+
+/* ── Ventas abiertas en el historial ────────────────────── */
+.open-sales__section {
+  margin-bottom: 24px;
+  max-width: 70%;
+  margin-left: auto;
+  margin-right: auto;
+}
+.open-sales__title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #333;
+}
+.open-sales__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.open-sale__card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fffde7;
+  border: 1px solid #ffe082;
+  border-radius: 10px;
+  padding: 10px 14px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.open-sale__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.85rem;
+  color: #555;
+}
+.open-sale__info strong { color: #222; font-size: 0.92rem; }
+.open-sale__actions {
+  display: flex;
+  gap: 6px;
+}
+
+/* ── Botones de tarjetas de producto en catálogo ────────── */
+.product__card-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 12px;
+}
+.product__button {
+  flex: 1;
+  padding: 8px;
+  background: #FC1;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+.product__button:hover { background: #ffb800; }
+.product__edit-button {
+  padding: 8px 10px;
+  background: #f0f4ff;
+  border: 1px solid #c5cae9;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.2s;
+}
+.product__edit-button:hover { background: #c5cae9; }
+
+/* ── Botón Guardar venta en carrito ─────────────────────── */
+.hold-sale {
+  display: block;
+  width: 100%;
+  max-width: 300px;
+  margin: 0.5rem auto 0;
+  padding: 0.6rem 1rem;
+  background: #fff3;
+  border: 2px dashed #aaa;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #555;
+  transition: all 0.2s;
+}
+.hold-sale:hover { background: #f5f5f5; border-color: #777; color: #222; }
+
+/* ── Responsive nuevas clases ───────────────────────────── */
+@media (max-width: 768px) {
+  .open-sales__section { max-width: 100%; }
+  .admin__form-row { grid-template-columns: 1fr; }
+  .admin-product-grid { grid-template-columns: 1fr; }
+  .history-header { display: none; }
+  .history-row {
+    grid-template-columns: 1fr 1fr;
+    font-size: 0.82rem;
+  }
+}
+@media (max-width: 480px) {
+  .app-toast { bottom: 16px; right: 16px; left: 16px; max-width: none; }
+  .admin__menu { grid-template-columns: 1fr 1fr; }
+}
+
+/* ============================================================
+   MVP2 — Estilos nuevos y mejorados
+   ============================================================ */
+
+/* ── Toast ──────────────────────────────────────────────────── */
+.app-toast {
+  position: fixed; bottom: 24px; right: 24px;
+  padding: 12px 20px; border-radius: 10px;
+  font-size: 0.9rem; font-weight: 500; color: #fff;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2); z-index: 9999;
+  opacity: 0; transform: translateY(10px);
+  transition: opacity 0.25s, transform 0.25s;
+  pointer-events: none; max-width: 320px;
+}
+.app-toast--visible  { opacity: 1; transform: translateY(0); }
+.app-toast--success  { background: #2e7d32; }
+.app-toast--error    { background: #c62828; }
+
+/* ── Modal de confirmación ──────────────────────────────────── */
+.modal-narrow { max-width: 380px !important; }
+.confirm-btn { padding: 9px 20px; border: none; border-radius: 7px; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: background 0.2s; }
+.confirm-btn--no  { background: #eee; color: #333; } .confirm-btn--no:hover  { background: #ddd; }
+.confirm-btn--yes { background: #c62828; color: #fff; } .confirm-btn--yes:hover { background: #b71c1c; }
+
+/* ── Modal flotante de formularios ─────────────────────────── */
+.floating-form {
+  max-width: 520px !important;
+  width: 94vw !important;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 28px !important;
+}
+
+/* ── Formulario interno ─────────────────────────────────────── */
+.admin__form-title { font-size: 1rem; font-weight: 700; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 2px solid #FC1; }
+.admin__form-group { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+.admin__form-group label { font-size: 0.78rem; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.3px; }
+.admin__form-group input, .admin__form-group select, .admin__form-group textarea {
+  padding: 8px 10px; border: 1px solid #ddd; border-radius: 7px;
+  font-size: 0.9rem; font-family: inherit; width: 100%; box-sizing: border-box; transition: border-color 0.2s;
+}
+.admin__form-group input:focus, .admin__form-group select:focus, .admin__form-group textarea:focus {
+  outline: none; border-color: #FC1; box-shadow: 0 0 0 3px rgba(255,204,0,0.18);
+}
+.admin__form-group textarea { resize: vertical; }
+.admin__form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.admin__form-actions { display: flex; gap: 8px; margin-top: 6px; }
+.btn-save { flex:1; padding:10px; background:#FC1; border:none; border-radius:7px; font-weight:700; font-size:0.92rem; cursor:pointer; transition:background 0.2s; }
+.btn-save:hover { background:#ffb800; }
+.btn-clear { padding:10px 16px; background:#eee; border:none; border-radius:7px; font-size:0.9rem; cursor:pointer; }
+.btn-clear:hover { background:#ddd; }
+
+/* ── Listado de productos en admin ──────────────────────────── */
+.admin__list-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px; }
+.admin__list-header h2 { font-size:1.15rem; }
+.btn-add-product { background:#FC1; border:none; padding:9px 16px; border-radius:7px; font-weight:700; font-size:0.88rem; cursor:pointer; transition:background 0.2s; white-space:nowrap; }
+.btn-add-product:hover { background:#ffb800; }
+.admin__empty { color:#999; font-size:0.9rem; margin-top:8px; }
+
+.admin-product-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(210px,1fr)); gap:12px; }
+.admin-product-card { background:#fff; border:1px solid #eee; border-radius:10px; padding:12px; display:flex; flex-direction:column; gap:10px; box-shadow:0 2px 6px rgba(0,0,0,0.06); transition:box-shadow 0.2s; }
+.admin-product-card:hover { box-shadow:0 4px 14px rgba(0,0,0,0.1); }
+.admin-product-name { font-weight:700; font-size:0.9rem; color:#222; line-height:1.3; }
+.admin-product-meta { display:flex; justify-content:space-between; align-items:center; gap:6px; flex-wrap:wrap; margin-top:4px; }
+.admin-product-cat { background:#f0f0f0; border-radius:20px; padding:2px 9px; font-size:0.76rem; color:#555; }
+.admin-product-price { font-weight:700; font-size:0.88rem; color:#222; }
+.admin-product-stock { font-size:0.8rem; color:#888; }
+.admin-product-actions { display:flex; gap:6px; }
+.btn-edit { flex:1; padding:6px 8px; background:#e3f2fd; color:#1565c0; border:1px solid #bbdefb; border-radius:6px; cursor:pointer; font-size:0.8rem; font-weight:600; transition:background 0.2s; text-align:center; }
+.btn-edit:hover { background:#bbdefb; }
+.btn-delete { flex:1; padding:6px 8px; background:#fdecea; color:#c62828; border:1px solid #ffcdd2; border-radius:6px; cursor:pointer; font-size:0.8rem; font-weight:600; transition:background 0.2s; text-align:center; }
+.btn-delete:hover { background:#ffcdd2; }
+
+/* ── Menú admin compacto (4 botones) ────────────────────────── */
+.admin__content { max-height: none !important; overflow-y: visible; }
+.admin__menu { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:10px; }
+.admin__menu-btn { font-size:12px; padding:8px 6px; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* ── Historial de ventas: columnas legibles ─────────────────── */
+.history-header, .history-row {
+  grid-template-columns: 0.8fr 1.6fr 1fr 0.9fr auto auto;
+  gap: 8px; font-size: 0.85rem;
+}
+.history-header span, .history-row span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.history-row button { font-size:0.78rem; padding:5px 10px; white-space:nowrap; }
+
+/* ── Modal detalles de venta — diseño profesional ───────────── */
+.sale-details-professional { max-width: 580px !important; padding: 28px !important; }
+.sd-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px; }
+.sd-title { font-size:1.2rem; font-weight:800; color:#111; margin:0 0 2px 0; }
+.sd-id { font-size:0.85rem; color:#888; font-family:monospace; }
+.sd-meta { font-size:0.85rem; color:#666; margin-bottom:18px; }
+.sd-section { margin-bottom:18px; }
+.sd-section-title { font-size:0.85rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:#888; margin-bottom:10px; border-bottom:1px solid #f0f0f0; padding-bottom:6px; }
+.sd-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.sd-field { display:flex; flex-direction:column; gap:2px; }
+.sd-label { font-size:0.75rem; color:#aaa; text-transform:uppercase; letter-spacing:0.3px; }
+.sd-field span:last-child { font-size:0.9rem; color:#222; font-weight:500; }
+.sd-table { width:100%; border-collapse:collapse; font-size:0.85rem; margin-top:6px; }
+.sd-table thead tr { background:#f8f8f8; }
+.sd-table th { padding:8px 10px; text-align:left; font-size:0.75rem; color:#888; font-weight:700; text-transform:uppercase; border-bottom:2px solid #eee; }
+.sd-table td { padding:8px 10px; border-bottom:1px solid #f0f0f0; color:#333; }
+.sd-table tbody tr:last-child td { border-bottom:none; }
+.sd-totals { background:#f9f9f9; border-radius:10px; padding:14px 16px; margin-top:4px; }
+.sd-total-row { display:flex; justify-content:space-between; padding:5px 0; font-size:0.88rem; color:#555; }
+.sd-total-final { border-top:2px solid #eee; margin-top:6px; padding-top:10px; font-weight:800; font-size:1rem; color:#111; }
+
+/* ── Pantalla de éxito en checkout ─────────────────────────── */
+.sale-success { text-align:center; padding:2rem 1rem; }
+.sale-success__icon { font-size:4rem; margin-bottom:1rem; animation: popIn 0.4s ease; }
+@keyframes popIn { 0%{transform:scale(0.5);opacity:0} 80%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
+.sale-success__title { font-size:1.6rem; font-weight:800; color:#2e7d32; margin-bottom:0.5rem; }
+.sale-success__subtitle { color:#666; font-size:0.95rem; margin-bottom:1.5rem; }
+.sale-success__summary { background:#f9f9f9; border:1px solid #eee; border-radius:12px; padding:1rem 1.5rem; max-width:400px; margin:0 auto 1.5rem; text-align:left; }
+.sale-success__row { display:flex; justify-content:space-between; padding:6px 0; font-size:0.9rem; border-bottom:1px solid #f0f0f0; color:#555; }
+.sale-success__row:last-child { border-bottom:none; }
+.sale-success__row strong { color:#222; }
+.sale-success__actions { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+.sale-success__btn-home { padding:10px 24px; background:#FC1; border:none; border-radius:8px; font-weight:700; cursor:pointer; font-size:0.95rem; transition:background 0.2s; }
+.sale-success__btn-home:hover { background:#ffb800; }
+.sale-success__btn-history { padding:10px 24px; background:#f0f0f0; border:none; border-radius:8px; font-weight:600; cursor:pointer; font-size:0.95rem; transition:background 0.2s; }
+.sale-success__btn-history:hover { background:#ddd; }
+
+/* ── Ventas abiertas ────────────────────────────────────────── */
+.open-sales__section { max-width:70%; margin:0 auto 24px; }
+.open-sales__title { font-size:1rem; font-weight:700; margin-bottom:10px; }
+.open-sales__list { display:flex; flex-direction:column; gap:8px; }
+.open-sale__card { display:flex; justify-content:space-between; align-items:center; background:#fffde7; border:1px solid #ffe082; border-radius:10px; padding:10px 14px; gap:12px; flex-wrap:wrap; }
+.open-sale__info { display:flex; flex-direction:column; gap:2px; font-size:0.85rem; color:#555; }
+.open-sale__info strong { color:#222; font-size:0.9rem; }
+.open-sale__actions { display:flex; gap:6px; }
+
+/* ── Botones de tarjeta de catálogo ─────────────────────────── */
+.product__card-actions { display:flex; gap:6px; margin-top:12px; }
+.product__button { flex:1; padding:8px; background:#FC1; border:none; border-radius:6px; cursor:pointer; font-size:0.83rem; font-weight:600; transition:background 0.2s; }
+.product__button:hover { background:#ffb800; }
+.product__edit-button { padding:8px 10px; background:#f0f4ff; border:1px solid #c5cae9; border-radius:6px; cursor:pointer; font-size:0.83rem; transition:background 0.2s; }
+.product__edit-button:hover { background:#c5cae9; }
+
+/* ── Botón guardar venta en carrito ─────────────────────────── */
+.hold-sale { display:block; width:100%; max-width:300px; margin:0.4rem auto 0; padding:0.6rem 1rem; background:transparent; border:2px dashed #bbb; border-radius:6px; cursor:pointer; font-size:0.88rem; color:#666; transition:all 0.2s; }
+.hold-sale:hover { background:#f5f5f5; border-color:#777; color:#222; }
+
+/* ── Sección de compra en modal ─────────────────────────────── */
+.purchase-add-item { background:#f9f9f9; border:1px solid #eee; border-radius:10px; padding:14px; margin-bottom:12px; }
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width:768px) {
+  .open-sales__section { max-width:100%; }
+  .sd-grid { grid-template-columns:1fr; }
+  .admin__form-row { grid-template-columns:1fr; }
+  .admin-product-grid { grid-template-columns:1fr; }
+  .floating-form { padding:20px !important; }
+  .sale-success__summary { max-width:100%; }
+}
+@media (max-width:480px) {
+  .app-toast { bottom:16px; right:16px; left:16px; max-width:none; }
+  .admin__menu { grid-template-columns:1fr 1fr; }
+  .history-header { display:none; }
+  .history-row { grid-template-columns:1fr 1fr; }
 }

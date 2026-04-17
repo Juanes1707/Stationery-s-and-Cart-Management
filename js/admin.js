@@ -1,315 +1,415 @@
-// PANEL ADMIN: CRUD de productos y controles del panel derecho
+// ============================================================
+// admin.js - Panel admin: CRUD productos como modal flotante
+// ============================================================
+
+// ── Toast ────────────────────────────────────────────────────
+function showToast(msg, type = "success") {
+  let t = document.getElementById("appToast");
+  if (!t) {
+    t = document.createElement("div");
+    t.id = "appToast";
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.className = `app-toast app-toast--${type} app-toast--visible`;
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove("app-toast--visible"), 3200);
+}
+
+// ── Modal de confirmación ─────────────────────────────────────
+function showConfirm(msg) {
+  return new Promise((resolve) => {
+    document.getElementById("appConfirmModal")?.remove();
+    const modal = document.createElement("div");
+    modal.id = "appConfirmModal";
+    modal.className = "sale-details-modal";
+    modal.innerHTML = `
+      <div class="sale-details-content modal-narrow">
+        <p style="font-size:1rem;">${msg}</p>
+        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px;">
+          <button id="confirmNo"  class="confirm-btn confirm-btn--no">Cancelar</button>
+          <button id="confirmYes" class="confirm-btn confirm-btn--yes">Confirmar</button>
+        </div>
+      </div>`;
+    document.body.appendChild(modal);
+    modal.querySelector("#confirmYes").addEventListener("click", () => {
+      modal.remove();
+      resolve(true);
+    });
+    modal.querySelector("#confirmNo").addEventListener("click", () => {
+      modal.remove();
+      resolve(false);
+    });
+  });
+}
+
+// ── Modal flotante genérico ───────────────────────────────────
+function openFloatingModal(contentHtml, onReady) {
+  document.getElementById("floatingFormModal")?.remove();
+  const modal = document.createElement("div");
+  modal.id = "floatingFormModal";
+  modal.className = "sale-details-modal";
+  modal.innerHTML = `<div class="sale-details-content floating-form">${contentHtml}</div>`;
+  document.body.appendChild(modal);
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) modal.remove();
+  });
+  if (typeof onReady === "function") onReady(modal);
+  return modal;
+}
+
+// ── Inicialización del panel ──────────────────────────────────
 function initAdmin() {
-  const adminHistoryBtn = document.getElementById('adminHistoryBtn');
-  const adminCrudBtn = document.getElementById('adminCrudBtn');
-  const adminContent = document.getElementById('adminContent');
-  const adminPanel = document.getElementById('adminPanel');
+  const btnHistory = document.getElementById("adminHistoryBtn");
+  const btnCrud = document.getElementById("adminCrudBtn");
+  const btnPurchases = document.getElementById("adminPurchasesBtn");
+  const btnEntities = document.getElementById("adminEntitiesBtn");
+  const adminContent = document.getElementById("adminContent");
+  const adminPanel = document.getElementById("adminPanel");
 
   if (!adminContent || !adminPanel) return;
+  if (adminPanel.dataset.inited === "1") return;
+  adminPanel.dataset.inited = "1";
 
-  // evitar re-inicializar manejadores de eventos
-  if (adminPanel.dataset.inited === '1') return;
-  adminPanel.dataset.inited = '1';
-
-  adminHistoryBtn.addEventListener('click', () => {
-    setActiveMenuButton(adminHistoryBtn);
+  btnHistory.addEventListener("click", () => {
+    setActiveMenuButton(btnHistory);
     renderAdminHistory();
   });
 
-  adminCrudBtn.addEventListener('click', () => {
-    setActiveMenuButton(adminCrudBtn);
+  // Al ir a Productos, cerramos la factura; si no, seguiría viéndose abajo sin sentido.
+  btnCrud.addEventListener("click", () => {
+    if (typeof clearInvoicePanel === "function") clearInvoicePanel();
+    setActiveMenuButton(btnCrud);
     renderAdminCRUD();
-    const adminPanel = document.getElementById('adminPanel');
-    if (adminPanel) adminPanel.classList.add('open');
-    document.querySelector('.app__container').classList.add('admin-open');
+    adminPanel.classList.add("open");
+    document.querySelector(".app__container").classList.add("admin-open");
   });
 
-  // mostrar historial por defecto
-  setActiveMenuButton(adminHistoryBtn);
+  btnPurchases?.addEventListener("click", () => {
+    // Misma idea que en Productos: al cambiar de pantalla, la factura no debe quedarse abierta.
+    if (typeof clearInvoicePanel === "function") clearInvoicePanel();
+    setActiveMenuButton(btnPurchases);
+    adminContent.innerHTML = "";
+    renderPurchasesModule();
+    adminPanel.classList.add("open");
+    document.querySelector(".app__container").classList.add("admin-open");
+  });
+
+  btnEntities?.addEventListener("click", () => {
+    // Igual: al ir a Entidades no queremos la factura del historial todavía visible.
+    if (typeof clearInvoicePanel === "function") clearInvoicePanel();
+    setActiveMenuButton(btnEntities);
+    adminContent.innerHTML = "";
+    renderEntitiesModule();
+    adminPanel.classList.add("open");
+    document.querySelector(".app__container").classList.add("admin-open");
+  });
+
+  setActiveMenuButton(btnHistory);
   renderAdminHistory();
 }
 
 function setActiveMenuButton(btn) {
-  document.querySelectorAll('.admin__menu-btn').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
+  document
+    .querySelectorAll(".admin__menu-btn")
+    .forEach((b) => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+}
+
+// initAdmin() solo corre una vez; al volver a perfil/factura el DOM seguía con otra pestaña en “active”.
+function resetAdminMenuSelectionToHistorial() {
+  const btnHistory = document.getElementById("adminHistoryBtn");
+  if (btnHistory) setActiveMenuButton(btnHistory);
 }
 
 function renderAdminHistory() {
-  // Reutiliza renderHistory que llena #historySection (lado izquierdo)
-  const historySectionEl = document.getElementById('historySection');
-  if (historySectionEl) historySectionEl.classList.remove('admin-listing');
-  const invoiceContainer = document.getElementById('invoiceContainer');
-  if (invoiceContainer) invoiceContainer.innerHTML = '';
+  document.getElementById("historySection")?.classList.remove("admin-listing");
+  // Volvemos al historial “desde cero”: sin factura abierta por si venías de otra vista.
+  // Por si no pudiéramos usar el cierre normal, igual vaciamos el recuadro de la factura.
+  if (typeof clearInvoicePanel === "function") clearInvoicePanel();
+  else {
+    const inv = document.getElementById("invoiceContainer");
+    if (inv) inv.innerHTML = "";
+  }
   renderHistory();
-  const adminContent = document.getElementById('adminContent');
-  if (!adminContent) return;
-  adminContent.innerHTML = '';
+  const ac = document.getElementById("adminContent");
+  if (ac) ac.innerHTML = "";
 }
 
 function renderAdminCRUD() {
-  const adminContent = document.getElementById('adminContent');
-  if (!adminContent) return;
-  adminContent.innerHTML = '';
+  const ac = document.getElementById("adminContent");
+  if (ac) ac.innerHTML = "";
   renderProductsInMainArea();
 }
 
-function renderAdminCRUDForm() {
-  const adminContent = document.getElementById('adminContent');
-  if (!adminContent) return;
+// ── Formulario de producto como MODAL FLOTANTE ────────────────
+function openProductModal(existingId = null) {
+  const prod = existingId ? products.find((p) => p.id === existingId) : null;
+  const title = prod ? "Editar Producto" : "Agregar Producto";
 
   const formHtml = `
-    <div class="admin__crud-form">
-      <h3>Agregar / Editar Producto</h3>
-      <form id="adminProductForm">
-        <input type="hidden" id="adminProductId">
-        <label>Nombre (obligatorio)</label>
-        <input id="adminName" required>
-        <label>Categoria (obligatorio)</label>
-        <input id="adminCategory" required>
-        <label>Precio venta (>=0)</label>
-        <input id="adminPrice" type="number" min="0" required>
-        <label>Costo proveedor (>=0)</label>
-        <input id="adminCost" type="number" min="0" required>
-        <label>Codigo interno (obligatorio)</label>
-        <input id="adminCode" required>
-        <label>Seguimiento inventario</label>
-        <select id="adminTracking">
-          <option value="true">Si</option>
-          <option value="false">No</option>
-        </select>
-        <label>Stock (>=0)</label>
-        <input id="adminStock" type="number" min="0" required>
-        <label>Imagen (URL)</label>
-        <input id="adminImage" placeholder="./imagenes y recursos/archivo.jpg">
-        <label>Descripcion</label>
-        <textarea id="adminDescription"></textarea>
-        <div style="margin-top:8px;display:flex;gap:8px;">
-          <button type="submit">Guardar</button>
-          <button type="button" id="adminReset">Limpiar</button>
+    <button class="close-btn">&times;</button>
+    <h3 class="admin__form-title">${title}</h3>
+    <form id="floatingProductForm" autocomplete="off">
+      <input type="hidden" id="fpId" value="${prod ? prod.id : ""}">
+
+      <div class="admin__form-group">
+        <label>Nombre *</label>
+        <input id="fpName" value="${prod ? escapeHtml(prod.name) : ""}" placeholder="Ej: Cuaderno universitario" required>
+      </div>
+
+      <div class="admin__form-group">
+        <label>Categoría *</label>
+        <input id="fpCategory" value="${prod ? escapeHtml(prod.category) : ""}" placeholder="Ej: Cuadernos" required>
+      </div>
+
+      <div class="admin__form-row">
+        <div class="admin__form-group">
+          <label>Precio venta *</label>
+          <input id="fpPrice" type="number" min="0" value="${prod ? prod.price : ""}" placeholder="0" required>
         </div>
-      </form>
-    </div>
+        <div class="admin__form-group">
+          <label>Costo proveedor *</label>
+          <input id="fpCost" type="number" min="0" value="${prod ? prod.cost : ""}" placeholder="0" required>
+        </div>
+      </div>
+
+      <div class="admin__form-row">
+        <div class="admin__form-group">
+          <label>Código interno *</label>
+          <input id="fpCode" value="${prod ? escapeHtml(prod.code || "") : ""}" placeholder="SKU-001" required>
+        </div>
+        <div class="admin__form-group">
+          <label>Stock *</label>
+          <input id="fpStock" type="number" min="0" value="${prod ? prod.stock : ""}" placeholder="0" required>
+        </div>
+      </div>
+
+      <div class="admin__form-group">
+        <label>Seguimiento inventario</label>
+        <select id="fpTracking">
+          <option value="true"  ${!prod || prod.tracking ? "selected" : ""}>Sí</option>
+          <option value="false" ${prod && !prod.tracking ? "selected" : ""}>No</option>
+        </select>
+      </div>
+
+      <div class="admin__form-group">
+        <label>URL de imagen</label>
+        <input id="fpImage" value="${prod ? prod.image || "" : ""}" placeholder="https://... o ./imagenes y recursos/foto.jpg">
+        <small style="color:#888;font-size:0.78rem;margin-top:3px;">
+          💡 Puedes usar una URL pública de imagen (Google Drive, Imgur, etc.)
+        </small>
+      </div>
+
+      <div class="admin__form-group">
+        <label>Descripción</label>
+        <textarea id="fpDescription" rows="2" placeholder="Descripción breve...">${prod ? prod.description || "" : ""}</textarea>
+      </div>
+
+      <div class="admin__form-actions">
+        <button type="submit" class="btn-save">💾 Guardar</button>
+        <button type="button" id="fpCancel" class="btn-clear">Cancelar</button>
+      </div>
+    </form>
   `;
 
-  adminContent.innerHTML = formHtml;
+  const modal = openFloatingModal(formHtml, (m) => {
+    m.querySelector(".close-btn").addEventListener("click", () => m.remove());
+    m.querySelector("#fpCancel").addEventListener("click", () => m.remove());
 
-  const form = document.getElementById('adminProductForm');
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
-    handleAdminFormSubmit();
-  });
-  document.getElementById('adminReset').addEventListener('click', () => {
-    clearAdminForm();
+    m.querySelector("#floatingProductForm").addEventListener(
+      "submit",
+      async (e) => {
+        e.preventDefault();
+        const id = document.getElementById("fpId").value;
+        const name = document.getElementById("fpName").value.trim();
+        const category = document.getElementById("fpCategory").value.trim();
+        const price = parseFloat(document.getElementById("fpPrice").value);
+        const cost = parseFloat(document.getElementById("fpCost").value);
+        const code = document.getElementById("fpCode").value.trim();
+        const stock = parseInt(document.getElementById("fpStock").value, 10);
+        const tracking = document.getElementById("fpTracking").value === "true";
+        const image =
+          document.getElementById("fpImage").value.trim() ||
+          "./imagenes y recursos/default.jpg";
+        const description = document
+          .getElementById("fpDescription")
+          .value.trim();
+
+        if (
+          !name ||
+          !category ||
+          isNaN(price) ||
+          price < 0 ||
+          isNaN(cost) ||
+          cost < 0 ||
+          !code ||
+          isNaN(stock) ||
+          stock < 0
+        ) {
+          showToast("Completa todos los campos obligatorios (*).", "error");
+          return;
+        }
+
+        const toSheets = (sid) => ({
+          id: sid,
+          nombre: name,
+          categoria: category,
+          precio: price,
+          costo: cost,
+          codigo: code,
+          seguimientoInventario: tracking,
+          stock,
+          imagen: image,
+          descripcion: description,
+        });
+
+        if (id) {
+          // Editar
+          const p = products.find((p) => p.id === Number(id));
+          if (p)
+            Object.assign(p, {
+              name,
+              category,
+              price,
+              cost,
+              code,
+              tracking,
+              stock,
+              image,
+              description,
+            });
+          try {
+            await apiUpdate("productos", toSheets(Number(id)));
+            showToast("Producto actualizado.");
+          } catch (err) {
+            console.error(err);
+            showToast("Error al sincronizar con Sheets.", "error");
+          }
+        } else {
+          // Crear
+          const newId = Date.now();
+          products.push({
+            id: newId,
+            name,
+            category,
+            price,
+            cost,
+            code,
+            tracking,
+            stock,
+            image,
+            description,
+          });
+          try {
+            await apiPost("productos", toSheets(newId));
+            showToast("Producto agregado.");
+          } catch (err) {
+            console.error(err);
+            showToast("Error al sincronizar con Sheets.", "error");
+          }
+        }
+
+        m.remove();
+        renderProducts(products);
+        if (typeof rebuildCategoryButtons === "function")
+          rebuildCategoryButtons();
+        renderProductsInMainArea();
+      },
+    );
   });
 }
 
+// ── Listado de productos ──────────────────────────────────────
 function renderProductsInMainArea() {
-  const historySection = document.getElementById('historySection');
-  const historyContent = document.querySelector('.history__content-sales');
+  const historySection = document.getElementById("historySection");
+  const historyContent = document.querySelector(".history__content-sales");
   if (!historySection || !historyContent) return;
   if (!Array.isArray(products)) products = [];
-  // agrega clase de marca para que los estilos ajusten el ancho al abrir formulario/panel
-  historySection.classList.add('admin-listing');
+  historySection.classList.add("admin-listing");
 
-  // agrega botón "Agregar producto" y listado
-  let html = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><h2>Productos</h2><button id="mainAddProduct" style="background:#FC1;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;">Agregar Producto</button></div>`;
+  let html = `
+    <div class="admin__list-header">
+      <h2>Productos</h2>
+      <button id="mainAddProduct" class="btn-add-product">+ Agregar Producto</button>
+    </div>
+  `;
 
   if (products.length === 0) {
-    html += '<p>No hay productos</p>';
+    html += '<p class="admin__empty">No hay productos registrados.</p>';
     historyContent.innerHTML = html;
-    document.getElementById('mainAddProduct').addEventListener('click', () => {
-      // abre el formulario en el panel derecho
-      setActiveMenuButton(document.getElementById('adminCrudBtn'));
-      renderAdminCRUDForm();
-      const adminPanel = document.getElementById('adminPanel');
-      if (adminPanel) adminPanel.classList.add('open');
-    });
+    document
+      .getElementById("mainAddProduct")
+      .addEventListener("click", () => openProductModal());
     return;
   }
 
   html += '<div class="admin-product-grid">';
-  products.forEach(p => {
-    html += `<div class="admin-product-card">
-               <div class="admin-product-info">
-                 <strong>${escapeHtml(p.name)}</strong> <span class="admin-id">#${p.id}</span>
-                 <p>${escapeHtml(p.category)}</p>
-                 <p>$${Number(p.price).toLocaleString()} · stock: ${p.stock ?? 0}</p>
-               </div>
-               <div class="admin-product-actions">
-                 <button class="main-edit" data-id="${p.id}">Editar</button>
-                 <button class="main-delete" data-id="${p.id}">Eliminar</button>
-               </div>
-             </div>`;
+  products.forEach((p) => {
+    html += `
+      <div class="admin-product-card">
+        <div class="admin-product-info">
+          <div class="admin-product-name">${escapeHtml(p.name)}</div>
+          <div class="admin-product-meta">
+            <span class="admin-product-cat">${escapeHtml(p.category)}</span>
+            <span class="admin-product-price">$${Number(p.price).toLocaleString("es-CO")}</span>
+          </div>
+          <div class="admin-product-stock">Stock: <strong>${p.stock ?? 0}</strong></div>
+        </div>
+        <div class="admin-product-actions">
+          <button class="main-edit btn-edit"    data-id="${p.id}">✏️ Editar</button>
+          <button class="main-delete btn-delete" data-id="${p.id}">🗑️ Eliminar</button>
+        </div>
+      </div>`;
   });
-  html += '</div>';
-
+  html += "</div>";
   historyContent.innerHTML = html;
 
-  // conecta eventos de botones
-  historyContent.querySelectorAll('.main-edit').forEach(b => b.addEventListener('click', (e) => {
-    const id = Number(e.target.dataset.id);
-    // abre formulario en el panel derecho y carga el producto
-    setActiveMenuButton(document.getElementById('adminCrudBtn'));
-    renderAdminCRUDForm();
-    loadProductIntoForm(id);
-    const adminPanel = document.getElementById('adminPanel');
-    if (adminPanel) adminPanel.classList.add('open');
-    document.querySelector('.app__container').classList.add('admin-open');
-  }));
+  document
+    .getElementById("mainAddProduct")
+    .addEventListener("click", () => openProductModal());
 
-  historyContent.querySelectorAll('.main-delete').forEach(b => b.addEventListener('click', (e) => {
-    const id = Number(e.target.dataset.id);
-    if (confirm('¿Eliminar producto? Esta acción no se puede deshacer.')) {
-      deleteProduct(id);
-    }
-  }));
+  historyContent.querySelectorAll(".main-edit").forEach((btn) => {
+    btn.addEventListener("click", (e) =>
+      openProductModal(Number(e.currentTarget.dataset.id)),
+    );
+  });
 
-  document.getElementById('mainAddProduct').addEventListener('click', () => {
-    setActiveMenuButton(document.getElementById('adminCrudBtn'));
-    renderAdminCRUDForm();
-    clearAdminForm();
-    const adminPanel = document.getElementById('adminPanel');
-    if (adminPanel) adminPanel.classList.add('open');
-    document.querySelector('.app__container').classList.add('admin-open');
+  historyContent.querySelectorAll(".main-delete").forEach((btn) => {
+    btn.addEventListener("click", async (e) => {
+      const id = Number(e.currentTarget.dataset.id);
+      const ok = await showConfirm(
+        "¿Eliminar este producto? No se puede deshacer.",
+      );
+      if (ok) deleteProduct(id);
+    });
   });
 }
 
-function renderAdminProductsList() {
-  const container = document.getElementById('adminProductsList');
-  if (!container) return;
-  if (!Array.isArray(products)) products = [];
-
-  if (products.length === 0) {
-    container.innerHTML = '<p>No hay productos</p>';
-    return;
+async function deleteProduct(id) {
+  products.splice(
+    products.findIndex((p) => p.id === id),
+    1,
+  );
+  try {
+    await apiDelete("productos", { id });
+    showToast("Producto eliminado.");
+  } catch (e) {
+    console.error(e);
+    showToast("Eliminado localmente. Error en Sheets.", "error");
   }
-
-  let html = '<table style="width:100%;border-collapse:collapse;"><thead><tr><th>Id</th><th>Nombre</th><th>Categoria</th><th>Precio</th><th>Stock</th><th>Acciones</th></tr></thead><tbody>';
-  products.forEach(p => {
-    html += `<tr style="border-top:1px solid #eee;"><td>${p.id}</td><td>${escapeHtml(p.name)}</td><td>${escapeHtml(p.category)}</td><td>$${Number(p.price).toLocaleString()}</td><td>${p.stock ?? 0}</td><td><button class="admin-edit" data-id="${p.id}">Editar</button> <button class="admin-delete" data-id="${p.id}">Eliminar</button></td></tr>`;
-  });
-  html += '</tbody></table>';
-  container.innerHTML = html;
-
-  container.querySelectorAll('.admin-edit').forEach(b => b.addEventListener('click', (e) => {
-    const id = Number(e.target.dataset.id);
-    loadProductIntoForm(id);
-  }));
-
-  container.querySelectorAll('.admin-delete').forEach(b => b.addEventListener('click', (e) => {
-    const id = Number(e.target.dataset.id);
-    if (confirm('¿Eliminar producto? Esta acción no se puede deshacer.')) {
-      deleteProduct(id);
-    }
-  }));
-}
-
-function handleAdminFormSubmit() {
-  const idField = document.getElementById('adminProductId');
-  const name = document.getElementById('adminName').value.trim();
-  const category = document.getElementById('adminCategory').value.trim();
-  const price = parseFloat(document.getElementById('adminPrice').value);
-  const cost = parseFloat(document.getElementById('adminCost').value);
-  const code = document.getElementById('adminCode').value.trim();
-  const tracking = document.getElementById('adminTracking').value === 'true';
-  const stock = parseInt(document.getElementById('adminStock').value, 10);
-  const image = document.getElementById('adminImage').value.trim() || './imagenes y recursos/default.jpg';
-  const description = document.getElementById('adminDescription').value.trim();
-
-  // Validaciones basicas
-  if (!name || !category || isNaN(price) || price < 0 || isNaN(cost) || cost < 0 || !code || isNaN(stock) || stock < 0) {
-    alert('Por favor completa los campos obligatorios y asegúrate de valores numéricos no negativos.');
-    return;
-  }
-
-  const existingId = idField.value ? Number(idField.value) : null;
-
-  if (existingId) {
-    // editar
-    const prod = products.find(p => p.id === existingId);
-    if (!prod) return;
-    prod.name = name;
-    prod.category = category;
-    prod.price = price;
-    prod.cost = cost;
-    prod.code = code;
-    prod.tracking = tracking;
-    prod.stock = stock;
-    prod.image = image;
-    prod.description = description;
-    saveProductsToStorage();
-    renderAdminProductsList();
-    renderProducts(products);
-    // actualiza el listado principal si está visible
-    if (document.getElementById('historySection')) renderProductsInMainArea();
-    clearAdminForm();
-    alert('Producto actualizado');
-  } else {
-    // agregar nuevo
-    const newId = products.reduce((max, p) => Math.max(max, p.id || 0), 0) + 1;
-    const newProd = {
-      id: newId,
-      name,
-      category,
-      price,
-      cost,
-      code,
-      tracking,
-      stock,
-      image,
-      description
-    };
-    products.push(newProd);
-    saveProductsToStorage();
-    renderAdminProductsList();
-    renderProducts(products);
-    if (document.getElementById('historySection')) renderProductsInMainArea();
-    clearAdminForm();
-    alert('Producto agregado');
-  }
-}
-
-function loadProductIntoForm(id) {
-  const prod = products.find(p => p.id === id);
-  if (!prod) return;
-  document.getElementById('adminProductId').value = prod.id;
-  document.getElementById('adminName').value = prod.name || '';
-  document.getElementById('adminCategory').value = prod.category || '';
-  document.getElementById('adminPrice').value = prod.price ?? 0;
-  document.getElementById('adminCost').value = prod.cost ?? 0;
-  document.getElementById('adminCode').value = prod.code || '';
-  document.getElementById('adminTracking').value = prod.tracking ? 'true' : 'false';
-  document.getElementById('adminStock').value = prod.stock ?? 0;
-  document.getElementById('adminImage').value = prod.image || '';
-  document.getElementById('adminDescription').value = prod.description || '';
-}
-
-function clearAdminForm() {
-  document.getElementById('adminProductId').value = '';
-  document.getElementById('adminName').value = '';
-  document.getElementById('adminCategory').value = '';
-  document.getElementById('adminPrice').value = '';
-  document.getElementById('adminCost').value = '';
-  document.getElementById('adminCode').value = '';
-  document.getElementById('adminTracking').value = 'true';
-  document.getElementById('adminStock').value = '';
-  document.getElementById('adminImage').value = '';
-  document.getElementById('adminDescription').value = '';
-}
-
-function deleteProduct(id) {
-  const idx = products.findIndex(p => p.id === id);
-  if (idx === -1) return;
-  products.splice(idx, 1);
-  saveProductsToStorage();
-  renderAdminProductsList();
   renderProducts(products);
-  if (document.getElementById('historySection')) renderProductsInMainArea();
+  if (typeof rebuildCategoryButtons === "function") rebuildCategoryButtons();
+  renderProductsInMainArea();
 }
 
 function escapeHtml(str) {
-  if (!str) return '';
-  return str.replace(/[&<>"']/g, function (m) {
-    return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"})[m];
-  });
+  if (!str) return "";
+  return str.replace(
+    /[&<>"']/g,
+    (m) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[
+        m
+      ],
+  );
 }
