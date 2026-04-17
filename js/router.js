@@ -33,6 +33,9 @@ function navigate(route) {
     mainSection.style.display = "block";
     cartAside.style.display = "block";
     cartButton.style.display = "block";
+    if (typeof resetAdminMenuSelectionToHistorial === "function") {
+      resetAdminMenuSelectionToHistorial();
+    }
     // asegurarse de que el carrito refleje el estado actual (vacío tras compra)
     if (typeof renderCart === "function") {
       renderCart();
@@ -56,6 +59,9 @@ function navigate(route) {
     if (typeof initAdmin === "function") {
       initAdmin();
     }
+    if (typeof resetAdminMenuSelectionToHistorial === "function") {
+      resetAdminMenuSelectionToHistorial();
+    }
     if (typeof renderHistory === "function") renderHistory();
     if (typeof renderInvoice === "function" && typeof currentInvoiceId !== "undefined" && currentInvoiceId != null) {
       renderInvoice(currentInvoiceId);
@@ -76,6 +82,9 @@ function navigate(route) {
     renderHistory();
     if (typeof initAdmin === "function") {
       initAdmin();
+    }
+    if (typeof resetAdminMenuSelectionToHistorial === "function") {
+      resetAdminMenuSelectionToHistorial();
     }
   }
 

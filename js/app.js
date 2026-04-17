@@ -30,7 +30,6 @@ function renderProducts(productList) {
   productList.forEach((product) => {
     const card = `
       <div class="product__card">
-        <img src="${product.image}" alt="${product.name}">
         <div class="product__info">
           <h3>${product.name}</h3>
           <p>${product.description}</p>

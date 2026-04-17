@@ -76,7 +76,9 @@ function initAdmin() {
     renderAdminHistory();
   });
 
+  // Al ir a Productos, cerramos la factura; si no, seguiría viéndose abajo sin sentido.
   btnCrud.addEventListener("click", () => {
+    if (typeof clearInvoicePanel === "function") clearInvoicePanel();
     setActiveMenuButton(btnCrud);
     renderAdminCRUD();
     adminPanel.classList.add("open");
@@ -84,6 +86,8 @@ function initAdmin() {
   });
 
   btnPurchases?.addEventListener("click", () => {
+    // Misma idea que en Productos: al cambiar de pantalla, la factura no debe quedarse abierta.
+    if (typeof clearInvoicePanel === "function") clearInvoicePanel();
     setActiveMenuButton(btnPurchases);
     adminContent.innerHTML = "";
     renderPurchasesModule();
@@ -92,6 +96,8 @@ function initAdmin() {
   });
 
   btnEntities?.addEventListener("click", () => {
+    // Igual: al ir a Entidades no queremos la factura del historial todavía visible.
+    if (typeof clearInvoicePanel === "function") clearInvoicePanel();
     setActiveMenuButton(btnEntities);
     adminContent.innerHTML = "";
     renderEntitiesModule();
@@ -110,10 +116,21 @@ function setActiveMenuButton(btn) {
   if (btn) btn.classList.add("active");
 }
 
+// initAdmin() solo corre una vez; al volver a perfil/factura el DOM seguía con otra pestaña en “active”.
+function resetAdminMenuSelectionToHistorial() {
+  const btnHistory = document.getElementById("adminHistoryBtn");
+  if (btnHistory) setActiveMenuButton(btnHistory);
+}
+
 function renderAdminHistory() {
   document.getElementById("historySection")?.classList.remove("admin-listing");
-  const inv = document.getElementById("invoiceContainer");
-  if (inv) inv.innerHTML = "";
+  // Volvemos al historial “desde cero”: sin factura abierta por si venías de otra vista.
+  // Por si no pudiéramos usar el cierre normal, igual vaciamos el recuadro de la factura.
+  if (typeof clearInvoicePanel === "function") clearInvoicePanel();
+  else {
+    const inv = document.getElementById("invoiceContainer");
+    if (inv) inv.innerHTML = "";
+  }
   renderHistory();
   const ac = document.getElementById("adminContent");
   if (ac) ac.innerHTML = "";
