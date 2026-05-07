@@ -481,8 +481,8 @@ footer {
     box-shadow: 0 10px 25px rgba(0, 0, 0, .1);
     padding: 1.5rem;
     margin: 2rem;
-    height: 30rem;
-    max-height: calc(100vh - 4rem);
+    height: calc(100vh - 200px);
+    max-height: calc(100vh - 200px);
     width: 25rem;
     display: flex;
     flex-direction: column;
@@ -537,7 +537,7 @@ footer {
 }
 
 .admin__panel {
-    position: relative;
+    position: static;
     background-color: #f1f1f1;
     border-radius: 14px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, .08);
@@ -545,7 +545,12 @@ footer {
     width: 100%;
     display: flex;
     flex-direction: column;
-    z-index: 1;
+    transition: opacity 0.25s ease;
+    z-index: 120;
+    overflow: hidden;
+}
+
+.admin__panel.open {
     opacity: 1;
     pointer-events: auto;
 }
@@ -748,7 +753,7 @@ footer {
 }
 
 .empty__cart {
-    flex: 1 1 0;
+    flex: 0 0 auto;
     min-height: 0;
     display: flex;
     align-items: center;
@@ -1785,8 +1790,8 @@ footer {
 
 /* ── Panel admin: scroll interno si el menú es muy largo ─── */
 .admin__panel {
-  max-height: calc(100vh - 120px);
-  overflow-y: auto;
+    max-height: calc(100vh - 210px);
+    overflow-y: auto;
 }
 
 .admin__content {
