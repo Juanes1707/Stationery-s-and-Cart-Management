@@ -1,37 +1,11 @@
 const express = require('express');
-const { Producto } = require('../models');
+const ctrl = require('../controllers/productos.controller');
+const { createRules, updateRules, handleValidationErrors } = require('../validators/producto.validator');
 const router = express.Router();
 
-// GET - obtener todos
-router.get('/', async (req, res, next) => {
-  try {
-    const data = await Producto.findAll();
-    res.json({ success: true, data });
-  } catch (err) { next(err); }
-});
-
-// POST - crear nuevo
-router.post('/', async (req, res, next) => {
-  try {
-    const nuevo = await Producto.create(req.body);
-    res.json({ success: true, data: nuevo });
-  } catch (err) { next(err); }
-});
-
-// PUT - editar por id
-router.put('/:id', async (req, res, next) => {
-  try {
-    await Producto.update(req.body, { where: { id: req.params.id } });
-    res.json({ success: true });
-  } catch (err) { next(err); }
-});
-
-// DELETE - eliminar por id
-router.delete('/:id', async (req, res, next) => {
-  try {
-    await Producto.destroy({ where: { id: req.params.id } });
-    res.json({ success: true });
-  } catch (err) { next(err); }
-});
+router.get('/', ctrl.list);
+router.post('/', createRules, handleValidationErrors, ctrl.create);
+router.put('/:id', updateRules, handleValidationErrors, ctrl.update);
+router.delete('/:id', ctrl.remove);
 
 module.exports = router;
