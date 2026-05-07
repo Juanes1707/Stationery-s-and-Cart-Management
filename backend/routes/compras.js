@@ -2,12 +2,28 @@ const express = require('express');
 const { Compra } = require('../models');
 const router = express.Router();
 
+function parseItemsJson(value) {
+  if (!value) return [];
+  if (typeof value !== 'string') return value;
+  try {
+    const parsed = JSON.parse(value);
+    return typeof parsed === 'string' ? parseItemsJson(parsed) : parsed;
+  } catch (error) {
+    return [];
+  }
+}
+
+function stringifyItemsJson(value) {
+  if (!value) return JSON.stringify([]);
+  return typeof value === 'string' ? value : JSON.stringify(value);
+}
+
 router.get('/', async (req, res, next) => {
   try {
     const data = await Compra.findAll();
     const parsed = data.map(c => ({
       ...c.toJSON(),
-      itemsJson: JSON.parse(c.itemsJson || '[]')
+      itemsJson: parseItemsJson(c.itemsJson)
     }));
     res.json({ success: true, data: parsed });
   } catch (err) { next(err); }
@@ -17,7 +33,7 @@ router.post('/', async (req, res, next) => {
   try {
     const body = {
       ...req.body,
-      itemsJson: JSON.stringify(req.body.itemsJson || [])
+      itemsJson: stringifyItemsJson(req.body.itemsJson)
     };
     const nueva = await Compra.create(body);
     res.json({ success: true, data: nueva });
@@ -28,7 +44,7 @@ router.put('/:id', async (req, res, next) => {
   try {
     const body = {
       ...req.body,
-      itemsJson: JSON.stringify(req.body.itemsJson || [])
+      itemsJson: stringifyItemsJson(req.body.itemsJson)
     };
     await Compra.update(body, { where: { id: req.params.id } });
     res.json({ success: true });

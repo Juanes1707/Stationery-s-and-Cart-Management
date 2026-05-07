@@ -438,8 +438,21 @@ if (homeButton) {
 // que a su vez llama a renderProducts() e initAdmin().
 // Aquí solo cargamos carrito y ventas desde localStorage.
 // ============================================================
-loadCart();
-loadSales();
-renderCart();
-renderHistory();
-navigate("home");
+async function initializeApp() {
+  loadCart();
+  loadSales();
+  renderCart();
+  renderHistory();
+  navigate("home");
+
+  if (typeof loadProductsFromAPI === "function") {
+    await loadProductsFromAPI();
+  }
+
+  if (typeof loadSalesFromAPI === "function") {
+    await loadSalesFromAPI();
+    renderHistory();
+  }
+}
+
+initializeApp();

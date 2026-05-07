@@ -1,23 +1,14 @@
-﻿// ============================================================
-// data.js - Productos cargados 100% desde Google Sheets
-// No hay datos hardcodeados. La hoja "productos" es la fuente
-// de verdad. Si está vacía, el catálogo aparece vacío.
+// ============================================================
+// data.js - Productos cargados desde backend Express + SQLite
 // ============================================================
 
-let products = []; // siempre empieza vacío
+let products = [];
 
-// ============================================================
-// Normaliza una fila cruda de Google Sheets al formato del app.
-// Sheets devuelve todo como string, así que hay que convertir.
-// Los encabezados en Sheets son: id | nombre | categoría |
-//   precio | costo | stock | seguimientoInventario
-// (se aceptan también las claves en inglés por compatibilidad)
-// ============================================================
 function normalizeProduct(p) {
   return {
     id: Number(p.id),
     name: p.nombre || p.name || "",
-    category: p.categoría || p.categoria || p.category || "",
+    category: p.categoria || p.category || "",
     price: parseFloat(p.precio ?? p.price ?? 0),
     cost: parseFloat(p.costo ?? p.cost ?? 0),
     code: p.codigo || p.code || "",
@@ -32,40 +23,24 @@ function normalizeProduct(p) {
   };
 }
 
-// ============================================================
-// Carga productos desde la API (Google Sheets).
-// Llama a renderProducts() e initAdmin() cuando termina.
-// ============================================================
 async function loadProductsFromAPI() {
   try {
     const data = await apiGet("productos");
-    if (Array.isArray(data) && data.length > 0) {
-      products = data.map(normalizeProduct);
-    } else {
-      products = [];
-      console.warn('La hoja "productos" está vacía o no devolvió datos.');
+    products = Array.isArray(data) ? data.map(normalizeProduct) : [];
+
+    if (products.length === 0) {
+      console.warn('La tabla "productos" esta vacia o no devolvio datos.');
     }
   } catch (e) {
     products = [];
-    console.error("Error al cargar productos desde Google Sheets:", e);
+    console.error("Error al cargar productos desde SQLite:", e);
   }
 
-  renderProducts(products);
+  if (typeof renderProducts === "function") renderProducts(products);
   if (typeof rebuildCategoryButtons === "function") rebuildCategoryButtons();
-  initAdmin();
+  if (typeof initAdmin === "function") initAdmin();
 }
 
-// ============================================================
-// No-op: ya no se usa localStorage.
-// Se mantiene para no romper posibles llamadas en otros archivos
-// mientras terminas la migración.
-// ============================================================
 function saveProductsToStorage() {
-  // Migrado a API — no hace nada
+  // Migrado a API.
 }
-
-// ============================================================
-// Punto de entrada
-// IMPORTANTE: api.js debe cargarse ANTES que data.js en el HTML
-// ============================================================
-loadProductsFromAPI();

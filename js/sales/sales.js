@@ -150,6 +150,7 @@ async function registerSale() {
   const newSale = {
     id:       Date.now(),
     date:     new Date().toLocaleString('es-CO'),
+    fechaISO: new Date().toISOString(),
     total:    total.toLocaleString('es-CO'),
     items:    state.cart.map(item => ({ name: item.name, quantity: item.quantity, price: item.price })),
     customer, payment
@@ -160,13 +161,18 @@ async function registerSale() {
 
   // Enviar a Google Sheets
   try {
-    await apiPost('ventas', {
-      id: newSale.id, fecha: newSale.date,
+    const result = await apiPost('ventas', {
+      id: newSale.id, fecha: newSale.fechaISO,
       clienteId: newSale.customer.name,
       metodoPago: newSale.payment.method,
       total: total,
-      itemsJson: JSON.stringify(newSale.items)
+      itemsJson: {
+        items: newSale.items,
+        customer: newSale.customer,
+        payment: newSale.payment
+      }
     });
+    if (result?.data?.id) newSale.id = result.data.id;
   } catch (e) { console.error('Error guardando venta en Sheets:', e); }
 
   state.cart = []; state.activeOpenSaleId = null;

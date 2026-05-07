@@ -17,3 +17,34 @@ function loadSales() {
     const data = localStorage.getItem("ventas");
     state.sales = data ? JSON.parse(data) : [];
 } //Busca si el historial existe y su existe lo convierte de vuelta a array y lo mete al state de las ventas, si no, lo deja vacío
+
+function normalizeSaleFromAPI(sale) {
+    const payload = sale.itemsJson || {};
+    const items = Array.isArray(payload) ? payload : (payload.items || []);
+    const customer = Array.isArray(payload)
+        ? { name: sale.clienteId || "", email: "", phone: "", address: "" }
+        : (payload.customer || { name: sale.clienteId || "", email: "", phone: "", address: "" });
+    const payment = Array.isArray(payload)
+        ? { method: sale.metodoPago || "" }
+        : (payload.payment || { method: sale.metodoPago || "" });
+
+    return {
+        id: sale.id,
+        date: sale.fecha ? new Date(sale.fecha).toLocaleString("es-CO") : "",
+        total: Number(sale.total || 0).toLocaleString("es-CO"),
+        items,
+        customer,
+        payment
+    };
+}
+
+async function loadSalesFromAPI() {
+    try {
+        const data = await apiGet("ventas");
+        state.sales = Array.isArray(data) ? data.map(normalizeSaleFromAPI) : [];
+        saveSales();
+    } catch (error) {
+        console.error("Error cargando ventas desde SQLite:", error);
+        loadSales();
+    }
+}
