@@ -74,14 +74,26 @@
                 </div>
             </section>
 
-            <!-- HISTORIAL DE VENTAS -->
-            <section class="history__content" id="historySection">
-                <div class="history__content-sales">
-                    <!-- history.js renderiza el historial aquí -->
+            <!-- Historial + menú admin en el mismo bloque del main (sin flotar encima de la página) -->
+            <div class="admin-history-workspace">
+                <div class="admin__panel-container">
+                    <aside class="admin__panel" id="adminPanel">
+                        <div class="admin__menu">
+                            <button id="adminHistoryBtn"   class="admin__menu-btn active">Historial</button>
+                            <button id="adminCrudBtn"       class="admin__menu-btn">Productos</button>
+                            <button id="adminPurchasesBtn"  class="admin__menu-btn">Compras</button>
+                            <button id="adminEntitiesBtn"   class="admin__menu-btn">Entidades</button>
+                        </div>
+                        <div class="admin__content" id="adminContent"></div>
+                    </aside>
                 </div>
-                <!-- FACTURA -->
-                <div id="invoiceContainer"></div>
-            </section>
+                <section class="history__content" id="historySection">
+                    <div class="history__content-sales">
+                        <!-- history.js renderiza el historial aquí -->
+                    </div>
+                    <div id="invoiceContainer"></div>
+                </section>
+            </div>
 
             <!-- CHECKOUT -->
             <section class="checkout__content" id="checkoutSection">

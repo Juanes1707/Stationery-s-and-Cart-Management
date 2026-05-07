@@ -30,7 +30,6 @@ function renderProducts(productList) {
   productList.forEach((product) => {
     const card = `
       <div class="product__card">
-        <img src="${product.image}" alt="${product.name}">
         <div class="product__info">
           <h3>${product.name}</h3>
           <p>${product.description}</p>
@@ -74,7 +73,6 @@ function renderCart() {
     const subtotal = (item.price * item.quantity).toLocaleString("es-CO");
     cartItemsContainer.innerHTML += `
       <div class="cart__item-container">
-        <img src="${item.image}" alt="${item.name}" class="cart__item-image">
         <div class="cart__item-info">
           <h4>${item.name}</h4>
           <p class="cart__item-price">$${subtotal}</p>
@@ -444,3 +442,4 @@ loadCart();
 loadSales();
 renderCart();
 renderHistory();
+navigate("home");
