@@ -134,7 +134,7 @@ async function registerSale() {
   const total    = subtotal + iva;
 
   const customer = {
-    name:    document.getElementById('customerName')?.value    || '',
+    name:    document.getElementById('customerName')?.value.trim() || 'Consumidor final',
     email:   document.getElementById('customerEmail')?.value   || '',
     phone:   document.getElementById('customerPhone')?.value   || '',
     address: document.getElementById('customerAddress')?.value || ''
@@ -152,28 +152,34 @@ async function registerSale() {
     date:     new Date().toLocaleString('es-CO'),
     fechaISO: new Date().toISOString(),
     total:    total.toLocaleString('es-CO'),
-    items:    state.cart.map(item => ({ name: item.name, quantity: item.quantity, price: item.price })),
+    items:    state.cart.map(item => ({ id: item.id, name: item.name, quantity: item.quantity, price: item.price })),
     customer, payment
   };
 
+  const result = await apiPost('ventas', {
+    fecha: newSale.fechaISO,
+    clienteId: newSale.customer.name,
+    metodoPago: newSale.payment.method,
+    itemsJson: {
+      items: newSale.items,
+      customer: newSale.customer,
+      payment: newSale.payment
+    }
+  });
+
+  if (!result?.success) {
+    throw new Error(result?.message || 'No se pudo registrar la venta.');
+  }
+
+  if (result?.data?.id) newSale.id = result.data.id;
+  const serverPayload = result?.data?.itemsJson || {};
+  if (Array.isArray(serverPayload.items)) newSale.items = serverPayload.items;
+  if (serverPayload.total != null) newSale.total = Number(serverPayload.total).toLocaleString('es-CO');
+  if (serverPayload.payment) newSale.payment = serverPayload.payment;
+  if (serverPayload.customer) newSale.customer = serverPayload.customer;
+
   state.sales.push(newSale);
   saveSales();
-
-  // Enviar a Google Sheets
-  try {
-    const result = await apiPost('ventas', {
-      id: newSale.id, fecha: newSale.fechaISO,
-      clienteId: newSale.customer.name,
-      metodoPago: newSale.payment.method,
-      total: total,
-      itemsJson: {
-        items: newSale.items,
-        customer: newSale.customer,
-        payment: newSale.payment
-      }
-    });
-    if (result?.data?.id) newSale.id = result.data.id;
-  } catch (e) { console.error('Error guardando venta en Sheets:', e); }
 
   state.cart = []; state.activeOpenSaleId = null;
   saveCart();

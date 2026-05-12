@@ -5,6 +5,7 @@
 let products = [];
 
 function normalizeProduct(p) {
+  const image = p.imagen || p.image || "";
   return {
     id: Number(p.id),
     name: p.nombre || p.name || "",
@@ -18,7 +19,7 @@ function normalizeProduct(p) {
       p.tracking === "true" ||
       p.tracking === true,
     stock: parseInt(p.stock ?? 0, 10),
-    image: p.imagen || p.image || "./imagenes y recursos/default.jpg",
+    image: image.includes("default.jpg") || !image ? "./imagenes y recursos/Icon-Papeleria.jpg" : image,
     description: p.descripcion || p.description || "",
   };
 }

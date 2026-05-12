@@ -280,17 +280,18 @@ function openProductModal(existingId = null) {
               description,
             });
           try {
-            await apiUpdate("productos", toSheets(Number(id)));
+            const result = await apiUpdate("productos", toSheets(Number(id)));
+            if (!result?.success) throw new Error(result?.message || "No se pudo actualizar el producto.");
             showToast("Producto actualizado.");
           } catch (err) {
             console.error(err);
             showToast("Error al sincronizar con Sheets.", "error");
+            return;
           }
         } else {
           // Crear
-          const newId = Date.now();
-          products.push({
-            id: newId,
+          const tempProduct = {
+            id: Date.now(),
             name,
             category,
             price,
@@ -300,13 +301,17 @@ function openProductModal(existingId = null) {
             stock,
             image,
             description,
-          });
+          };
           try {
-            await apiPost("productos", toSheets(newId));
+            const result = await apiPost("productos", toSheets(tempProduct.id));
+            if (!result?.success) throw new Error(result?.message || "No se pudo crear el producto.");
+            tempProduct.id = Number(result.data?.id || tempProduct.id);
+            products.push(tempProduct);
             showToast("Producto agregado.");
           } catch (err) {
             console.error(err);
             showToast("Error al sincronizar con Sheets.", "error");
+            return;
           }
         }
 

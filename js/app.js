@@ -123,6 +123,43 @@ function escapeHtmlLocal(str) {
   );
 }
 
+renderProducts = function renderPOSProducts(productList) {
+  productsContainer.innerHTML = "";
+
+  productList.forEach((product) => {
+    const stock = Number(product.stock ?? 0);
+    const hasStock = product.tracking === false || stock > 0;
+    const stockLabel = product.tracking === false ? "Sin seguimiento" : `${stock} disp.`;
+    const stockClass = product.tracking === false ? "ok" : stock <= 5 ? "low" : "ok";
+    const image = product.image || "./imagenes y recursos/Icon-Papeleria.jpg";
+
+    productsContainer.insertAdjacentHTML(
+      "beforeend",
+      `
+      <div class="product__card ${!hasStock ? "product__card--empty" : ""}">
+        <img src="${escapeHtmlLocal(image)}" alt="${escapeHtmlLocal(product.name)}" loading="lazy">
+        <div class="product__info">
+          <div class="product__topline">
+            <span class="product__code">${escapeHtmlLocal(product.code || product.category || "POS")}</span>
+            <span class="product__stock product__stock--${stockClass}">${stockLabel}</span>
+          </div>
+          <h3>${escapeHtmlLocal(product.name)}</h3>
+          <p>${escapeHtmlLocal(product.description || product.category || "")}</p>
+          <span class="product__price">$${Number(product.price).toLocaleString("es-CO")}</span>
+          <div class="product__card-actions">
+            <button class="product__button" data-id="${product.id}" ${!hasStock ? "disabled" : ""}>
+              ${hasStock ? "Agregar" : "Sin stock"}
+            </button>
+            <button class="product__edit-button" data-id="${product.id}" title="Editar producto">
+              <i class="fa-solid fa-pen"></i>
+            </button>
+          </div>
+        </div>
+      </div>`,
+    );
+  });
+};
+
 // ============================================================
 // FUNCIÓN 3 — Generar dinámicamente botones de categoría
 // Se ejecuta después de cargar productos desde Google Sheets
@@ -274,7 +311,7 @@ function openQuickEditModal(productId) {
       await apiUpdate("productos", {
         id: prod.id,
         nombre: prod.name,
-        categoría: prod.category,
+        categoria: prod.category,
         precio: prod.price,
         costo: prod.cost,
         codigo: prod.code,
@@ -322,7 +359,8 @@ productsContainer.addEventListener("click", function (event) {
     const product = products.find((p) => p.id === productId);
     if (!product) return;
 
-    addToCart(product);
+    const added = addToCart(product);
+    if (!added) return;
     saveCart();
     renderCart();
     appContainer.classList.add("cart-open");
@@ -347,9 +385,10 @@ cartItemsContainer.addEventListener("click", function (event) {
   if (isNaN(productId)) return;
 
   if (btn.classList.contains("increase")) {
-    increaseQuantity(productId);
-    saveCart();
-    renderCart();
+    if (increaseQuantity(productId)) {
+      saveCart();
+      renderCart();
+    }
   }
   if (btn.classList.contains("decrease")) {
     decreaseQuantity(productId);
@@ -384,7 +423,7 @@ searchInput.addEventListener("input", function () {
     .replace(/[\u0300-\u036f]/g, "");
 
   const filtered = products.filter((p) =>
-    p.name
+    `${p.name} ${p.code || ""} ${p.category || ""}`
       .toLowerCase()
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")

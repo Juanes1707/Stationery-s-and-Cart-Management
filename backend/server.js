@@ -20,7 +20,11 @@ app.use('/api/categorias',  require('./routes/categorias'));
 // Middleware global de errores (siempre al final)
 app.use((err, req, res, next) => {
   console.error(err);
-  res.status(500).json({ error: 'Error interno del servidor' });
+  const status = err.status || 500;
+  res.status(status).json({
+    success: false,
+    message: status === 500 ? 'Error interno del servidor' : err.message,
+  });
 });
 
 (async () => {

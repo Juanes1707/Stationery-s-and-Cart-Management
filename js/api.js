@@ -78,6 +78,9 @@ async function apiPost(resource, data) {
     });
     const json = await response.json();
     logAPI("POST", resource, json.success ? "success" : "error", json);
+    if (!response.ok || !json.success) {
+      throw new Error(json.message || `Error POST ${resource}`);
+    }
     return json;
   } catch (err) {
     logAPI("POST", resource, "error", err);
@@ -102,6 +105,9 @@ async function apiUpdate(resource, data) {
     });
     const json = await response.json();
     logAPI("PUT", resource, json.success ? "success" : "error", json);
+    if (!response.ok || !json.success) {
+      throw new Error(json.message || `Error PUT ${resource}`);
+    }
     return json;
   } catch (err) {
     logAPI("PUT", resource, "error", err);
