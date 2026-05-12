@@ -1,7 +1,9 @@
 require('dotenv').config();
+const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const { sequelize } = require('./models');
+const { runMigrations } = require('./migrate');
 
 // Importamos los middlewares
 const requestLogger = require('./middlewares/requestLogger');
@@ -25,6 +27,8 @@ app.use('/api/clientes',    require('./routes/clientes'));
 app.use('/api/proveedores', require('./routes/proveedores'));
 app.use('/api/categorias',  require('./routes/categorias'));
 
+app.use(express.static(path.join(__dirname, '..')));
+
 // Middleware global de errores — siempre al final
 app.use((err, req, res, next) => {
   console.error(err);
@@ -35,8 +39,8 @@ app.use((err, req, res, next) => {
   try {
     await sequelize.authenticate();
     console.log('Conexión a SQLite exitosa');
-    await sequelize.sync();
-    console.log('Tablas sincronizadas');
+    await runMigrations();
+    console.log('Migraciones verificadas');
     app.listen(PORT, () => console.log(`Servidor en http://localhost:${PORT}`));
   } catch (error) {
     console.error('Error al iniciar el servidor:', error);

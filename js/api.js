@@ -2,7 +2,10 @@
 // api.js - Comunicación con backend Express + SQLite
 // ============================================================
 
-const API_URL = "http://localhost:3000/api";
+const API_URL = window.location.port === "3000"
+  ? `${window.location.origin}/api`
+  : "http://localhost:3000/api";
+let lastApiError = null;
 
 // ============================================================
 // Loader visual (se mantiene igual que antes)
@@ -50,12 +53,20 @@ function logAPI(action, resource, status, data = null) {
 async function apiGet(resource) {
   startApiLoader();
   try {
+    lastApiError = null;
     logAPI("GET", resource, "request");
     const response = await fetch(`${API_URL}/${resource}`);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status} consultando ${resource}`);
+    }
     const json = await response.json();
     logAPI("GET", resource, json.success ? "success" : "error", json);
+    if (!json.success) {
+      throw new Error(json.message || `Respuesta invalida consultando ${resource}`);
+    }
     return json.data ?? [];
   } catch (err) {
+    lastApiError = err;
     logAPI("GET", resource, "error", err);
     console.error(`Error GET ${resource}:`, err);
     return [];

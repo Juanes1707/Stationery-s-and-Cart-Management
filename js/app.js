@@ -27,6 +27,11 @@ let currentCategory = "todos";
 function renderProducts(productList) {
   productsContainer.innerHTML = "";
 
+  if (!Array.isArray(productList) || productList.length === 0) {
+    renderCatalogMessage("No hay productos para mostrar.");
+    return;
+  }
+
   productList.forEach((product) => {
     const card = `
       <div class="product__card">
@@ -43,6 +48,16 @@ function renderProducts(productList) {
     `;
     productsContainer.innerHTML += card;
   });
+}
+
+function renderCatalogMessage(message) {
+  if (!productsContainer) return;
+  productsContainer.innerHTML = `
+    <div class="catalog__empty-state">
+      <strong>${escapeHtmlLocal(message)}</strong>
+      <span>Verifica que el backend este corriendo en http://localhost:3000.</span>
+    </div>
+  `;
 }
 
 // ============================================================
@@ -439,19 +454,23 @@ if (homeButton) {
 // Aquí solo cargamos carrito y ventas desde localStorage.
 // ============================================================
 async function initializeApp() {
-  loadCart();
-  loadSales();
-  renderCart();
-  renderHistory();
-  navigate("home");
-
   if (typeof loadProductsFromAPI === "function") {
     await loadProductsFromAPI();
   }
 
-  if (typeof loadSalesFromAPI === "function") {
-    await loadSalesFromAPI();
+  try {
+    loadCart();
+    loadSales();
+    renderCart();
     renderHistory();
+    navigate("home");
+
+    if (typeof loadSalesFromAPI === "function") {
+      await loadSalesFromAPI();
+      renderHistory();
+    }
+  } catch (error) {
+    console.error("Error inicializando la interfaz:", error);
   }
 }
 
