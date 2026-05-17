@@ -6,8 +6,9 @@ function stripIdSuffixes(data) {
 
   // Si es un objeto, recorremos cada campo
   if (data && typeof data === 'object') {
+    const source = typeof data.toJSON === 'function' ? data.toJSON() : data;
     const cleaned = {};
-    for (const [key, value] of Object.entries(data)) {
+    for (const [key, value] of Object.entries(source)) {
       // Si el campo termina en 'Id', lo saltamos (no lo incluimos en la respuesta)
       if (key.endsWith('Id')) continue;
       // Si no termina en 'Id', lo incluimos y aplicamos la limpieza recursivamente
