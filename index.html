@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -6,75 +6,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Papel y Luna</title>
     <link rel="stylesheet" href="styles.css">
-    <!-- ICON DE LA PAPELERIA -->
+    <link rel="stylesheet" href="responsive.css">
     <link rel="shortcut icon" href="imagenes y recursos/Icon-Papeleria.jpg" type="image/x-icon">
-    <!-- ICONOS PARA LA ESTETICA -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <!-- IMPORTACIÓN DE FUENTE  -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
 </head>
 
 <body>
     <div class="app__container">
-        <!-- HEADER E INPUT DE NAVEGACION -->
         <header class="header__content">
             <div class="header__content-elements">
-                <img src="imagenes y recursos/Papel y Luna Logo.png" alt="Papel y Luna Logo"
-                    class="header__content-logo">
+                <img src="imagenes y recursos/Papel y Luna Logo.png" alt="Papel y Luna Logo" class="header__content-logo">
                 <h1 class="header__content-title">Papel y Luna</h1>
             </div>
             <div class="header__content-input-container">
-                <button class="header__content-button">
+                <button class="header__content-button" aria-label="Buscar">
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </button>
-                <input type="text" id="searchInput" placeholder="Buscar producto..." class="header__content-input">
+                <input type="text" id="searchInput" placeholder="Buscar producto..." class="header__content-input" autocomplete="off">
             </div>
             <div class="header__actions">
-                <button class="header__actions-button" id="cartButton">
+                <button class="header__actions-button" id="cartButton" aria-label="Abrir carrito">
                     <i class="fa-solid fa-cart-arrow-down"></i>
+                    <span class="cart-badge" id="cartBadge">0</span>
                 </button>
-                <button class="header__actions-button" id="profileButton">
+                <button class="header__actions-button" id="profileButton" aria-label="Administracion">
                     <i class="fa-solid fa-user"></i>
                 </button>
-                <button class="header__actions-button" id="homeButton">
+                <button class="header__actions-button" id="homeButton" aria-label="Inicio">
                     <i class="fa-solid fa-house"></i>
                 </button>
             </div>
         </header>
 
-        <!-- MAIN -->
         <main class="main__content">
-            <!-- HERO -->
             <section class="hero__section">
                 <div class="hero__section-content">
-                    <h2>Tu mundo creativo comienza aquí</h2>
-                    <p>Inspiración y calidad premium para cada trazo de tu historia. Descubre nuestra selección de
-                        productos únicos.</p>
-                    <button>Ver catálogo</button>
+                    <h2>Tu mundo creativo comienza aqui</h2>
+                    <p>Inspiracion y calidad premium para cada trazo de tu historia. Descubre nuestra seleccion de productos unicos.</p>
+                    <button>Ver catalogo</button>
                     <button id="hero__section-button">Novedades</button>
                 </div>
             </section>
 
-            <!-- CATÁLOGO -->
             <section class="main__content-section">
                 <h2 class="main__content-title">Nuestros Productos</h2>
                 <div class="categories__container">
                     <button class="category__button active" data-category="todos">Todos</button>
                     <button class="category__button" data-category="Cuadernos">Libretas y agendas</button>
-                    <button class="category__button" data-category="Escritura">Bolígrafos y lápices</button>
+                    <button class="category__button" data-category="Escritura">Boligrafos y lapices</button>
                     <button class="category__button" data-category="Arte">Arte y creatividad</button>
-                    <button class="category__button" data-category="Organización">Organización</button>
+                    <button class="category__button" data-category="Organizacion">Organizacion</button>
                 </div>
                 <div class="main__products-container">
-                    <!-- Los productos se renderizan dinámicamente desde data.js -->
                 </div>
             </section>
 
-            <!-- Historial + menú admin en el mismo bloque del main (sin flotar encima de la página) -->
             <div class="admin-history-workspace">
                 <div class="admin__panel-container">
                     <aside class="admin__panel" id="adminPanel">
@@ -88,33 +77,27 @@
                     </aside>
                 </div>
                 <section class="history__content" id="historySection">
-                    <div class="history__content-sales">
-                        <!-- history.js renderiza el historial aquí -->
-                    </div>
+                    <div class="history__content-sales"></div>
                     <div id="invoiceContainer"></div>
                 </section>
             </div>
 
-            <!-- CHECKOUT -->
             <section class="checkout__content" id="checkoutSection">
                 <div class="checkout__content-container"></div>
             </section>
         </main>
 
-        <!-- CARRITO -->
+        <div class="cart-overlay" id="cartOverlay" aria-hidden="true"></div>
+
         <div class="cart__aside-container">
-            <aside class="cart__aside" id="cart">
+            <aside class="cart__aside" id="cart" role="complementary" aria-label="Carrito de compras">
                 <h2 class="cart__aside-title">Carrito</h2>
                 <div class="cart__items" id="cartItems"></div>
                 <div class="empty__cart" id="emptyCartMessage"></div>
-                <div class="cart__footer" id="cartFooter">
-                    <!-- app.js renderiza los botones aquí -->
-                </div>
+                <div class="cart__footer" id="cartFooter"></div>
             </aside>
         </div>
 
-        <!-- ADMIN PANEL -->
-        <!-- Se agregaron los botones de Compras y Entidades (MVP2) -->
         <div class="admin__panel-container">
             <aside class="admin__panel" id="adminPanel">
                 <div class="admin__menu">
@@ -127,7 +110,6 @@
             </aside>
         </div>
 
-        <!-- FOOTER -->
         <footer class="footer-content">
             <div class="footer__columns">
                 <div class="footer__col footer__col--about">
@@ -135,25 +117,23 @@
                     <p class="footer__description">Creamos herramientas para que tus ideas cobren vida.</p>
                     <div class="footer__socials">
                         <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a href="https://www.instagram.com/papeleriapapelyluna/" aria-label="Instagram">
-                            <i class="fab fa-instagram"></i>
-                        </a>
+                        <a href="https://www.instagram.com/papeleriapapelyluna/" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
                         <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
                     </div>
                 </div>
                 <div class="footer__col footer__col--categories">
-                    <h3><span class="footer__col-icon"><i class="fa-solid fa-book"></i></span>Categorías</h3>
+                    <h3><span class="footer__col-icon"><i class="fa-solid fa-book"></i></span>Categorias</h3>
                     <ul>
                         <li><a href="#">Libretas y Agendas</a></li>
-                        <li><a href="#">Bolígrafos y Lápices</a></li>
+                        <li><a href="#">Boligrafos y Lapices</a></li>
                         <li><a href="#">Arte y Creatividad</a></li>
-                        <li><a href="#">Organización</a></li>
+                        <li><a href="#">Organizacion</a></li>
                     </ul>
                 </div>
                 <div class="footer__col footer__col--help">
                     <h3><span class="footer__col-icon"><i class="fa-solid fa-book"></i></span>Ayuda</h3>
                     <ul>
-                        <li><a href="#">Envíos y Entregas</a></li>
+                        <li><a href="#">Envios y Entregas</a></li>
                         <li><a href="#">Cambios y Devoluciones</a></li>
                         <li><a href="#">Contacto</a></li>
                         <li><a href="#">Preguntas Frecuentes</a></li>
@@ -161,7 +141,7 @@
                 </div>
             </div>
             <div class="footer__bottom">
-                <p>© 2026 Papel y Luna. Todos los derechos reservados.</p>
+                <p>2026 Papel y Luna. Todos los derechos reservados.</p>
             </div>
         </footer>
     </div>
@@ -173,22 +153,6 @@
         </div>
     </div>
 
-    <!--
-      ORDEN DE CARGA DE SCRIPTS — muy importante no cambiar este orden:
-      1. api.js       → define apiGet, apiPost, apiUpdate, apiDelete (todo lo demás depende de esto)
-      2. data.js      → carga productos desde Sheets, define normalizeProduct y loadProductsFromAPI
-      3. state.js     → define state, addToCart, removeFromCart, etc.
-      4. storage.js   → define saveCart, loadCart, saveSales, loadSales
-      5. sales.js     → define registerSale, holdCurrentSale, renderOpenSales
-      6. history.js   → define renderHistory, showSaleDetails
-      7. invoice.js   → define renderInvoice
-      8. router.js    → define navigate
-      9. purchases.js → define renderPurchasesModule, renderPurchaseForm (nuevo MVP2)
-     10. entities.js  → define renderEntitiesModule, CRUD de categorías/proveedores/clientes (nuevo MVP2)
-     11. admin.js     → define initAdmin, renderAdminCRUD, deleteProduct, etc.
-     12. checkout.js  → define renderCheckout
-     13. app.js       → punto de entrada principal, inicializa la UI
-    -->
     <script src="./js/api.js"></script>
     <script src="./js/data.js"></script>
     <script src="./js/state.js"></script>
@@ -203,5 +167,4 @@
     <script src="./js/checkout.js"></script>
     <script src="./js/app.js"></script>
 </body>
-
 </html>

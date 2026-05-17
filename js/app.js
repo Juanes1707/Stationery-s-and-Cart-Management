@@ -1,4 +1,4 @@
-// ============================================================
+﻿// ============================================================
 // app.js - Lógica principal de la interfaz
 // Depende de: api.js, data.js, state.js, storage.js,
 //             sales.js, history.js, router.js, admin.js
@@ -78,6 +78,7 @@ function renderCart() {
     `;
     cartFooter.innerHTML = "";
     return;
+    _updateCartBadge(0);
   }
 
   cartItemsContainer.style.display = "block";
@@ -119,6 +120,7 @@ function renderCart() {
     <button class="checkout">Finalizar Compra</button>
   `;
 }
+  _updateCartBadge(state.cart.reduce(function(s,i){return s+i.quantity;},0));
 
 // ============================================================
 // Utilidad para escapar caracteres HTML
@@ -355,6 +357,21 @@ cartButton.addEventListener("click", () => {
   appContainer.classList.toggle("cart-open");
 });
 
+// Cerrar carrito al tocar el overlay de fondo
+var _cartOverlay = document.getElementById("cartOverlay");
+if (_cartOverlay) {
+  _cartOverlay.addEventListener("click", function () {
+    appContainer.classList.remove("cart-open");
+  });
+}
+
+function _updateCartBadge(count) {
+  var badge = document.getElementById("cartBadge");
+  if (!badge) return;
+  badge.textContent = count > 0 ? String(count) : "";
+  badge.setAttribute("data-count", String(count));
+}
+
 // Catálogo: agregar al carrito o editar producto rápido
 productsContainer.addEventListener("click", function (event) {
   const btn = event.target.closest("button");
@@ -514,3 +531,5 @@ async function initializeApp() {
 }
 
 initializeApp();
+
+
