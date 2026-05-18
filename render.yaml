@@ -1,0 +1,45 @@
+# =====================================================================
+# Blueprint de Render para Stationery-s-and-Cart-Management
+# Despliega:
+#   1) Una base de datos PostgreSQL gestionada (plan free, 30 dias).
+#   2) Un Web Service Node con el backend Express del subdirectorio /backend.
+#
+# Uso: en Render -> New + -> Blueprint -> seleccionar este repo.
+# Render leera este archivo y aprovisionara todo automaticamente.
+# =====================================================================
+
+databases:
+  - name: stationery-db
+    plan: free
+    databaseName: stationery
+    user: stationery_user
+
+services:
+  - type: web
+    name: stationery-api
+    runtime: node
+    plan: free
+    region: oregon
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /authors
+    autoDeploy: true
+    envVars:
+      # Cadena de conexion completa inyectada por Render desde la BD vinculada.
+      - key: DATABASE_URL
+        fromDatabase:
+          name: stationery-db
+          property: connectionString
+
+      # Activa el bloque "production" de backend/config/config.js.
+      - key: NODE_ENV
+        value: production
+
+      # Render genera una cadena aleatoria larga y la guarda como secreto.
+      - key: JWT_SECRET
+        generateValue: true
+
+      # Vigencia del JWT.
+      - key: JWT_EXPIRES_IN
+        value: 1h

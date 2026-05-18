@@ -18,6 +18,16 @@ app.use(express.json());
 app.use(requestLogger);
 app.use(sanitizeIds);
 
+// Endpoint publico de verificacion del despliegue (NO requiere autenticacion).
+// Permite al evaluador confirmar autoria del equipo accediendo desde el navegador.
+app.get("/authors", (req, res) => {
+  res.json([
+    { nombre: "Samuel Alejandro Gerena Gomez", codigo: "340727" },
+    { nombre: "Juan Esteban Rubio",            codigo: "352018" },
+    { nombre: "Samuel Hernandez",              codigo: "350997" },
+  ]);
+});
+
 // Rutas publicas de autenticacion
 app.use("/api/auth", require("./routes/auth"));
 
@@ -33,7 +43,12 @@ app.use("/api/compras",     authJwt, requireRole("ADMIN"), require("./routes/com
 app.use("/api/proveedores", authJwt, requireRole("ADMIN"), require("./routes/proveedores"));
 app.use("/api/categorias",  authJwt, requireRole("ADMIN"), require("./routes/categorias"));
 
-app.use(express.static(path.join(__dirname, "..")));
+// En local servimos el frontend estatico (HTML/CSS/JS) desde la carpeta padre.
+// En produccion (Render) la carpeta padre no existe porque solo se despliega /backend,
+// por lo que se desactiva el servido de archivos estaticos.
+if (process.env.NODE_ENV !== "production") {
+  app.use(express.static(path.join(__dirname, "..")));
+}
 
 app.use((err, req, res, next) => {
   console.error(err);
@@ -47,11 +62,13 @@ app.use((err, req, res, next) => {
 (async () => {
   try {
     await sequelize.authenticate();
-    console.log("Conexion a SQLite exitosa");
+    const dialect = sequelize.getDialect();
+    console.log(`Conexion a base de datos (${dialect}) exitosa`);
     await runMigrations();
     console.log("Migraciones verificadas");
-    app.listen(PORT, () => console.log("Servidor en http://localhost:" + PORT));
+    app.listen(PORT, () => console.log(`Servidor escuchando en puerto ${PORT}`));
   } catch (error) {
     console.error("Error al iniciar el servidor:", error);
+    process.exit(1);
   }
 })();

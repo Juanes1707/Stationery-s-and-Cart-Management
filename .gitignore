@@ -1,0 +1,60 @@
+# =====================================================================
+# .gitignore raiz del repo Stationery-s-and-Cart-Management
+# Cubre tanto el frontend (raiz) como reglas generales del proyecto.
+# El backend tiene su propio .gitignore mas especifico dentro de /backend.
+# =====================================================================
+
+# Dependencias
+node_modules/
+**/node_modules/
+
+# Variables de entorno
+.env
+.env.*
+!.env.example
+
+# Bases de datos locales (SQLite usado en desarrollo)
+*.sqlite
+*.sqlite3
+*.sqlite-journal
+*.sqlite-shm
+*.sqlite-wal
+*.db
+*.db-journal
+database.sqlite
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build / coverage
+dist/
+build/
+coverage/
+.cache/
+
+# OS y editores
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Archivos temporales
+tmp/
+temp/
+*.tmp
+*.bak
+
+# Lockfiles auxiliares (mantener package-lock.json principal)
+package-lock.json.*
+
+# Dumps de BD
+*.dump
+*.sql.gz
