@@ -1,8 +1,11 @@
 'use strict';
 
+// Identificador entrecomillado para que PostgreSQL preserve el case del nombre de tabla
+// (sin comillas PG lowercasea y "Categorias" se vuelve "categorias", que no existe).
+// SQLite tambien acepta comillas dobles como identificador estandar SQL.
 async function isEmpty(queryInterface, tableName) {
   const [rows] = await queryInterface.sequelize.query(
-    `SELECT COUNT(*) AS count FROM ${tableName}`
+    `SELECT COUNT(*) AS count FROM "${tableName}"`
   );
   return Number(rows[0].count) === 0;
 }

@@ -7,6 +7,12 @@ const db = require('./models');
 
 const migrationsPath = path.join(__dirname, 'migrations');
 
+// Identificador de la tabla de metadatos de migraciones.
+// Se entrecomilla con dobles porque PostgreSQL preserva el case dentro de comillas
+// y lowercasea los identificadores sin comillas (lo que romperia el SELECT/INSERT).
+// SQLite tambien acepta comillas dobles como identificador estandar SQL.
+const META_TABLE = '"SequelizeMeta"';
+
 async function ensureMetaTable(queryInterface) {
   await queryInterface.createTable('SequelizeMeta', {
     name: {
@@ -25,7 +31,7 @@ async function getAppliedMigrations(sequelize, queryInterface) {
     if (!/already exists/i.test(error.message)) throw error;
   }
 
-  const rows = await sequelize.query('SELECT name FROM SequelizeMeta', {
+  const rows = await sequelize.query(`SELECT name FROM ${META_TABLE}`, {
     type: Sequelize.QueryTypes.SELECT,
   });
 
@@ -46,7 +52,7 @@ async function runMigrations() {
 
     const migration = require(path.join(migrationsPath, file));
     await migration.up(queryInterface, Sequelize);
-    await sequelize.query('INSERT INTO SequelizeMeta (name) VALUES (?)', {
+    await sequelize.query(`INSERT INTO ${META_TABLE} (name) VALUES (?)`, {
       replacements: [file],
     });
     console.log(`Migracion aplicada: ${file}`);
