@@ -60,16 +60,34 @@ function openFloatingModal(contentHtml, onReady) {
 
 // ── Inicialización del panel ──────────────────────────────────
 function initAdmin() {
-  const btnHistory = document.getElementById("adminHistoryBtn");
-  const btnCrud = document.getElementById("adminCrudBtn");
+  const btnHistory  = document.getElementById("adminHistoryBtn");
+  const btnCrud     = document.getElementById("adminCrudBtn");
   const btnPurchases = document.getElementById("adminPurchasesBtn");
   const btnEntities = document.getElementById("adminEntitiesBtn");
+  const btnProfile  = document.getElementById("adminProfileBtn");
   const adminContent = document.getElementById("adminContent");
-  const adminPanel = document.getElementById("adminPanel");
+  const adminPanel  = document.getElementById("adminPanel");
 
   if (!adminContent || !adminPanel) return;
   if (adminPanel.dataset.inited === "1") return;
   adminPanel.dataset.inited = "1";
+
+  // ── Aplicar restricciones de rol en los tabs ──────────────
+  if (!can("manageCatalog")) {
+    btnCrud.disabled = true;
+    btnCrud.title = "Solo administradores";
+    btnCrud.classList.add("admin__menu-btn--locked");
+  }
+  if (btnPurchases && !can("managePurchases")) {
+    btnPurchases.disabled = true;
+    btnPurchases.title = "Solo administradores";
+    btnPurchases.classList.add("admin__menu-btn--locked");
+  }
+  if (btnEntities && !can("manageEntities")) {
+    btnEntities.disabled = true;
+    btnEntities.title = "Solo administradores";
+    btnEntities.classList.add("admin__menu-btn--locked");
+  }
 
   btnHistory.addEventListener("click", () => {
     setActiveMenuButton(btnHistory);
@@ -78,6 +96,7 @@ function initAdmin() {
 
   // Al ir a Productos, cerramos la factura; si no, seguiría viéndose abajo sin sentido.
   btnCrud.addEventListener("click", () => {
+    if (!can("manageCatalog")) return;
     if (typeof clearInvoicePanel === "function") clearInvoicePanel();
     setActiveMenuButton(btnCrud);
     renderAdminCRUD();
@@ -86,6 +105,7 @@ function initAdmin() {
   });
 
   btnPurchases?.addEventListener("click", () => {
+    if (!can("managePurchases")) return;
     // Misma idea que en Productos: al cambiar de pantalla, la factura no debe quedarse abierta.
     if (typeof clearInvoicePanel === "function") clearInvoicePanel();
     setActiveMenuButton(btnPurchases);
@@ -96,11 +116,21 @@ function initAdmin() {
   });
 
   btnEntities?.addEventListener("click", () => {
+    if (!can("manageEntities")) return;
     // Igual: al ir a Entidades no queremos la factura del historial todavía visible.
     if (typeof clearInvoicePanel === "function") clearInvoicePanel();
     setActiveMenuButton(btnEntities);
     adminContent.innerHTML = "";
     renderEntitiesModule();
+    adminPanel.classList.add("open");
+    document.querySelector(".app__container").classList.add("admin-open");
+  });
+
+  btnProfile?.addEventListener("click", () => {
+    if (typeof clearInvoicePanel === "function") clearInvoicePanel();
+    setActiveMenuButton(btnProfile);
+    adminContent.innerHTML = "";
+    if (typeof renderProfileModule === "function") renderProfileModule();
     adminPanel.classList.add("open");
     document.querySelector(".app__container").classList.add("admin-open");
   });
@@ -333,19 +363,23 @@ function renderProductsInMainArea() {
   if (!Array.isArray(products)) products = [];
   historySection.classList.add("admin-listing");
 
+  const canManage = can("manageCatalog");
+
   let html = `
     <div class="admin__list-header">
       <h2>Productos</h2>
-      <button id="mainAddProduct" class="btn-add-product">+ Agregar Producto</button>
+      ${canManage ? '<button id="mainAddProduct" class="btn-add-product">+ Agregar Producto</button>' : ""}
     </div>
   `;
 
   if (products.length === 0) {
     html += '<p class="admin__empty">No hay productos registrados.</p>';
     historyContent.innerHTML = html;
-    document
-      .getElementById("mainAddProduct")
-      .addEventListener("click", () => openProductModal());
+    if (canManage) {
+      document
+        .getElementById("mainAddProduct")
+        .addEventListener("click", () => openProductModal());
+    }
     return;
   }
 
@@ -361,34 +395,37 @@ function renderProductsInMainArea() {
           </div>
           <div class="admin-product-stock">Stock: <strong>${p.stock ?? 0}</strong></div>
         </div>
+        ${canManage ? `
         <div class="admin-product-actions">
           <button class="main-edit btn-edit"    data-id="${p.id}">✏️ Editar</button>
           <button class="main-delete btn-delete" data-id="${p.id}">🗑️ Eliminar</button>
-        </div>
+        </div>` : ""}
       </div>`;
   });
   html += "</div>";
   historyContent.innerHTML = html;
 
-  document
-    .getElementById("mainAddProduct")
-    .addEventListener("click", () => openProductModal());
+  if (canManage) {
+    document
+      .getElementById("mainAddProduct")
+      .addEventListener("click", () => openProductModal());
 
-  historyContent.querySelectorAll(".main-edit").forEach((btn) => {
-    btn.addEventListener("click", (e) =>
-      openProductModal(Number(e.currentTarget.dataset.id)),
-    );
-  });
-
-  historyContent.querySelectorAll(".main-delete").forEach((btn) => {
-    btn.addEventListener("click", async (e) => {
-      const id = Number(e.currentTarget.dataset.id);
-      const ok = await showConfirm(
-        "¿Eliminar este producto? No se puede deshacer.",
+    historyContent.querySelectorAll(".main-edit").forEach((btn) => {
+      btn.addEventListener("click", (e) =>
+        openProductModal(Number(e.currentTarget.dataset.id)),
       );
-      if (ok) deleteProduct(id);
     });
-  });
+
+    historyContent.querySelectorAll(".main-delete").forEach((btn) => {
+      btn.addEventListener("click", async (e) => {
+        const id = Number(e.currentTarget.dataset.id);
+        const ok = await showConfirm(
+          "¿Eliminar este producto? No se puede deshacer.",
+        );
+        if (ok) deleteProduct(id);
+      });
+    });
+  }
 }
 
 async function deleteProduct(id) {

@@ -167,9 +167,10 @@ renderProducts = function renderPOSProducts(productList) {
             <button class="product__button" data-id="${product.id}" ${!hasStock ? "disabled" : ""}>
               ${hasStock ? "Agregar" : "Sin stock"}
             </button>
+            ${(typeof can === "function" && can("editProductCard")) ? `
             <button class="product__edit-button" data-id="${product.id}" title="Editar producto">
               <i class="fa-solid fa-pen"></i>
-            </button>
+            </button>` : ""}
           </div>
         </div>
       </div>`,
@@ -307,7 +308,7 @@ function openQuickEditModal(productId) {
       isNaN(newStock) ||
       newStock < 0
     ) {
-      alert("Por favor ingresa valores válidos en todos los campos.");
+      showToast("Por favor ingresa valores válidos en todos los campos.", "error");
       return;
     }
 
@@ -380,8 +381,9 @@ productsContainer.addEventListener("click", function (event) {
   const productId = parseInt(btn.dataset.id);
   if (isNaN(productId)) return;
 
-  // Botón edición rápida (✏️)
+  // Botón edición rápida (✏️) — solo ADMIN
   if (btn.classList.contains("product__edit-button")) {
+    if (typeof can === "function" && !can("editProductCard")) return;
     openQuickEditModal(productId);
     return;
   }
@@ -533,3 +535,31 @@ async function initializeApp() {
 initializeApp();
 
 
+
+
+// ── Sesión: mostrar usuario y botón de cerrar sesión ──────────
+(function initSessionUI() {
+  var user       = (typeof getUser === "function") ? getUser() : null;
+  var infoEl     = document.getElementById("headerUserInfo");
+  var logoutBtn  = document.getElementById("logoutButton");
+
+  if (user && infoEl && logoutBtn) {
+    infoEl.style.display  = "flex";
+    logoutBtn.style.display = "flex";
+
+    // Badge de rol (Admin / Cajero)
+    var roleBadge = document.getElementById("headerRoleBadge");
+    if (roleBadge) {
+      var isAdmin = user.role === "ADMIN";
+      roleBadge.textContent = isAdmin ? "Admin" : "Cajero";
+      roleBadge.className = "header__role-badge header__role-badge--" + (isAdmin ? "admin" : "user");
+      roleBadge.style.display = "inline-flex";
+    }
+
+    logoutBtn.addEventListener("click", function () {
+      showConfirm("¿Seguro que quieres cerrar la sesión?").then(function (ok) {
+        if (ok) logout();
+      });
+    });
+  }
+})();

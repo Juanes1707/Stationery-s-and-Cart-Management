@@ -205,10 +205,7 @@ function renderEntityList(entityName, items) {
       const id = e.currentTarget.dataset.id;
       const confirmMessage =
         "¿Eliminar este registro? Esta acción no se puede deshacer.";
-      const allowed =
-        typeof showConfirm === "function"
-          ? await showConfirm(confirmMessage)
-          : confirm(confirmMessage);
+      const allowed = await showConfirm(confirmMessage);
       if (!allowed) return;
 
       try {

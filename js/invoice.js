@@ -149,7 +149,7 @@ function renderInvoiceTotals(invoiceContainer, subtotal, totalVenta) {
 function renderInvoice(saleId) {
   const sale = findSaleById(saleId);
   if (!sale) {
-    alert("No se encontró la venta.");
+    if (typeof showToast === "function") showToast("No se encontró la venta.", "error");
     return;
   }
 

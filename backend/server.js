@@ -1,52 +1,57 @@
-require('dotenv').config();
-const path = require('path');
-const express = require('express');
-const cors = require('cors');
-const { sequelize } = require('./models');
-const { runMigrations } = require('./migrate');
+﻿require("dotenv").config();
+const path = require("path");
+const express = require("express");
+const cors    = require("cors");
+const { sequelize } = require("./models");
+const { runMigrations } = require("./migrate");
 
-// Importamos los middlewares
-const requestLogger = require('./middlewares/requestLogger');
-const sanitizeIds  = require('./middlewares/sanitizeIds');
+const requestLogger = require("./middlewares/requestLogger");
+const sanitizeIds   = require("./middlewares/sanitizeIds");
+const authJwt       = require("./middlewares/authJwt");
+const requireRole   = require("./middlewares/requireRole");
 
-const app = express();
+const app  = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
+app.use(requestLogger);
+app.use(sanitizeIds);
 
-// Middlewares transversales — se aplican a TODAS las rutas
-app.use(requestLogger); // pre-procesamiento: registra cada petición en la BD
-app.use(sanitizeIds);   // post-procesamiento: elimina campos que terminen en 'Id'
+// Rutas publicas de autenticacion
+app.use("/api/auth", require("./routes/auth"));
 
-// Rutas
-app.use('/api/productos',   require('./routes/productos'));
-app.use('/api/ventas',      require('./routes/ventas'));
-app.use('/api/compras',     require('./routes/compras'));
-app.use('/api/clientes',    require('./routes/clientes'));
-app.use('/api/proveedores', require('./routes/proveedores'));
-app.use('/api/categorias',  require('./routes/categorias'));
+// Catalogo de productos: GET publico, escritura protegida en el router
+app.use("/api/productos", require("./routes/productos"));
 
-app.use(express.static(path.join(__dirname, '..')));
+// Rutas protegidas: cualquier usuario autenticado
+app.use("/api/ventas",   authJwt, requireRole("USER"), require("./routes/ventas"));
+app.use("/api/clientes", authJwt, requireRole("USER"), require("./routes/clientes"));
 
-// Middleware global de errores — siempre al final
+// Rutas protegidas: solo ADMIN
+app.use("/api/compras",     authJwt, requireRole("ADMIN"), require("./routes/compras"));
+app.use("/api/proveedores", authJwt, requireRole("ADMIN"), require("./routes/proveedores"));
+app.use("/api/categorias",  authJwt, requireRole("ADMIN"), require("./routes/categorias"));
+
+app.use(express.static(path.join(__dirname, "..")));
+
 app.use((err, req, res, next) => {
   console.error(err);
   const status = err.status || 500;
   res.status(status).json({
     success: false,
-    message: status === 500 ? 'Error interno del servidor' : err.message,
+    message: status === 500 ? "Error interno del servidor" : err.message,
   });
 });
 
 (async () => {
   try {
     await sequelize.authenticate();
-    console.log('Conexión a SQLite exitosa');
+    console.log("Conexion a SQLite exitosa");
     await runMigrations();
-    console.log('Migraciones verificadas');
-    app.listen(PORT, () => console.log(`Servidor en http://localhost:${PORT}`));
+    console.log("Migraciones verificadas");
+    app.listen(PORT, () => console.log("Servidor en http://localhost:" + PORT));
   } catch (error) {
-    console.error('Error al iniciar el servidor:', error);
+    console.error("Error al iniciar el servidor:", error);
   }
 })();
