@@ -3,14 +3,12 @@ let currentRoute = "home";
 
 function navigate(route) {
   const mainSection = document.querySelector(".main__content-section");
-  const heroSection = document.querySelector(".hero__section");
   const historySection = document.querySelector("#historySection");
   const checkoutSection = document.querySelector("#checkoutSection");
   const adminPanel = document.querySelector("#adminPanel");
   const cartButton = document.querySelector("#cartButton");
   const invoiceContainer = document.querySelector("#invoiceContainer");
 
-  heroSection.style.display = "none";
   mainSection.style.display = "none";
   historySection.style.display = "none";
   checkoutSection.style.display = "none";
@@ -27,7 +25,6 @@ function navigate(route) {
   currentRoute = route;
 
   if (route === "home") {
-    heroSection.style.display = "block";
     mainSection.style.display = "block";
     cartButton.style.display = "block";
     if (typeof resetAdminMenuSelectionToHistorial === "function") {
