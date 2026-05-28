@@ -130,8 +130,17 @@ async function registerSale() {
   if (state.cart.length === 0) return null;
 
   const subtotal = state.cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  const iva      = subtotal * 0.19;
-  const total    = subtotal + iva;
+  const discountSelect = document.getElementById('discountSelect');
+  const selectedDiscount = discountSelect?.selectedOptions?.[0]?.dataset.discount
+    ? JSON.parse(discountSelect.selectedOptions[0].dataset.discount)
+    : null;
+  const discountValue = selectedDiscount
+    ? Math.min(subtotal, selectedDiscount.tipo === 'PORCENTAJE'
+        ? subtotal * (Number(selectedDiscount.valor || 0) / 100)
+        : Number(selectedDiscount.valor || 0))
+    : 0;
+  const iva      = Math.max(0, subtotal - discountValue) * 0.19;
+  const total    = Math.max(0, subtotal - discountValue) + iva;
 
   const customer = {
     name:    document.getElementById('customerName')?.value.trim() || 'Consumidor final',
@@ -152,18 +161,29 @@ async function registerSale() {
     date:     new Date().toLocaleString('es-CO'),
     fechaISO: new Date().toISOString(),
     total:    total.toLocaleString('es-CO'),
-    items:    state.cart.map(item => ({ id: item.id, name: item.name, quantity: item.quantity, price: item.price })),
+    items:    state.cart.map(item => ({
+      productoId: item.id,
+      id: item.id,
+      nombre: item.name,
+      name: item.name,
+      cantidad: item.quantity,
+      quantity: item.quantity,
+      precio: item.price,
+      price: item.price
+    })),
     customer, payment
   };
 
   const result = await apiPost('ventas', {
     fecha: newSale.fechaISO,
-    clienteId: newSale.customer.name,
+    clienteId: null,
     metodoPago: newSale.payment.method,
+    descuentoId: selectedDiscount?.id || null,
     itemsJson: {
       items: newSale.items,
       customer: newSale.customer,
-      payment: newSale.payment
+      payment: newSale.payment,
+      descuento: selectedDiscount
     }
   });
 

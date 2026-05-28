@@ -77,8 +77,8 @@ function renderCart() {
       </div>
     `;
     cartFooter.innerHTML = "";
-    return;
     _updateCartBadge(0);
+    return;
   }
 
   cartItemsContainer.style.display = "block";
@@ -119,8 +119,8 @@ function renderCart() {
     <button class="hold-sale">🔖 Guardar venta</button>
     <button class="checkout">Finalizar Compra</button>
   `;
+  _updateCartBadge(state.cart.reduce(function(s, i) { return s + i.quantity; }, 0));
 }
-  _updateCartBadge(state.cart.reduce(function(s,i){return s+i.quantity;},0));
 
 // ============================================================
 // Utilidad para escapar caracteres HTML
@@ -148,16 +148,14 @@ renderProducts = function renderPOSProducts(productList) {
     const hasStock = product.tracking === false || stock > 0;
     const stockLabel = product.tracking === false ? "Sin seguimiento" : `${stock} disp.`;
     const stockClass = product.tracking === false ? "ok" : stock <= 5 ? "low" : "ok";
-    const image = product.image || "./imagenes y recursos/Icon-Papeleria.jpg";
 
     productsContainer.insertAdjacentHTML(
       "beforeend",
       `
       <div class="product__card ${!hasStock ? "product__card--empty" : ""}">
-        <img src="${escapeHtmlLocal(image)}" alt="${escapeHtmlLocal(product.name)}" loading="lazy">
         <div class="product__info">
           <div class="product__topline">
-            <span class="product__code">${escapeHtmlLocal(product.code || product.category || "POS")}</span>
+            <span class="product__availability">Disponibilidad</span>
             <span class="product__stock product__stock--${stockClass}">${stockLabel}</span>
           </div>
           <h3>${escapeHtmlLocal(product.name)}</h3>
@@ -397,16 +395,16 @@ productsContainer.addEventListener("click", function (event) {
     if (!added) return;
     saveCart();
     renderCart();
-    appContainer.classList.add("cart-open");
 
-    // Efecto visual temporal "✔ Agregado"
-    const originalText = btn.textContent;
-    btn.textContent = "✔ Agregado";
-    btn.disabled = true;
+    // Efecto visual temporal: agregar clase para mini alerta (no cambiar texto)
+    btn.classList.add('product-just-added');
     setTimeout(() => {
-      btn.textContent = originalText;
-      btn.disabled = false;
-    }, 1000);
+      btn.classList.remove('product-just-added');
+    }, 800);
+
+    if (typeof showToast === "function") {
+      showToast("Producto agregado al carrito.");
+    }
   }
 });
 

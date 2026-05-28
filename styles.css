@@ -1151,6 +1151,25 @@ footer {
     }
 }
 
+/* Mini alerta visual en botón de producto tras agregar */
+.product__button.product-just-added {
+    position: relative;
+    overflow: visible;
+}
+.product__button.product-just-added::after {
+    content: "✔ Agregado";
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 235, 59, 0.9);
+    color: #000;
+    font-weight: 700;
+    border-radius: 5px;
+    pointer-events: none;
+}
+
 
 .checkout__totals h3 {
     margin: 1rem 0 0 0;
@@ -1193,6 +1212,29 @@ footer {
     border-radius: 5px;
     font-family: "Plus Jakarta Sans", sans-serif;
     font-size: 0.95rem;
+}
+
+#checkoutForm select,
+.admin__form-grid input,
+.admin__form-grid select {
+    padding: 0.6rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 0.95rem;
+}
+
+.admin-inline-module {
+    display: grid;
+    gap: 1rem;
+}
+
+.admin__form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.75rem;
+    align-items: center;
+    margin-bottom: 1rem;
 }
 
 #checkoutForm input:focus {
@@ -1806,6 +1848,277 @@ footer {
     grid-template-columns: 1fr 1fr;
     gap: 6px;
     margin-bottom: 10px;
+}
+
+/* ============================================================
+   Ajustes admin: descuentos, faltantes, reportes y alertas
+   ============================================================ */
+
+.admin-inline-module {
+    width: min(100%, 980px);
+    max-width: 70%;
+    margin: 0 auto;
+    display: grid;
+    gap: 18px;
+}
+
+.admin-inline-module .history-card {
+    max-width: 100%;
+    margin-top: 2px;
+}
+
+.admin-module-title,
+.admin-section-title {
+    max-width: 100%;
+    margin: 0;
+    color: #222;
+    line-height: 1.25;
+}
+
+.admin-module-title {
+    padding: 0 0 14px;
+    margin-bottom: 4px;
+    border-bottom: 2px solid #FC1;
+    font-size: 1.35rem;
+    font-weight: 800;
+}
+
+.admin-section-title {
+    margin-top: 14px;
+    padding-top: 8px;
+    font-size: 1rem;
+    font-weight: 750;
+}
+
+.admin__form-grid {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.admin__form-grid input,
+.admin__form-grid select {
+    min-height: 42px;
+    background: #fff;
+}
+
+.admin__form-grid label {
+    min-height: 42px;
+    padding: 0 10px;
+    background: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 7px;
+    color: #444;
+    font-size: 0.9rem;
+}
+
+.admin-inline-module .history-row span:last-child {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.sale-details-modal {
+    backdrop-filter: blur(2px);
+}
+
+.sale-details-content {
+    box-shadow: 0 20px 55px rgba(0, 0, 0, 0.18);
+}
+
+.sale-details-content .close-btn {
+    width: 34px;
+    height: 34px;
+    display: inline-grid;
+    place-items: center;
+    top: 14px;
+    right: 16px;
+    padding: 0;
+    background: #f7f7f7;
+    color: #333;
+    border: 1px solid #e5e5e5;
+    border-radius: 50%;
+    line-height: 1;
+    font-size: 1.35rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s, border-color 0.2s;
+}
+
+.sale-details-content .close-btn:hover {
+    background: #FC1;
+    border-color: #FC1;
+    transform: none;
+}
+
+.modal-actions,
+.app-alert-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.app-alert-box {
+    padding-top: 32px !important;
+}
+
+.app-alert-title {
+    margin: 0 44px 10px 0 !important;
+    color: #222;
+    font-size: 1.15rem;
+    font-weight: 800;
+}
+
+.app-alert-message {
+    color: #555;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.app-alert-box--error {
+    border-top: 4px solid #c62828;
+}
+
+.app-alert-box--info {
+    border-top: 4px solid #FC1;
+}
+
+@media (max-width: 1024px) {
+    .admin-inline-module {
+        max-width: 90%;
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-inline-module {
+        max-width: 100%;
+    }
+
+    .modal-actions,
+    .app-alert-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+}
+
+/* ============================================================
+   Ajustes de catalogo, carrito e historial solicitados
+   ============================================================ */
+
+.product__card {
+    min-height: 0;
+}
+
+.product__card img {
+    display: none !important;
+}
+
+.product__info {
+    min-height: 220px;
+}
+
+.product__topline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.product__availability {
+    color: #666;
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.product__stock {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 72px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: #e4f7ed;
+    color: #166534;
+    font-size: 0.78rem !important;
+    font-weight: 800 !important;
+    white-space: nowrap;
+}
+
+.product__stock--low {
+    background: #fff3cd;
+    color: #8a5a00;
+}
+
+.product__card h3 {
+    margin-bottom: 4px;
+}
+
+.product__card p {
+    min-height: 36px;
+}
+
+.product__price {
+    display: block;
+    margin-top: 8px;
+    text-align: center;
+}
+
+.cart-badge {
+    box-shadow: 0 4px 10px rgba(229, 57, 53, 0.35);
+}
+
+.cart-badge:not(:empty)::after {
+    content: "";
+    position: absolute;
+    inset: -5px;
+    border: 2px solid rgba(229, 57, 53, 0.18);
+    border-radius: inherit;
+}
+
+.history-sales-card,
+.history__content-sales > .history-content-title {
+    max-width: min(92%, 1180px);
+}
+
+.history-sales-card .history-header,
+.history-sales-card .history-row {
+    grid-template-columns: 0.65fr 1.6fr 1fr 1.1fr 1fr 0.8fr 1fr;
+    gap: 12px;
+    align-items: center;
+}
+
+.history-sales-card .history-row {
+    padding: 18px 0;
+}
+
+.history-sales-card .history-row button {
+    justify-self: stretch;
+    text-align: center;
+    padding: 10px 12px;
+    font-size: 0.9rem;
+}
+
+.history-sales-card .history-header span,
+.history-sales-card .history-row span {
+    white-space: normal;
+}
+
+@media (max-width: 768px) {
+    .history-sales-card .history-header {
+        display: none;
+    }
+
+    .history-sales-card .history-row {
+        grid-template-columns: 1fr 1fr;
+    }
 }
 
 .admin__menu-btn {
@@ -2857,6 +3170,21 @@ footer {
 
 .sale-success__btn-history:hover {
     background: #ddd;
+}
+
+/* Centrado del panel de éxito sin romper el layout del checkout */
+.checkout__content-container.checkout--success {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    grid-template-columns: none;
+}
+
+.checkout__content-container.checkout--success .sale-success {
+    max-width: 720px;
+    width: 100%;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    border-radius: 12px;
 }
 
 /* ── Ventas abiertas ────────────────────────────────────────── */

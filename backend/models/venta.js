@@ -17,8 +17,30 @@ module.exports = (sequelize, DataTypes) => {
     fecha: DataTypes.DATE,
     clienteId: DataTypes.INTEGER,
     metodoPago: DataTypes.STRING,
+    subtotal: {
+      type: DataTypes.FLOAT,
+      defaultValue: 0
+    },
+    iva: {
+      type: DataTypes.FLOAT,
+      defaultValue: 0
+    },
+    descuentoValor: {
+      type: DataTypes.FLOAT,
+      defaultValue: 0
+    },
+    descuentoJson: DataTypes.TEXT,
     total: DataTypes.FLOAT,
-    itemsJson: DataTypes.TEXT
+    itemsJson: DataTypes.TEXT,
+    estado: {
+      type: DataTypes.ENUM('ABIERTA', 'CERRADA'),
+      defaultValue: 'CERRADA',
+      allowNull: false
+    },
+    usuarioQuereCorrijo: DataTypes.INTEGER,
+    fechaCorreccion: DataTypes.DATE,
+    justificacionCorreccion: DataTypes.TEXT,
+    ventaOriginalJson: DataTypes.TEXT
   }, {
     sequelize,
     modelName: 'Venta',

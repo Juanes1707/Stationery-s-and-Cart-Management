@@ -9,7 +9,7 @@ const AUTH_URL =
     ? `${window.location.origin}/api/auth`
     : 'http://localhost:3000/api/auth';
 
-// Claves usadas en sessionStorage (solo duran mientras el tab está abierto)
+// Claves usadas en localStorage (persisten incluso después de cerrar el navegador)
 const TOKEN_KEY = 'py_token';
 const USER_KEY  = 'py_user';
 
@@ -17,22 +17,22 @@ const USER_KEY  = 'py_user';
 
 /** Guarda token y datos del usuario tras un login exitoso. */
 function saveSession(token, user) {
-  sessionStorage.setItem(TOKEN_KEY, token);
-  sessionStorage.setItem(USER_KEY, JSON.stringify(user));
+  localStorage.setItem(TOKEN_KEY, token);
+  localStorage.setItem(USER_KEY, JSON.stringify(user));
 }
 
 /** Devuelve el token JWT guardado o null si no hay sesión. */
 function getToken() {
-  return sessionStorage.getItem(TOKEN_KEY);
+  return localStorage.getItem(TOKEN_KEY);
 }
 
 /** Devuelve el objeto de usuario guardado o null. */
 function getUser() {
-  const raw = sessionStorage.getItem(USER_KEY);
+  const raw = localStorage.getItem(USER_KEY);
   return raw ? JSON.parse(raw) : null;
 }
 
-/** true si hay un token en sessionStorage. */
+/** true si hay un token en localStorage. */
 function isAuthenticated() {
   return Boolean(getToken());
 }
@@ -47,8 +47,8 @@ function hasRole(role) {
 
 /** Borra la sesión y redirige al login. */
 function logout() {
-  sessionStorage.removeItem(TOKEN_KEY);
-  sessionStorage.removeItem(USER_KEY);
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(USER_KEY);
   window.location.href = '/login.html';
 }
 

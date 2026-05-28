@@ -43,6 +43,35 @@ function showConfirm(msg) {
   });
 }
 
+function showAppAlert(msg, type = "info") {
+  return new Promise((resolve) => {
+    document.getElementById("appAlertModal")?.remove();
+    const modal = document.createElement("div");
+    modal.id = "appAlertModal";
+    modal.className = "sale-details-modal app-alert-modal";
+    modal.innerHTML = `
+      <div class="sale-details-content modal-narrow app-alert-box app-alert-box--${type}">
+        <button class="close-btn" aria-label="Cerrar">&times;</button>
+        <h3 class="app-alert-title">${type === "error" ? "No se pudo completar" : "Aviso"}</h3>
+        <p class="app-alert-message">${msg}</p>
+        <div class="app-alert-actions">
+          <button class="confirm-btn confirm-btn--yes">Entendido</button>
+        </div>
+      </div>`;
+
+    document.body.appendChild(modal);
+    const close = () => {
+      modal.remove();
+      resolve();
+    };
+    modal.querySelector(".close-btn").addEventListener("click", close);
+    modal.querySelector(".confirm-btn").addEventListener("click", close);
+    modal.addEventListener("click", (event) => {
+      if (event.target === modal) close();
+    });
+  });
+}
+
 // ── Modal flotante genérico ───────────────────────────────────
 function openFloatingModal(contentHtml, onReady) {
   document.getElementById("floatingFormModal")?.remove();
@@ -64,6 +93,9 @@ function initAdmin() {
   const btnCrud     = document.getElementById("adminCrudBtn");
   const btnPurchases = document.getElementById("adminPurchasesBtn");
   const btnEntities = document.getElementById("adminEntitiesBtn");
+  const btnDiscounts = document.getElementById("adminDiscountsBtn");
+  const btnShortages = document.getElementById("adminShortagesBtn");
+  const btnReports = document.getElementById("adminReportsBtn");
   const btnProfile  = document.getElementById("adminProfileBtn");
   const adminContent = document.getElementById("adminContent");
   const adminPanel  = document.getElementById("adminPanel");
@@ -87,6 +119,16 @@ function initAdmin() {
     btnEntities.disabled = true;
     btnEntities.title = "Solo administradores";
     btnEntities.classList.add("admin__menu-btn--locked");
+  }
+  if (btnDiscounts && !can("manageDiscounts")) {
+    btnDiscounts.disabled = true;
+    btnDiscounts.title = "Solo administradores";
+    btnDiscounts.classList.add("admin__menu-btn--locked");
+  }
+  if (btnReports && !can("viewReports")) {
+    btnReports.disabled = true;
+    btnReports.title = "Solo administradores";
+    btnReports.classList.add("admin__menu-btn--locked");
   }
 
   btnHistory.addEventListener("click", () => {
@@ -122,6 +164,36 @@ function initAdmin() {
     setActiveMenuButton(btnEntities);
     adminContent.innerHTML = "";
     renderEntitiesModule();
+    adminPanel.classList.add("open");
+    document.querySelector(".app__container").classList.add("admin-open");
+  });
+
+  btnDiscounts?.addEventListener("click", () => {
+    if (!can("manageDiscounts")) return;
+    if (typeof clearInvoicePanel === "function") clearInvoicePanel();
+    setActiveMenuButton(btnDiscounts);
+    adminContent.innerHTML = "";
+    renderDiscountsModule();
+    adminPanel.classList.add("open");
+    document.querySelector(".app__container").classList.add("admin-open");
+  });
+
+  btnShortages?.addEventListener("click", () => {
+    if (!can("manageShortages")) return;
+    if (typeof clearInvoicePanel === "function") clearInvoicePanel();
+    setActiveMenuButton(btnShortages);
+    adminContent.innerHTML = "";
+    renderShortagesModule();
+    adminPanel.classList.add("open");
+    document.querySelector(".app__container").classList.add("admin-open");
+  });
+
+  btnReports?.addEventListener("click", () => {
+    if (!can("viewReports")) return;
+    if (typeof clearInvoicePanel === "function") clearInvoicePanel();
+    setActiveMenuButton(btnReports);
+    adminContent.innerHTML = "";
+    renderReportsModule();
     adminPanel.classList.add("open");
     document.querySelector(".app__container").classList.add("admin-open");
   });

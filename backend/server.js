@@ -37,11 +37,14 @@ app.use("/api/productos", require("./routes/productos"));
 // Rutas protegidas: cualquier usuario autenticado
 app.use("/api/ventas",   authJwt, requireRole("USER"), require("./routes/ventas"));
 app.use("/api/clientes", authJwt, requireRole("USER"), require("./routes/clientes"));
+app.use("/api/faltantes", authJwt, requireRole("USER"), require("./routes/faltantes"));
+app.use("/api/descuentos", authJwt, requireRole("USER"), require("./routes/descuentos"));
 
 // Rutas protegidas: solo ADMIN
 app.use("/api/compras",     authJwt, requireRole("ADMIN"), require("./routes/compras"));
 app.use("/api/proveedores", authJwt, requireRole("ADMIN"), require("./routes/proveedores"));
 app.use("/api/categorias",  authJwt, requireRole("ADMIN"), require("./routes/categorias"));
+app.use("/api/reportes",    authJwt, requireRole("ADMIN"), require("./routes/reportes"));
 
 // En local servimos el frontend estatico (HTML/CSS/JS) desde la carpeta padre.
 // En produccion (Render) la carpeta padre no existe porque solo se despliega /backend,

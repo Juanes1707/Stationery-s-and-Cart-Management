@@ -6,6 +6,13 @@
 //   "categorias", "proveedores", "clientes"
 // ============================================================
 
+let activeEntityName = null;
+const entityListCache = {
+  categorias: [],
+  proveedores: [],
+  clientes: [],
+};
+
 // ── Función auxiliar: escapar HTML ─────────────────────────
 function escapeHtml(str) {
   if (!str) return "";
@@ -79,6 +86,7 @@ function renderEntitiesModule() {
 // Cargar y renderizar lista de una entidad desde Google Sheets
 // ============================================================
 async function loadEntityList(entityName) {
+  activeEntityName = entityName;
   const container = document.getElementById("entityListContainer");
   if (!container) return;
 
@@ -92,7 +100,8 @@ async function loadEntityList(entityName) {
     items = getLocalEntity(entityName); // fallback a localStorage
   }
 
-  // Guardar en localStorage como caché local
+  // Guardar en caché y en localStorage
+  entityListCache[entityName] = items;
   saveLocalEntity(entityName, items);
 
   renderEntityList(entityName, items);
@@ -128,25 +137,25 @@ function renderEntityList(entityName, items) {
   } else {
     html += `
       <div class="history-card">
-        <div class="history-header" style="grid-template-columns: repeat(${labels.columns.length + 1}, 1fr);">
+        <div class="history-header" style="grid-template-columns: repeat(${labels.columns.length}, minmax(0, 1fr)) auto;">
           ${labels.columns.map((c) => `<span>${c.label.toUpperCase()}</span>`).join("")}
           <span>ACCIONES</span>
         </div>
     `;
 
     items.forEach((item) => {
-      html += `<div class="history-row" style="grid-template-columns: repeat(${labels.columns.length + 1}, 1fr);">`;
+      html += `<div class="history-row" style="grid-template-columns: repeat(${labels.columns.length}, minmax(0, 1fr)) auto;">`;
       labels.columns.forEach((col) => {
         html += `<span>${item[col.key] || "-"}</span>`;
       });
       html += `
-          <span style="display:flex; gap:6px;">
+          <span style="display:flex; gap:6px; min-width:160px; justify-content:flex-end;">
             <button class="btn-edit-entity" data-id="${item.id}"
-              style="background:#2196F3; color:#fff; border:none; border-radius:4px; padding:4px 10px; cursor:pointer;">
+              style="background:#2196F3; color:#fff; border:none; border-radius:4px; padding:4px 10px; cursor:pointer; white-space:nowrap;">
               Editar
             </button>
             <button class="btn-delete-entity" data-id="${item.id}"
-              style="background:#f44336; color:#fff; border:none; border-radius:4px; padding:4px 10px; cursor:pointer;">
+              style="background:#f44336; color:#fff; border:none; border-radius:4px; padding:4px 10px; cursor:pointer; white-space:nowrap;">
               Eliminar
             </button>
           </span>
@@ -159,6 +168,8 @@ function renderEntityList(entityName, items) {
 
   container.innerHTML = html;
 
+  const originalItems = entityListCache[entityName] || items;
+
   // ── Buscador en tiempo real ───────────────────────────────
   document
     .getElementById("entitySearch")
@@ -167,7 +178,7 @@ function renderEntityList(entityName, items) {
         .toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "");
-      const filtered = items.filter((item) =>
+      const filtered = originalItems.filter((item) =>
         labels.columns.some((col) =>
           String(item[col.key] || "")
             .toLowerCase()
@@ -215,10 +226,11 @@ function renderEntityList(entityName, items) {
         );
         await apiDelete(entityName, { id });
 
-        // Actualizar lista local y recargar sólo si Sheet confirmó la eliminación
-        const updated = getLocalEntity(entityName).filter(
+        // Actualizar lista local y caché, y recargar sólo si Sheet confirmó la eliminación
+        const updated = (entityListCache[entityName] || getLocalEntity(entityName)).filter(
           (i) => String(i.id) !== String(id),
         );
+        entityListCache[entityName] = updated;
         saveLocalEntity(entityName, updated);
         renderEntityList(entityName, updated);
         if (typeof showToast === "function") {
@@ -367,6 +379,7 @@ function openEntityModal(entityName, item, allItems) {
           const local = getLocalEntity(entityName);
           const idx = local.findIndex((i) => String(i.id) === String(item.id));
           if (idx >= 0) local[idx] = newItem;
+          entityListCache[entityName] = local;
           saveLocalEntity(entityName, local);
           renderEntityList(entityName, local);
         } else {
@@ -432,6 +445,7 @@ function openEntityModal(entityName, item, allItems) {
           if (createdSuccessfully) {
             const local = getLocalEntity(entityName);
             local.push(newItem);
+            entityListCache[entityName] = local;
             saveLocalEntity(entityName, local);
             renderEntityList(entityName, local);
           }

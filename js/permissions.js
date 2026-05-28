@@ -9,6 +9,9 @@ const PERMISSIONS = {
     manageCatalog:    true,
     managePurchases:  true,
     manageEntities:   true,
+    manageDiscounts:  true,
+    manageShortages:  true,
+    viewReports:      true,
     viewHistory:      true,
   },
   USER: {
@@ -16,6 +19,9 @@ const PERMISSIONS = {
     manageCatalog:    false,
     managePurchases:  false,
     manageEntities:   false,
+    manageDiscounts:  false,
+    manageShortages:  true,
+    viewReports:      false,
     viewHistory:      true,
   },
 };

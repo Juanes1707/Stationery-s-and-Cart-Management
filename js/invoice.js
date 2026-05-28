@@ -84,7 +84,7 @@ function renderInvoiceInfo(invoiceContainer, sale) {
   infoVentaEl.innerHTML = `
     <div class="flex">
       <span><b>Factura:</b> #${sale.id}</span>
-      <span><b>Fecha:</b> ${sale.date}</span>
+      <span><b>Fecha:</b> ${typeof formatSaleDate === 'function' ? formatSaleDate(sale.date) : sale.date}</span>
     </div>
   `;
 }

@@ -7,7 +7,24 @@ function money(value) {
   return Number(value || 0).toLocaleString("es-CO");
 }
 
+let checkoutDiscounts = [];
+
+function calculateCheckoutTotals(discount) {
+  const subtotal = state.cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const discountValue = discount
+    ? Math.min(subtotal, discount.tipo === "PORCENTAJE"
+        ? subtotal * (Number(discount.valor || 0) / 100)
+        : Number(discount.valor || 0))
+    : 0;
+  const base = Math.max(0, subtotal - discountValue);
+  const iva = base * 0.19;
+  return { subtotal, discountValue, iva, total: base + iva };
+}
+
 function renderSaleSuccess(saleData) {
+  // Activar modo "success" para centrar la tarjeta sin alterar layout del checkout
+  checkoutContainer.classList.add('checkout--success');
+
   checkoutContainer.innerHTML = `
     <div class="sale-success">
       <div class="sale-success__icon"><i class="fa-solid fa-circle-check"></i></div>
@@ -54,6 +71,8 @@ function renderSaleSuccess(saleData) {
 }
 
 function renderCheckout() {
+  // Asegurar que salimos del modo success cuando volvemos al formulario
+  checkoutContainer.classList.remove('checkout--success');
   checkoutContainer.innerHTML = "";
 
   if (state.cart.length === 0) {
@@ -67,9 +86,7 @@ function renderCheckout() {
     return;
   }
 
-  const subtotal = state.cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  const iva = subtotal * 0.19;
-  const total = subtotal + iva;
+  let totals = calculateCheckoutTotals(null);
 
   const cartItemsHTML = state.cart
     .map(
@@ -103,10 +120,18 @@ function renderCheckout() {
       <h3>Pago</h3>
 
       <div class="checkout__totals">
-        <p><span>Subtotal</span><strong>$${money(subtotal)}</strong></p>
-        <p><span>IVA 19%</span><strong>$${money(iva)}</strong></p>
-        <h3><span>Total</span><strong>$${money(total)}</strong></h3>
+        <p><span>Subtotal</span><strong id="checkoutSubtotal">$${money(totals.subtotal)}</strong></p>
+        <p><span>Descuento</span><strong id="checkoutDiscountValue">$0</strong></p>
+        <p><span>IVA 19%</span><strong id="checkoutIva">$${money(totals.iva)}</strong></p>
+        <h3><span>Total</span><strong id="checkoutTotal">$${money(totals.total)}</strong></h3>
       </div>
+
+      <label class="checkout__field">
+        <span>Descuento</span>
+        <select id="discountSelect">
+          <option value="">Sin descuento</option>
+        </select>
+      </label>
 
       <label class="checkout__field">
         <span>Cliente</span>
@@ -131,7 +156,7 @@ function renderCheckout() {
       <div id="efectivoFields" class="payment__fields">
         <label class="checkout__field">
           <span>Valor recibido</span>
-          <input type="number" id="valuePaid" placeholder="${Math.ceil(total)}" min="${Math.ceil(total)}" required>
+          <input type="number" id="valuePaid" placeholder="${Math.ceil(totals.total)}" min="${Math.ceil(totals.total)}" required>
         </label>
         <p id="changeDisplay" class="checkout__change"></p>
       </div>
@@ -147,6 +172,36 @@ function renderCheckout() {
   const efectivoFields = document.getElementById("efectivoFields");
   const valuePaidInput = document.getElementById("valuePaid");
   const changeDisplay = document.getElementById("changeDisplay");
+  const discountSelect = document.getElementById("discountSelect");
+
+  function selectedDiscount() {
+    const raw = discountSelect.selectedOptions[0]?.dataset.discount;
+    return raw ? JSON.parse(raw) : null;
+  }
+
+  function updateTotals() {
+    totals = calculateCheckoutTotals(selectedDiscount());
+    document.getElementById("checkoutSubtotal").textContent = `$${money(totals.subtotal)}`;
+    document.getElementById("checkoutDiscountValue").textContent = `$${money(totals.discountValue)}`;
+    document.getElementById("checkoutIva").textContent = `$${money(totals.iva)}`;
+    document.getElementById("checkoutTotal").textContent = `$${money(totals.total)}`;
+    valuePaidInput.placeholder = String(Math.ceil(totals.total));
+    valuePaidInput.min = String(Math.ceil(totals.total));
+    valuePaidInput.dispatchEvent(new Event("input"));
+  }
+
+  apiGet("descuentos?activo=true").then((data) => {
+    checkoutDiscounts = Array.isArray(data) ? data : [];
+    checkoutDiscounts.forEach((discount) => {
+      const option = document.createElement("option");
+      option.value = discount.id;
+      option.dataset.discount = JSON.stringify(discount);
+      option.textContent = `${discount.nombre} (${discount.tipo === "PORCENTAJE" ? `${discount.valor}%` : `$${money(discount.valor)}`})`;
+      discountSelect.appendChild(option);
+    });
+  });
+
+  discountSelect.addEventListener("change", updateTotals);
 
   paymentMethods.forEach((method) => {
     method.addEventListener("change", function () {
@@ -162,7 +217,7 @@ function renderCheckout() {
 
   valuePaidInput.addEventListener("input", function () {
     const received = Number(this.value || 0);
-    const change = received - Math.ceil(total);
+    const change = received - Math.ceil(totals.total);
     if (!this.value) {
       changeDisplay.textContent = "";
       return;
@@ -179,7 +234,7 @@ function renderCheckout() {
 
     if (paymentMethod === "efectivo") {
       const received = Number(valuePaidInput.value || 0);
-      if (received < Math.ceil(total)) {
+      if (received < Math.ceil(totals.total)) {
         showToast("El valor recibido es insuficiente.", "error");
         return;
       }

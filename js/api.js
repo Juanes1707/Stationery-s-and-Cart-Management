@@ -34,7 +34,7 @@ function logAPI(action, resource, status, data) {
 }
 
 // ── Cabecera de autorización ──────────────────────────────────
-// Lee el token de sessionStorage (guardado por auth.js al hacer login).
+// Lee el token de localStorage (guardado por auth.js al hacer login).
 // Si no hay token devuelve un objeto vacío (rutas públicas no lo necesitan).
 function _authHeader() {
   const token = (typeof getToken === "function") ? getToken() : null;

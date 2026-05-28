@@ -1178,3 +1178,93 @@ button.hold-sale:hover { border-color: var(--brand); color: #000; }
 
 .profile-submit--loading .profile-spinner  { display: block; }
 .profile-submit--loading .profile-btn-text { display: none; }
+
+/* ================================================================
+   Ajustes finales solicitados: catalogo, carrito e historial
+================================================================ */
+.product__card img {
+  display: none !important;
+}
+
+.product__info {
+  min-height: 220px;
+}
+
+.product__topline span,
+.product__availability,
+.product__stock {
+  margin-top: 0 !important;
+}
+
+.product__availability {
+  color: #666 !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.product__stock {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 72px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #e4f7ed;
+  color: #166534 !important;
+  font-size: 0.78rem !important;
+  font-weight: 800 !important;
+  white-space: nowrap;
+}
+
+.product__stock--low {
+  background: #fff3cd;
+  color: #8a5a00 !important;
+}
+
+.product__price {
+  margin-top: 8px !important;
+  text-align: center;
+}
+
+.history-sales-card,
+.history__content-sales > .history-content-title {
+  max-width: min(92%, 1180px);
+}
+
+.history-sales-card .history-header,
+.history-sales-card .history-row {
+  grid-template-columns: 0.65fr 1.6fr 1fr 1.1fr 1fr 0.8fr 1fr;
+  gap: 12px;
+}
+
+.history-sales-card .history-row {
+  padding: 18px 0;
+}
+
+.history-sales-card .history-row button {
+  justify-self: stretch;
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 0.9rem;
+}
+
+.history-sales-card .history-header span,
+.history-sales-card .history-row span {
+  white-space: normal;
+}
+
+.sale-details-content .close-btn:hover {
+  transform: none;
+}
+
+@media (max-width: 768px) {
+  .history-sales-card .history-header {
+    display: none;
+  }
+
+  .history-sales-card .history-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}
