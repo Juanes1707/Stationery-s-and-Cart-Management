@@ -1,7 +1,7 @@
 /* ================================================================
    RESPONSIVE.CSS — Papel y Luna
    Cargado DESPUÉS de styles.css. Mejora el diseño en todos los
-   tamaños de pantalla con un enfoque mobile-first.
+   tamaños de pantalla con un enfoque mobile-first. :)
 ================================================================ */
 
 /* ── Variables globales ──────────────────────────────────────── */
@@ -20,7 +20,7 @@
   --transition: 0.25s ease;
   --header-h:   68px;
 }
-
+/* :) */  
 /* ── Reset suave ─────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
 
