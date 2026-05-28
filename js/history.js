@@ -2,6 +2,11 @@
 // history.js - Historial de ventas
 // ============================================================
 
+const BACKEND_API_ROOT =
+  window.location.port === '3000'
+    ? `${window.location.origin}/api`
+    : 'https://stationery-api.onrender.com/api';
+
 function parseItemsJson(value) {
   if (!value) return [];
   if (typeof value !== 'string') return value;
@@ -198,7 +203,7 @@ function showSaleDetails(saleId) {
 // ============================================================
 async function openSaleForCorrection(saleId) {
   try {
-    const response = await authFetch(`http://localhost:3000/api/ventas/${saleId}/estado`, {
+    const response = await authFetch(`${BACKEND_API_ROOT}/ventas/${saleId}/estado`, {
       method: 'PATCH',
       body: JSON.stringify({
         nuevoEstado: 'ABIERTA',
@@ -357,7 +362,7 @@ function updateCorrectionTotals(modal, items) {
  */
 async function closeCorrectionWithoutSaving(saleId) {
   try {
-    await authFetch(`http://localhost:3000/api/ventas/${saleId}/estado`, {
+    await authFetch(`${BACKEND_API_ROOT}/ventas/${saleId}/estado`, {
       method: 'PATCH',
       body: JSON.stringify({ nuevoEstado: 'CERRADA' })
     });
@@ -377,7 +382,7 @@ async function saveCorrectedSale(modal, saleId, updatedItems) {
     const subtotal = updatedItems.reduce((acc, i) => acc + (Number(i.precio ?? i.price ?? 0) * Number(i.cantidad ?? i.quantity ?? 0)), 0);
     const total = subtotal * 1.19; // Incluir IVA
 
-    const response = await authFetch(`http://localhost:3000/api/ventas/${saleId}`, {
+    const response = await authFetch(`${BACKEND_API_ROOT}/ventas/${saleId}`, {
       method: 'PUT',
       body: JSON.stringify({
         itemsJson: updatedItems,
@@ -393,7 +398,7 @@ async function saveCorrectedSale(modal, saleId, updatedItems) {
     }
 
     // Recalcular totales en el servidor
-    await authFetch(`http://localhost:3000/api/ventas/${saleId}/recalcular-totales`, {
+    await authFetch(`${BACKEND_API_ROOT}/ventas/${saleId}/recalcular-totales`, {
       method: 'POST'
     });
 
@@ -502,7 +507,7 @@ function showRefundModal(saleId) {
       showAppAlert('Selecciona al menos un producto.', 'error');
       return;
     }
-    const response = await authFetch(`http://localhost:3000/api/ventas/${sale.id}/reembolsos`, {
+    const response = await authFetch(`${BACKEND_API_ROOT}/ventas/${sale.id}/reembolsos`, {
       method: 'POST',
       body: JSON.stringify({
         tipo: modal.querySelector('#refundAll').checked ? 'TOTAL' : 'PARCIAL',

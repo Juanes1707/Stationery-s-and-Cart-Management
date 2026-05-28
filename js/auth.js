@@ -7,7 +7,7 @@
 const AUTH_URL =
   window.location.port === '3000'
     ? `${window.location.origin}/api/auth`
-    : 'http://localhost:3000/api/auth';
+    : 'https://stationery-api.onrender.com/api/auth';
 
 // Claves usadas en localStorage (persisten incluso después de cerrar el navegador)
 const TOKEN_KEY = 'py_token';
