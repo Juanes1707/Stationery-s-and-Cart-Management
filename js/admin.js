@@ -133,7 +133,12 @@ function initAdmin() {
 
   btnHistory.addEventListener("click", () => {
     setActiveMenuButton(btnHistory);
-    renderAdminHistory();
+    if (typeof navigate === "function") {
+      navigate("profile");
+    }
+    if (typeof renderAdminHistory === "function") {
+      renderAdminHistory();
+    }
   });
 
   // Al ir a Productos, cerramos la factura; si no, seguiría viéndose abajo sin sentido.
@@ -225,7 +230,17 @@ function resetAdminMenuSelectionToHistorial() {
 }
 
 function renderAdminHistory() {
-  document.getElementById("historySection")?.classList.remove("admin-listing");
+  const historySection = document.getElementById("historySection");
+  const adminPanel = document.getElementById("adminPanel");
+  if (adminPanel) {
+    adminPanel.style.display = "flex";
+    adminPanel.classList.add("open");
+  }
+  if (historySection) {
+    historySection.style.display = "block";
+    historySection.classList.remove("admin-listing");
+  }
+
   // Volvemos al historial “desde cero”: sin factura abierta por si venías de otra vista.
   // Por si no pudiéramos usar el cierre normal, igual vaciamos el recuadro de la factura.
   if (typeof clearInvoicePanel === "function") clearInvoicePanel();
