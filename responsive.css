@@ -1,7 +1,7 @@
 /* ================================================================
    RESPONSIVE.CSS — Papel y Luna
    Cargado DESPUÉS de styles.css. Mejora el diseño en todos los
-   tamaños de pantalla con un enfoque mobile-first.
+   tamaños de pantalla con un enfoque mobile-first. :)
 ================================================================ */
 
 /* ── Variables globales ──────────────────────────────────────── */
@@ -20,7 +20,7 @@
   --transition: 0.25s ease;
   --header-h:   68px;
 }
-
+/* :) */  
 /* ── Reset suave ─────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -171,45 +171,6 @@
 
 .cart-badge[data-count="0"],
 .cart-badge:empty { display: none; }
-
-/* ================================================================
-   HERO SECTION
-================================================================ */
-.hero__section {
-  min-height: clamp(180px, 30vw, 380px);
-  border-radius: var(--radius-lg);
-  background-position: center center;
-  background-size: cover;
-  position: relative;
-  margin-bottom: 2rem;
-}
-
-.hero__section-content {
-  padding: clamp(1.25rem, 4vw, 2.5rem);
-  max-width: clamp(280px, 55%, 460px);
-}
-
-.hero__section-content h2 {
-  font-size: clamp(1.25rem, 3.5vw, 2.1rem);
-  margin-bottom: 0.75rem;
-  line-height: 1.25;
-}
-
-.hero__section-content p {
-  font-size: clamp(0.85rem, 1.8vw, 1rem);
-  margin-bottom: 1.25rem;
-  opacity: 0.92;
-}
-
-.hero__section-content button {
-  padding: 0.6rem 1.25rem;
-  font-size: clamp(0.8rem, 1.5vw, 1rem);
-  border-radius: var(--radius-sm);
-  transition: background var(--transition), transform var(--transition);
-  -webkit-tap-highlight-color: transparent;
-}
-
-.hero__section-content button:active { transform: scale(0.96); }
 
 /* ================================================================
    CATEGORÍAS (scroll horizontal en móvil)
@@ -716,10 +677,6 @@ button.hold-sale:hover { border-color: var(--brand); color: #000; }
   .header__actions { gap: 0.4rem; }
   .header__actions-button { width: 38px; height: 38px; min-width: 38px; font-size: 0.95rem; }
 
-  /* Hero más compacto */
-  .hero__section { min-height: clamp(160px, 40vw, 240px); margin-bottom: 1.25rem; border-radius: var(--radius-md); }
-  .hero__section-content { max-width: 100%; }
-
   /* Productos: 2 columnas fijas */
   .main__products-container {
     grid-template-columns: repeat(2, 1fr);
@@ -764,28 +721,6 @@ button.hold-sale:hover { border-color: var(--brand); color: #000; }
   header, main, aside, footer { padding: 0.75rem; }
 
   .header__content-title { font-size: 1rem; }
-
-  /* Hero adaptado en vez de oculto */
-  .hero__section {
-    min-height: 190px;
-    border-radius: var(--radius-md);
-    background-position: 70% center;
-  }
-
-  .hero__section-content {
-    padding: 1.1rem;
-    max-width: 85%;
-    background: linear-gradient(to right, rgba(0,0,0,.6) 60%, transparent);
-    border-radius: 0 0 0 var(--radius-md);
-  }
-
-  .hero__section-content h2 { font-size: 1.15rem; margin-bottom: 0.5rem; }
-  .hero__section-content p  { font-size: 0.78rem; margin-bottom: 0.9rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-
-  .hero__section-content button {
-    font-size: 0.82rem;
-    padding: 0.5rem 1rem;
-  }
 
   /* Productos: 2 columnas en teléfonos */
   .main__products-container {
@@ -837,15 +772,6 @@ button.hold-sale:hover { border-color: var(--brand); color: #000; }
 
   .header__actions-button { width: 36px; height: 36px; min-width: 36px; font-size: 0.9rem; }
 
-  /* Hero simplificado */
-  .hero__section { min-height: 170px; }
-  .hero__section-content h2 { font-size: 1rem; }
-  .hero__section-content p  { display: none; }
-
-  /* Botones full-width en hero */
-  .hero__section-content button,
-  #hero__section-button { width: 100%; text-align: center; }
-
   /* Grid 2 columnas ajustadas */
   .main__products-container { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
 
@@ -882,7 +808,6 @@ button.hold-sale:hover { border-color: var(--brand); color: #000; }
 ================================================================ */
 @media print {
   .header__content,
-  .hero__section,
   .main__content-section,
   .admin-history-workspace,
   .checkout__content,
