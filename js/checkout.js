@@ -243,7 +243,9 @@ function renderCheckout() {
     try {
       const saleData = await registerSale();
       await loadProductsFromAPI();
-      renderHistory();
+      if (typeof renderHistory === 'function') {
+        renderHistory();
+      }
       renderSaleSuccess(saleData);
     } catch (error) {
       console.error(error);
