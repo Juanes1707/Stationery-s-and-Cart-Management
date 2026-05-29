@@ -3,7 +3,9 @@
 // Depende de: api.js, data.js, state.js, storage.js,
 //             sales.js, history.js, router.js, admin.js
 // ============================================================
-
+if (!isAuthenticated()) {
+  window.location.href = 'login.html';
+}
 // ── Selectores globales ─────────────────────────────────────
 const productsContainer = document.querySelector(".main__products-container");
 const cartItemsContainer = document.getElementById("cartItems");
@@ -55,7 +57,7 @@ function renderCatalogMessage(message) {
   productsContainer.innerHTML = `
     <div class="catalog__empty-state">
       <strong>${escapeHtmlLocal(message)}</strong>
-      <span>Verifica que el backend este corriendo en http://localhost:3000.</span>
+      <span>Verifica que el backend esté desplegado y accesible en https://stationery-api.onrender.com.</span>
     </div>
   `;
 }

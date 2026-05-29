@@ -2,6 +2,11 @@
 // history.js - Historial de ventas
 // ============================================================
 
+const BACKEND_API_ROOT =
+  window.location.port === '3000'
+    ? `${window.location.origin}/api`
+    : 'https://stationery-api.onrender.com/api';
+
 function parseItemsJson(value) {
   if (!value) return [];
   if (typeof value !== 'string') return value;
@@ -44,13 +49,22 @@ function formatSaleDate(value) {
 function renderHistory() {
   const historySection = document.querySelector('.history__content-sales');
   if (!historySection) return;
+  historySection.style.display = 'block';
+  historySection.parentElement?.scrollIntoView({ behavior: 'smooth' });
 
-  if (state.sales.length === 0) {
+  const sales = Array.isArray(state.sales) ? state.sales : [];
+  if (sales.length === 0) {
     historySection.innerHTML = `
       <h2 class="history-content-title">Historial de ventas</h2>
       <p style="color:#888; text-align:center; margin-top:16px;">No hay ventas registradas.</p>
     `;
   } else {
+    const sortedSales = [...sales].sort((a, b) => {
+      const dateA = new Date(a.fechaISO || a.date || a.fecha || a.fechaISO || a.date);
+      const dateB = new Date(b.fechaISO || b.date || b.fecha || b.fechaISO || b.date);
+      return dateB - dateA;
+    });
+
     let content = `
       <h2 class="history-content-title">Historial de ventas</h2>
       <div class="history-card history-sales-card">
@@ -59,7 +73,7 @@ function renderHistory() {
           <span>ESTADO</span><span>DETALLES</span><span>FACTURA</span><span>REEMBOLSO</span>
         </div>
     `;
-    state.sales.forEach(sale => {
+    sortedSales.forEach(sale => {
       content += `
         <div class="history-row">
           <span>#${String(sale.id).slice(-6)}</span>
@@ -198,7 +212,7 @@ function showSaleDetails(saleId) {
 // ============================================================
 async function openSaleForCorrection(saleId) {
   try {
-    const response = await authFetch(`http://localhost:3000/api/ventas/${saleId}/estado`, {
+    const response = await authFetch(`${BACKEND_API_ROOT}/ventas/${saleId}/estado`, {
       method: 'PATCH',
       body: JSON.stringify({
         nuevoEstado: 'ABIERTA',
@@ -357,7 +371,7 @@ function updateCorrectionTotals(modal, items) {
  */
 async function closeCorrectionWithoutSaving(saleId) {
   try {
-    await authFetch(`http://localhost:3000/api/ventas/${saleId}/estado`, {
+    await authFetch(`${BACKEND_API_ROOT}/ventas/${saleId}/estado`, {
       method: 'PATCH',
       body: JSON.stringify({ nuevoEstado: 'CERRADA' })
     });
@@ -377,7 +391,7 @@ async function saveCorrectedSale(modal, saleId, updatedItems) {
     const subtotal = updatedItems.reduce((acc, i) => acc + (Number(i.precio ?? i.price ?? 0) * Number(i.cantidad ?? i.quantity ?? 0)), 0);
     const total = subtotal * 1.19; // Incluir IVA
 
-    const response = await authFetch(`http://localhost:3000/api/ventas/${saleId}`, {
+    const response = await authFetch(`${BACKEND_API_ROOT}/ventas/${saleId}`, {
       method: 'PUT',
       body: JSON.stringify({
         itemsJson: updatedItems,
@@ -393,7 +407,7 @@ async function saveCorrectedSale(modal, saleId, updatedItems) {
     }
 
     // Recalcular totales en el servidor
-    await authFetch(`http://localhost:3000/api/ventas/${saleId}/recalcular-totales`, {
+    await authFetch(`${BACKEND_API_ROOT}/ventas/${saleId}/recalcular-totales`, {
       method: 'POST'
     });
 
@@ -464,16 +478,57 @@ function showRefundModal(saleId) {
       const item = sale.items[idx];
       return {
         productoId: item.productoId ?? item.id,
-        id: item.productoId ?? item.id,
-        nombre: item.nombre || item.name,
-        name: item.nombre || item.name,
         cantidad: Number(modal.querySelector(`.refund-qty[data-index="${idx}"]`).value || 0),
-        quantity: Number(modal.querySelector(`.refund-qty[data-index="${idx}"]`).value || 0),
-        precio: Number(item.precio ?? item.price ?? 0),
-        price: Number(item.precio ?? item.price ?? 0)
+        precio: Number(item.precio ?? item.price ?? 0)
       };
     });
   }
+
+  function updateRefundTotal() {
+    const subtotal = selectedItems().reduce((acc, item) => acc + item.precio * item.cantidad, 0);
+    document.getElementById('refundTotal').textContent = `$${(subtotal * 1.19).toLocaleString('es-CO')}`;
+  }
+
+  modal.querySelectorAll('.refund-check').forEach((check) => {
+    check.addEventListener('change', () => {
+      modal.querySelector(`.refund-qty[data-index="${check.dataset.index}"]`).disabled = !check.checked;
+      updateRefundTotal();
+    });
+  });
+
+  modal.querySelectorAll('.refund-qty').forEach((input) => {
+    input.addEventListener('input', updateRefundTotal);
+  });
+
+  document.getElementById('refundAll').addEventListener('change', function() {
+    modal.querySelectorAll('.refund-check').forEach(check => check.checked = this.checked);
+    modal.querySelectorAll('.refund-check').forEach(check => check.dispatchEvent(new Event('change')));
+  });
+
+  modal.querySelector('.close-btn').addEventListener('click', () => modal.remove());
+  modal.querySelector('.btn-close-modal').addEventListener('click', () => modal.remove());
+
+  modal.querySelector('.btn-save-refund').addEventListener('click', async () => {
+    const items = selectedItems();
+    const returnStock = document.getElementById('refundReturnStock').checked;
+    const reason = document.getElementById('refundReason').value || 'No especificado';
+    
+    try {
+      await authFetch(`${BACKEND_API_ROOT}/ventas/${saleId}/reembolso`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items, returnStock, reason })
+      });
+      showToast('Reembolso registrado exitosamente.');
+      modal.remove();
+      renderHistory();
+    } catch (error) {
+      console.error('Error al procesar reembolso:', error);
+      showAppAlert('Error al procesar reembolso.', 'error');
+    }
+  });
+}
+
 
   function updateRefundTotal() {
     const subtotal = selectedItems().reduce((acc, item) => acc + item.precio * item.cantidad, 0);
@@ -502,7 +557,7 @@ function showRefundModal(saleId) {
       showAppAlert('Selecciona al menos un producto.', 'error');
       return;
     }
-    const response = await authFetch(`http://localhost:3000/api/ventas/${sale.id}/reembolsos`, {
+    const response = await authFetch(`${BACKEND_API_ROOT}/ventas/${sale.id}/reembolsos`, {
       method: 'POST',
       body: JSON.stringify({
         tipo: modal.querySelector('#refundAll').checked ? 'TOTAL' : 'PARCIAL',
@@ -520,4 +575,3 @@ function showRefundModal(saleId) {
     showToast(`Reembolso registrado por $${Number(json.data.total).toLocaleString('es-CO')}.`);
     await loadProductsFromAPI();
   });
-}

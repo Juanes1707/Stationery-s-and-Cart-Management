@@ -7,7 +7,7 @@
 const AUTH_URL =
   window.location.port === '3000'
     ? `${window.location.origin}/api/auth`
-    : 'http://localhost:3000/api/auth';
+    : 'https://stationery-api.onrender.com/api/auth';
 
 // Claves usadas en localStorage (persisten incluso después de cerrar el navegador)
 const TOKEN_KEY = 'py_token';
@@ -49,7 +49,7 @@ function hasRole(role) {
 function logout() {
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(USER_KEY);
-  window.location.href = '/login.html';
+  window.location.href = 'login.html';
 }
 
 // ── Login ────────────────────────────────────────────────────
@@ -124,11 +124,11 @@ async function authFetch(url, options = {}) {
  */
 function requireAuth(requiredRole) {
   if (!isAuthenticated()) {
-    window.location.href = '/login.html';
+    window.location.href = 'login.html';
     return false;
   }
   if (requiredRole && !hasRole(requiredRole)) {
-    window.location.href = '/index.html';
+    window.location.href = 'index.html';
     return false;
   }
   return true;

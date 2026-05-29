@@ -7,7 +7,7 @@
 const PROFILE_URL =
   window.location.port === '3000'
     ? `${window.location.origin}/api/auth/profile`
-    : 'http://localhost:3000/api/auth/profile';
+    : 'https://stationery-api.onrender.com/api/auth/profile';
 
 function renderProfileModule() {
   // Mismo patrón que purchases.js / entities.js / renderProductsInMainArea

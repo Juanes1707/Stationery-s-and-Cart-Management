@@ -112,6 +112,7 @@ async function renderPurchasesModule() {
   const historyContent = document.querySelector(".history__content-sales");
   if (!historySection || !historyContent) return;
 
+  historySection.style.display = "block";
   historySection.classList.add("admin-listing");
   historyContent.innerHTML = '<p class="admin__empty">Cargando compras...</p>';
 
@@ -337,9 +338,13 @@ function openPurchaseModal() {
           });
           console.log("[compras] apiPost result:", result);
 
+          if (!result?.success) {
+            throw new Error(result?.message || "No se pudo registrar la compra.");
+          }
+
           const purchases = getPurchases();
           purchases.push({
-            id: result?.data?.id || Date.now(),
+            id: result.data?.id || Date.now(),
             fecha: normalizePurchaseDate(new Date(date || new Date())),
             proveedor: provider,
             proveedorId: provider,
@@ -347,16 +352,21 @@ function openPurchaseModal() {
             items: purchaseItems,
           });
           savePurchases(purchases);
-          showToast("Compra registrada en SQLite.");
+          showToast("Compra registrada en SQLite.", "success");
         } catch (error) {
           console.error(error);
-          showToast("No se pudo registrar la compra en SQLite.", "error");
+          showToast(error.message || "No se pudo registrar la compra en SQLite.", "error");
           return;
         }
 
         modal.remove();
+        if (typeof loadProductsFromAPI === "function") {
+          await loadProductsFromAPI();
+        }
         await renderPurchasesModule();
-        renderProducts(products);
+        if (typeof renderProducts === "function") {
+          renderProducts(products);
+        }
       });
     }
   });
