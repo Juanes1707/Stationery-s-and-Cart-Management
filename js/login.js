@@ -5,7 +5,7 @@
 
 // Si ya hay sesión activa no tiene sentido estar en el login
 if (isAuthenticated()) {
-  window.location.href = '/index.html';
+  window.location.href = 'index.html';
 }
 
 // ── Referencias al DOM ────────────────────────────────────────
@@ -58,7 +58,7 @@ form.addEventListener('submit', async (e) => {
 
   try {
     await login(username, password);
-    window.location.href = '/index.html';
+    window.location.href = 'index.html';
   } catch (err) {
     showError(err.message || 'Error al iniciar sesión.');
   } finally {
