@@ -49,6 +49,8 @@ function formatSaleDate(value) {
 function renderHistory() {
   const historySection = document.querySelector('.history__content-sales');
   if (!historySection) return;
+  historySection.style.display = 'block';
+  historySection.parentElement?.scrollIntoView({ behavior: 'smooth' });
 
   const sales = Array.isArray(state.sales) ? state.sales : [];
   if (sales.length === 0) {

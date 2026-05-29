@@ -112,6 +112,7 @@ async function renderPurchasesModule() {
   const historyContent = document.querySelector(".history__content-sales");
   if (!historySection || !historyContent) return;
 
+  historySection.style.display = "block";
   historySection.classList.add("admin-listing");
   historyContent.innerHTML = '<p class="admin__empty">Cargando compras...</p>';
 

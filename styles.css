@@ -233,6 +233,16 @@ footer {
     padding: 20px;
 }
 
+#historySection.admin-listing .history-card,
+#historySection.admin-listing .history-content-title {
+    max-width: 100%;
+}
+
+#historySection.admin-listing .history__content-sales {
+    width: 100%;
+    min-width: 0;
+}
+
 .history-content-title {
     max-width: 70%;
     margin-left: auto;
