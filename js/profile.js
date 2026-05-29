@@ -4,10 +4,9 @@
 //             admin.js (showToast)
 // ============================================================
 
-const PROFILE_URL =
-  window.location.port === '3000'
-    ? `${window.location.origin}/api/auth/profile`
-    : 'http://localhost:3000/api/auth/profile';
+const PROFILE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? `http://${window.location.hostname}:3000/api/auth/profile`
+  : 'https://stationery-api.onrender.com/api/auth/profile';
 
 function renderProfileModule() {
   // Mismo patrón que purchases.js / entities.js / renderProductsInMainArea

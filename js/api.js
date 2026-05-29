@@ -4,9 +4,9 @@
 // Depende de auth.js (debe cargarse antes en el HTML).
 // ============================================================
 
-const API_URL = window.location.port === "3000"
-  ? `${window.location.origin}/api`
-  : "http://localhost:3000/api";
+const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? `http://${window.location.hostname}:3000/api`
+  : 'https://stationery-api.onrender.com/api';
 
 let lastApiError = null;
 

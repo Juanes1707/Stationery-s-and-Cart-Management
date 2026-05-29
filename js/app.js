@@ -55,7 +55,7 @@ function renderCatalogMessage(message) {
   productsContainer.innerHTML = `
     <div class="catalog__empty-state">
       <strong>${escapeHtmlLocal(message)}</strong>
-      <span>Verifica que el backend este corriendo en http://localhost:3000.</span>
+      <span>Verifica que el backend este disponible en ${API_URL}.</span>
     </div>
   `;
 }

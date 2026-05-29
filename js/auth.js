@@ -4,10 +4,9 @@
 // Se carga ANTES que api.js en cualquier página que lo necesite.
 // ============================================================
 
-const AUTH_URL =
-  window.location.port === '3000'
-    ? `${window.location.origin}/api/auth`
-    : 'http://localhost:3000/api/auth';
+const AUTH_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? `http://${window.location.hostname}:3000/api/auth`
+  : 'https://stationery-api.onrender.com/api/auth';
 
 // Claves usadas en localStorage (persisten incluso después de cerrar el navegador)
 const TOKEN_KEY = 'py_token';
