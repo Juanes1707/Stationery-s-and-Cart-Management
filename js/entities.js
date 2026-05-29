@@ -384,7 +384,6 @@ function openEntityModal(entityName, item, allItems) {
           renderEntityList(entityName, local);
         } else {
           // ── CREAR ────────────────────────────────────────────
-          newItem.id = Date.now();
           console.log(
             `%c📝 Creando nueva ${labels.singular}:`,
             "color: #0066cc; font-weight: bold;",
@@ -404,6 +403,7 @@ function openEntityModal(entityName, item, allItems) {
 
             if (result && result.success) {
               createdSuccessfully = true;
+              newItem.id = result.data?.id ?? result.data?.dataValues?.id;
               showToast(`${labels.singular} creada correctamente.`, "success");
 
               // Si se creó una categoría, regenerar botones de filtro
@@ -442,13 +442,11 @@ function openEntityModal(entityName, item, allItems) {
             );
           }
 
+          m.remove();
           if (createdSuccessfully) {
-            const local = getLocalEntity(entityName);
-            local.push(newItem);
-            entityListCache[entityName] = local;
-            saveLocalEntity(entityName, local);
-            renderEntityList(entityName, local);
+            await loadEntityList(entityName);
           }
+          return;
         }
 
         m.remove();
@@ -548,7 +546,6 @@ function renderEntityForm(entityName, item) {
         renderEntityList(entityName, local);
       } else {
         // ── CREAR ────────────────────────────────────────────
-        newItem.id = Date.now();
         let createResult;
         try {
           createResult = await apiPost(entityName, newItem);
@@ -561,10 +558,8 @@ function renderEntityForm(entityName, item) {
         }
 
         if (createResult && createResult.success) {
-          const local = getLocalEntity(entityName);
-          local.push(newItem);
-          saveLocalEntity(entityName, local);
-          renderEntityList(entityName, local);
+          newItem.id = createResult.data?.id ?? createResult.data?.dataValues?.id;
+          await loadEntityList(entityName);
         } else {
           console.error("No se pudo crear la entidad:", createResult);
         }
