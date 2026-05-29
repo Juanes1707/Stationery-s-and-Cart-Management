@@ -4,7 +4,7 @@
 //             sales.js, history.js, router.js, admin.js
 // ============================================================
 if (!isAuthenticated()) {
-  window.location.href = '/login.html';
+  window.location.href = 'login.html';
 }
 // ── Selectores globales ─────────────────────────────────────
 const productsContainer = document.querySelector(".main__products-container");
