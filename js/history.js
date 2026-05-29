@@ -60,15 +60,20 @@ function renderHistory() {
         </div>
     `;
     state.sales.forEach(sale => {
+      const estado = sale.estado || '';
+      const isRefunded = ['REEMBOLSADA', 'REEMBOLSO_TOTAL', 'REEMBOLSO_PARCIAL'].includes(estado) || sale.reembolsada === true;
+      const isOpen = estado === 'ABIERTA';
+      const statusClass = isRefunded ? 'refunded' : isOpen ? 'pending' : 'delivered';
+      const statusLabel = isRefunded ? 'Reembolsada' : isOpen ? 'En corrección' : 'Entregado';
       content += `
         <div class="history-row">
           <span>#${String(sale.id).slice(-6)}</span>
           <span>${formatSaleDate(sale.date)}</span>
           <span>$${sale.total}</span>
-          <span class="status delivered">Entregado</span>
+          <span class="status ${statusClass}">${statusLabel}</span>
           <button class="btn-details" data-id="${sale.id}">Ver detalles</button>
           <button class="btn-invoice" data-id="${sale.id}">Factura</button>
-          <button class="btn-refund" data-id="${sale.id}">Reembolsar</button>
+          <button class="btn-refund" data-id="${sale.id}" ${isRefunded ? 'disabled title="Ya fue reembolsada"' : ''}>Reembolsar</button>
         </div>
       `;
     });
@@ -231,6 +236,7 @@ async function showCorrectionModal(venta) {
 
   const parsedItems = parseItemsJson(venta.itemsJson);
   const items = Array.isArray(parsedItems) ? parsedItems : (parsedItems.items || []);
+  const originalItems = items.map(i => ({ ...i }));
   const subtotal = items.reduce((acc, i) => acc + (Number(i.precio ?? i.price ?? 0) * Number(i.cantidad ?? i.quantity ?? 0)), 0);
   const iva = subtotal * 0.19;
   const total = subtotal + iva;
@@ -320,7 +326,7 @@ async function showCorrectionModal(venta) {
   // Guardar corrección
   modal.querySelector('.btn-save-correction').addEventListener('click', async (e) => {
     const saleId = Number(e.currentTarget.dataset.id);
-    await saveCorrectedSale(modal, saleId, items);
+    await saveCorrectedSale(modal, saleId, items, originalItems);
   });
 
   modal.addEventListener('click', e => { if (e.target === modal) {} });
@@ -363,19 +369,22 @@ async function closeCorrectionWithoutSaving(saleId) {
     });
     document.getElementById('correctionModal')?.remove();
     showToast('Se canceló la corrección.');
-    location.reload();
+    if (typeof loadSalesFromAPI === 'function') await loadSalesFromAPI();
+    renderHistory();
   } catch (error) {
     console.error('Error al cancelar corrección:', error);
+    document.getElementById('correctionModal')?.remove();
+    renderHistory();
   }
 }
 
 /**
  * Guarda la venta corregida
  */
-async function saveCorrectedSale(modal, saleId, updatedItems) {
+async function saveCorrectedSale(modal, saleId, updatedItems, originalItems = []) {
   try {
     const subtotal = updatedItems.reduce((acc, i) => acc + (Number(i.precio ?? i.price ?? 0) * Number(i.cantidad ?? i.quantity ?? 0)), 0);
-    const total = subtotal * 1.19; // Incluir IVA
+    const total = subtotal * 1.19;
 
     const response = await authFetch(`http://localhost:3000/api/ventas/${saleId}`, {
       method: 'PUT',
@@ -392,14 +401,45 @@ async function saveCorrectedSale(modal, saleId, updatedItems) {
       return;
     }
 
-    // Recalcular totales en el servidor
     await authFetch(`http://localhost:3000/api/ventas/${saleId}/recalcular-totales`, {
       method: 'POST'
     });
 
+    // Reconciliar inventario: reintegrar unidades eliminadas o reducidas
+    const toRestock = [];
+    for (const orig of originalItems) {
+      const origId = orig.productoId ?? orig.id;
+      const origQty = Number(orig.cantidad ?? orig.quantity ?? 0);
+      const updated = updatedItems.find(u => (u.productoId ?? u.id) === origId);
+      const newQty = updated ? Number(updated.cantidad ?? updated.quantity ?? 0) : 0;
+      const diff = origQty - newQty;
+      if (diff > 0) toRestock.push({ productId: origId, quantity: diff });
+    }
+    if (toRestock.length > 0 && typeof products !== 'undefined' && typeof apiUpdate === 'function') {
+      await Promise.allSettled(toRestock.map(({ productId, quantity }) => {
+        const product = products.find(p => p.id === productId);
+        if (!product || product.tracking === false) return Promise.resolve();
+        product.stock = (product.stock || 0) + quantity;
+        return apiUpdate('productos', {
+          id: product.id,
+          nombre: product.name,
+          categoria: product.category,
+          precio: product.price,
+          costo: product.cost,
+          codigo: product.code,
+          seguimientoInventario: product.tracking,
+          stock: product.stock,
+          imagen: product.image,
+          descripcion: product.description,
+        });
+      }));
+    }
+
     modal.remove();
     showToast('Venta corregida y guardada exitosamente.');
-    location.reload();
+    if (typeof loadSalesFromAPI === 'function') await loadSalesFromAPI();
+    await loadProductsFromAPI();
+    renderHistory();
   } catch (error) {
     console.error('Error al guardar corrección:', error);
     showAppAlert('No se pudo guardar la corrección.', 'error');
@@ -516,8 +556,14 @@ function showRefundModal(saleId) {
       showAppAlert(json.message || 'No se pudo registrar el reembolso.', 'error');
       return;
     }
+    const saleIdx = state.sales.findIndex(s => s.id === sale.id);
+    if (saleIdx >= 0) {
+      state.sales[saleIdx].estado = 'REEMBOLSADA';
+    }
+    if (typeof saveSales === 'function') saveSales();
     modal.remove();
     showToast(`Reembolso registrado por $${Number(json.data.total).toLocaleString('es-CO')}.`);
+    renderHistory();
     await loadProductsFromAPI();
   });
 }
