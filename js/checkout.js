@@ -1,7 +1,12 @@
 // checkout.js - Flujo rapido de cobro POS
 
-const checkoutContainer = document.querySelector(".checkout__content-container");
-const checkoutSection = document.querySelector("#checkoutSection");
+function getCheckoutContainer() {
+  return document.querySelector(".checkout__content-container");
+}
+
+function getCheckoutSection() {
+  return document.querySelector("#checkoutSection");
+}
 
 function money(value) {
   return Number(value || 0).toLocaleString("es-CO");
@@ -22,6 +27,9 @@ function calculateCheckoutTotals(discount) {
 }
 
 function renderSaleSuccess(saleData) {
+  const checkoutContainer = getCheckoutContainer();
+  if (!checkoutContainer) return;
+
   // Activar modo "success" para centrar la tarjeta sin alterar layout del checkout
   checkoutContainer.classList.add('checkout--success');
 
@@ -37,7 +45,7 @@ function renderSaleSuccess(saleData) {
           <strong>$${saleData.total}</strong>
         </div>
         <div class="sale-success__row">
-          <span>Metodo de pago</span>
+          <span>Método de pago</span>
           <strong>${saleData.payment?.method || "-"}</strong>
         </div>
         ${
@@ -62,7 +70,7 @@ function renderSaleSuccess(saleData) {
         <button class="sale-success__btn-home" onclick="navigate('home'); renderCart();">
           Nueva venta
         </button>
-        <button class="sale-success__btn-history" onclick="navigate('profile'); initAdmin();">
+        <button class="sale-success__btn-history" onclick="navigate('history');">
           Ver historial
         </button>
       </div>
@@ -71,6 +79,9 @@ function renderSaleSuccess(saleData) {
 }
 
 function renderCheckout() {
+  const checkoutContainer = getCheckoutContainer();
+  if (!checkoutContainer) return;
+
   // Asegurar que salimos del modo success cuando volvemos al formulario
   checkoutContainer.classList.remove('checkout--success');
   checkoutContainer.innerHTML = "";
@@ -243,10 +254,10 @@ function renderCheckout() {
     try {
       const saleData = await registerSale();
       await loadProductsFromAPI();
+      renderSaleSuccess(saleData);
       if (typeof renderHistory === 'function') {
         renderHistory();
       }
-      renderSaleSuccess(saleData);
     } catch (error) {
       console.error(error);
       showToast(error.message || "Error al procesar la venta.", "error");

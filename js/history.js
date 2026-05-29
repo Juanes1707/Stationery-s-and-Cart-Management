@@ -50,12 +50,19 @@ function renderHistory() {
   const historySection = document.querySelector('.history__content-sales');
   if (!historySection) return;
 
-  if (state.sales.length === 0) {
+  const sales = Array.isArray(state.sales) ? state.sales : [];
+  if (sales.length === 0) {
     historySection.innerHTML = `
       <h2 class="history-content-title">Historial de ventas</h2>
       <p style="color:#888; text-align:center; margin-top:16px;">No hay ventas registradas.</p>
     `;
   } else {
+    const sortedSales = [...sales].sort((a, b) => {
+      const dateA = new Date(a.fechaISO || a.date || a.fecha || a.fechaISO || a.date);
+      const dateB = new Date(b.fechaISO || b.date || b.fecha || b.fechaISO || b.date);
+      return dateB - dateA;
+    });
+
     let content = `
       <h2 class="history-content-title">Historial de ventas</h2>
       <div class="history-card history-sales-card">
@@ -64,7 +71,7 @@ function renderHistory() {
           <span>ESTADO</span><span>DETALLES</span><span>FACTURA</span><span>REEMBOLSO</span>
         </div>
     `;
-    state.sales.forEach(sale => {
+    sortedSales.forEach(sale => {
       content += `
         <div class="history-row">
           <span>#${String(sale.id).slice(-6)}</span>
